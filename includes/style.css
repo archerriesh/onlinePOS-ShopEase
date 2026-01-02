@@ -1,0 +1,146 @@
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #faf7f5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+}
+
+.auth-container {
+  padding-top: 100px;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  color: #ba704a;
+}
+
+.navbar-brand:hover {
+  color: #61593d;
+}
+
+.nav-item .nav-link{
+  color: #ba704a;
+}
+
+.nav-item .nav-link:hover{
+  font-weight: bold;
+}
+
+.form-label {
+  color: #61593d;
+}
+
+.form-control::placeholder {
+  color: rgba(97, 89, 61, 0.5);
+}
+
+.btn {
+  background-color: #61593d;
+  color: #faf7f5;
+  border: none;
+  align-self: center;
+}
+
+.btn:hover {
+  background-color: #c7965c;
+}
+
+.auth-image {
+  max-width: 90%;
+}
+
+h1.auth-title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 48px;
+    color: #61593d;
+}
+
+.auth-subtitle {
+    font-family: 'Poppins', sans-serif;
+    font-size: 18px;
+    color: #61593d;
+    text-align: center;
+}
+
+.form-control {
+  border-radius: 8px;
+}
+
+p {
+  padding-top: 10px;
+  color: #61593d;
+}
+
+a {
+  color: #61593d;
+  text-decoration: none;
+}
+
+a:hover{
+  color: #c7965c;
+}
+
+.role-wrapper {
+    margin-top: 10px;
+}
+
+.role-circle {
+    display: inline-flex; 
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background-color: #fff;
+    border: 2px solid #e0c097;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+}
+
+.role-circle span {
+    font-weight: 600;
+    color: #61593d;
+}
+
+.role-circle:hover {
+    background-color: #f5e6c8;
+    transform: translateY(-6px);
+    box-shadow: 0 10px 24px rgba(186,112,74,0.25);
+}
+
+.role-circle:active {
+    transform: scale(0.95);
+}
+
+.footer {
+  background-color: #f3efe9;
+  border-top: 1px solid #e0dcd5;
+}
+
+.footer-brand {
+  font-weight: 700;
+  color: #ba704a;
+  margin-right: 8px;
+}
+
+.footer-text {
+  color: #8a8375;
+  font-size: 14px;
+}
+
+.footer-link {
+  margin-left: 16px;
+  color: #61593d;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.footer-link:hover {
+  color: #ba704a;
+}
