@@ -27,7 +27,7 @@
     <div class="collapse navbar-collapse" id="mainNavbar">
         <ul class="navbar-nav ms-auto gap-3">
             <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">Products</a></li>
+            <li class="nav-item"><a class="nav-link" href="../pages/liat-produk.php">Products</a></li>
             <li class="nav-item"><a class="nav-link" href="#">Categories</a></li>
             <li class="nav-item"><a class="nav-link" href="#">Cart</a></li>
             <li class="nav-item"><a class="nav-link" href="#">History</a></li>
