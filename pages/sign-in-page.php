@@ -12,15 +12,15 @@ include '../includes/header-auth.php';
         <div class="col-12 col-md-5 offset-md-1 order-2 order-md-2">
             <h1 class="auth-title mb-4">Sign In</h1>
 
-            <form>
+            <form method="POST" action="sign-in.php">
                 <div class="mb-3">
                     <label class="form-label">Username</label>
-                    <input type="text" class="form-control" placeholder="Username">
+                    <input type="text" name="username" class="form-control" placeholder="Username">
                 </div>
 
                 <div class="mb-4">
                     <label class="form-label">Password</label>
-                    <input type="password" class="form-control" placeholder="Password">
+                    <input type="password" name="password" class="form-control" placeholder="Password">
                 </div>
 
                 <button type="submit" class="btn w-75 py-2 mx-auto d-block">

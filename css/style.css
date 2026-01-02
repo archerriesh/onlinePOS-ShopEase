@@ -118,6 +118,33 @@ a:hover{
     transform: scale(0.95);
 }
 
+.feature-card {
+    display: block;
+    background: #f3efe9;
+    border-radius: 16px;
+    padding: 32px;
+    text-align: center;
+    text-decoration: none;
+    color: #61593d;
+    transition: all 0.25s ease;
+    height: 100%;
+}
+
+.feature-card h4 {
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.feature-card p {
+    font-size: 14px;
+    color: #8a8375;
+}
+
+.feature-card:hover {
+    background: #e9dfd3;
+    transform: translateY(-6px);
+}
+
 .footer {
   background-color: #f3efe9;
   border-top: 1px solid #e0dcd5;

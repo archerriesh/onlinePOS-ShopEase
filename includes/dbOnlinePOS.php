@@ -1,12 +1,6 @@
 <?php
+$conn = mysqli_connect("localhost", "root", "", "dbOnlinePOS");
 
-$dsn = "mysql:host=localhost;dbname=dbOnlinePOS";
-$dbusername = "root";
-$dbpassword = "";
-
-try {
-    $pdo = new PDO($dsn, $dbusername, $dbpassword);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);  
-} catch (PDOException $e) {
-    echo "Connection failed: " . $e->getMessage();
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
 }
