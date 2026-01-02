@@ -1,12 +1,12 @@
 <?php
 $authPage = 'signin';
-include 'includes/header-auth.php';
+include '../includes/header-auth.php';
 ?>
 
 <div class="container login-container pt-5 mt-5">
     <div class="row w-100">
         <div class="col-12 col-md-6 order-1 order-md-1 text-center mb-10 mb-md-0">
-            <img src="foto/signin.png" class="img-fluid mt-5" alt="Shopping Illustration">
+            <img src="../foto/signin.png" class="img-fluid" alt="Shopping Illustration">
         </div>
 
         <div class="col-12 col-md-5 offset-md-1 order-2 order-md-2">
@@ -27,9 +27,9 @@ include 'includes/header-auth.php';
                     Sign In
                 </button>
 
-                <p>
+                <p class="mt-3 text-center">
                     Don’t have account?
-                    <a href="sign-up.php" class="fw-semibold text-decoration-none">
+                    <a href="../pages/sign-up-page.php" class="fw-semibold text-decoration-none">
                         Sign Up
                     </a>
                 </p>
@@ -38,4 +38,4 @@ include 'includes/header-auth.php';
     </div>
 </div>
 
-<?php include 'includes/footer.php'; ?>
+<?php include '../includes/footer.php'; ?>
