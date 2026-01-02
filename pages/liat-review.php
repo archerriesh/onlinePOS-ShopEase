@@ -1,6 +1,6 @@
 <?php
-$pageCSS = 'css/liat-review.css';
-include 'includes/header-main.php';
+$pageCSS = '../css/liat-review.css';
+include '../includes/header-main.php';
 ?>
 
 <div class="review-container">
@@ -94,4 +94,4 @@ include 'includes/header-main.php';
 
 </div>
 
-<?php
+<?php include '../includes/footer.php'; ?>

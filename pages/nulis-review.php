@@ -1,6 +1,6 @@
 <?php
-$pageCSS = 'css/nulis-review.css';
-include 'includes/header-main.php';
+$pageCSS = '../css/nulis-review.css';
+include '../includes/header-main.php';
 ?>
 
 <div class="page-bg">
@@ -24,4 +24,4 @@ include 'includes/header-main.php';
   </section>
 </div>
 
-<?php include 'includes/footer.php'; ?>
+<?php include '../includes/footer.php'; ?>

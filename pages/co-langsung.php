@@ -1,6 +1,6 @@
 <?php
-$pageCSS = '/ONLINEPOS-SHOPEASE/assets/css/co-langsung.css';
-include 'includes/header-main.php';
+$pageCSS = '../css/co-langsung.css';
+include '../includes/header-main.php';
 ?>
 
 <main class="container">
@@ -57,4 +57,4 @@ include 'includes/header-main.php';
     </aside>
 </main>
 
-<?php include 'includes/footer.php'; ?>
+<?php include '../includes/footer.php'; ?>

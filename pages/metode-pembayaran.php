@@ -1,6 +1,6 @@
 <?php
-$pageCSS = 'css/metode-pembayaran.css';
-include 'includes/header-main.php';
+$pageCSS = '../css/metode-pembayaran.css';
+include '../includes/header-main.php';
 ?>
 
 <div class="overlay">
@@ -57,4 +57,4 @@ include 'includes/header-main.php';
     </div>
 </div>
 
-<?php include 'includes/footer.php'; ?>
+<?php include '../includes/footer.php'; ?>

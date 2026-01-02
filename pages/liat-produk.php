@@ -1,6 +1,6 @@
 <?php
-$pageCSS = 'css/liat-produk.css';
-include 'includes/header-main.php';
+$pageCSS = '../css/liat-produk.css';
+include '../includes/header-main.php';
 ?>
 
 <main class="container">
@@ -45,4 +45,4 @@ include 'includes/header-main.php';
 </section>
 </main>
 
-<?php include 'includes/footer.php'; ?>
+<?php include '../includes/footer.php'; ?>
