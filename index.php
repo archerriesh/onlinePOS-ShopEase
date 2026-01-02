@@ -19,19 +19,19 @@ include 'includes/header-main.php';
 
             <div class="row justify-content-center g-4 role-wrapper">
                 <div class="col-4 col-md-4 text-center">
-                    <a href="pages/sign-in-page.php?role=buyer" class="role-circle">
+                    <a href="pages/sign-in-page.php" class="role-circle">
                         <span>Buyer</span>
                     </a>
                 </div>
 
                 <div class="col-4 col-md-4 text-center">
-                    <a href="pages/sign-in-page.php?role=seller" class="role-circle">
+                    <a href="pages/sign-in-page.php" class="role-circle">
                         <span>Seller</span>
                     </a>
                 </div>
 
                 <div class="col-4 col-md-4 text-center">
-                    <a href="pages/sign-in-page.php?role=buyer" class="role-circle">
+                    <a href="pages/sign-in-page.php" class="role-circle">
                         <span>Staff</span>
                     </a>
                 </div>
