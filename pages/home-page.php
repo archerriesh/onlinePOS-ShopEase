@@ -5,11 +5,12 @@ if (!isset($_SESSION['login'])) {
     exit;
 }
 
+$pageCSS = '../css/home-page.css';
 include '../includes/header-main.php';
 ?>
 
 <section class="hero">
-    <div class="container">
+    <div class="home-container">
       <h1>Welcome to ShopEase</h1>
       <p class="subtitle">
         an online shopping platform designed to deliver convenience at every step. From discovering products to completing secure payments, ShopEase ensures a seamless, efficient, and comfortable shopping experience for everyone.
@@ -60,9 +61,6 @@ include '../includes/header-main.php';
             </div>
         </article>
         </div>
-    </section>
 </section>
 
-<?php
-include '../includes/footer.php';
-?>
+<?php include '../includes/footer.php'; ?>

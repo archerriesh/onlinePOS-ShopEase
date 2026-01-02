@@ -1,6 +1,15 @@
 <?php
-$pageCSS = '../css/liat-produk.css';
-include '../includes/header-main.php';
+include '../includes/db.php';
+
+$idProduk = $_GET['id'];
+
+$query = mysqli_query($conn,
+    "SELECT idProduk, namaProduk, harga, keterangan
+     FROM tbProduk
+     WHERE idProduk = '$idProduk'"
+);
+
+$produk = mysqli_fetch_assoc($query);
 ?>
 
 <main class="container">
@@ -37,7 +46,7 @@ include '../includes/header-main.php';
 
         <div class="action-row">
             <button class="btn add">🛒 Add to cart</button>
-            <button class="btn buy">Buy now</button>
+            <button class="btn buy" href="../pages/co-langsung.php">Buy now</button>
         </div>
 
         </div>
