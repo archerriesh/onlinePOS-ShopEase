@@ -1,5 +1,5 @@
 <?php
-$pageCSS = 'css/co-langsung.css';
+$pageCSS = '/ONLINEPOS-SHOPEASE/assets/css/co-langsung.css';
 include 'includes/header-main.php';
 ?>
 
