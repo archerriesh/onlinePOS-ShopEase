@@ -1,0 +1,90 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif;
+}
+
+body {
+    background: #faf7f5;
+}
+
+.overlay {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.payment-card {
+    width: 520px;
+    background: #e3d6cc;
+    border-radius: 18px;
+    padding: 32px 36px;
+}
+
+.payment-card h2 {
+    text-align: center;
+    font-size: 22px;
+    margin-bottom: 28px;
+    color: #121212;
+}
+
+.method {
+    margin-bottom: 26px;
+}
+
+.radio {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 15px;
+    color: #121212;
+    margin-bottom: 14px;
+}
+
+.radio input {
+    display: none;
+}
+
+.custom-radio {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #61593d;
+    border-radius: 50%;
+}
+
+.logos {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 28px;
+}
+
+.logos img {
+    height: 34px;
+}
+
+.logos.qris {
+    justify-content: flex-start;
+    padding-left: 28px;
+}
+
+.arrow {
+    font-size: 20px;
+    color: #121212;
+    cursor: default;
+}
+
+.choose-btn {
+    width: 100%;
+    margin-top: 18px;
+    padding: 14px;
+    border-radius: 14px;
+    border: none;
+    background: #61593d;
+    color: #ffffff;
+    font-size: 15px;
+    cursor: pointer;
+}

@@ -1,3 +1,8 @@
+<?php
+$authPage = 'signin';
+include 'includes/header-auth.php';
+?>
+
 <div class="container login-container pt-5 mt-5">
     <div class="row w-100">
         <div class="col-12 col-md-6 order-1 order-md-1 text-center mb-10 mb-md-0">
@@ -31,4 +36,6 @@
             </form>
         </div>
     </div>
-</
+</div>
+
+<?php include 'includes/footer.php'; ?>

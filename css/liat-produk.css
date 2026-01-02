@@ -1,0 +1,77 @@
+:root{  
+  /* Palet warna yang disediakan */  
+  --p1: #faf7f5;  
+  --p2: #e3d6cc;  
+  --p3: #c7965c;  
+  --p4: #ba704a;  
+  --p5: #a6996b;  
+  --p6: #61593d;  
+  --p7: #121212;  
+
+  --card: #fff;  
+  --shadow: rgba(0,0,0,.08);  
+  --radius: 14px;  
+  --border: #ecd9c2;  
+}  
+
+* { box-sizing: border-box; }  
+html, body { margin: 0; padding: 0; background: #f7f0e6; color: #2b2b2b; font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial; }  
+
+.site-header{  
+  display:flex; justify-content: space-between; align-items: center;  
+  padding: 22px 40px; background: #f0e9e0; border-bottom: 1px solid #e6d6c0;  
+}  
+.site-header .logo{ font-weight: 800; color: #d27d4b; font-size: 28px; }  
+.site-header .nav{ display:flex; gap:20px; font-size:14px; color:#a46b46; }  
+.site-header .nav a{ text-decoration:none; color:inherit; }  
+
+.container{ max-width: 1100px; margin: 28px auto; padding: 0 20px; }  
+
+.product-card{  
+  display:grid;  
+  grid-template-columns: 420px 1fr;  
+  gap: 26px;  
+  align-items: stretch;  
+  background: #fff;  
+  border: 2px solid #ecd9c2;  
+  border-radius: var(--radius);  
+  padding: 18px;  
+  box-shadow: 0 6px 16px rgba(0,0,0,.04);  
+}  
+.image-wrap{  
+  display:flex; align-items: center; justify-content: center;  
+  background: #fff;  
+  border: 1px solid #e8d8c3;  
+  border-radius: 10px;  
+  padding: 8px;  
+}  
+.image-wrap img{ max-width: 100%; height: auto; display:block; }  
+
+.info{ padding: 4px 0 0 0; }  
+.title{ font-size: 24px; line-height: 1.25; margin: 6px 0 6px; color:#333; font-weight: 700; }  
+.brand{ color:#888; font-size: 14px; margin-bottom: 6px; }  
+
+.quantity {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: #555;
+  font-size: 13px;
+  margin: 6px 0 12px;
+}
+.rating .stars {
+  color: #f4a261; /* warna bintang seperti ilustrasi */
+}
+.rating .reviews {
+  color: #666;
+}
+.rating .sold {
+  color: #666;
+}

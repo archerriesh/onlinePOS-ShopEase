@@ -1,3 +1,8 @@
+<?php 
+$authPage = 'signup';
+include 'includes/header-auth.php';
+?>
+
 <div class="container signup-container">
     <div class="row align-items-center">
         <div class="col-12 col-md-6 text-center order-1 order-md-2">
@@ -52,3 +57,5 @@
         </div>
     </div>
 </div>
+
+<? include 'includes/footer.php'; ?>
