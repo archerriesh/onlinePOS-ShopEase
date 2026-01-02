@@ -75,3 +75,115 @@ html, body { margin: 0; padding: 0; background: #f7f0e6; color: #2b2b2b; font-fa
 .rating .sold {
   color: #666;
 }
+
+.action-row {
+  display: flex;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.btn {
+  padding: 12px 22px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+/* Add to cart */
+.btn.add {
+  background: #fff;
+  border-color: #ba704a;
+  color: #ba704a;
+}
+
+/* Buy now */
+.btn.buy {
+  background: #ba704a;
+  border-color: #ba704a;
+  color: #fff;
+}
+
+
+.qty {
+  display: flex;
+  align-items: center;
+  gap: 8px; 
+}
+
+.qty .btn-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;          
+  border: 1.5px solid #ba704a;
+  background: #fff;
+  color: #ba704a;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qty input {
+  width: 36px;
+  text-align: center;
+  border: none;               
+  background: transparent;
+  font-size: 15px;
+  font-weight: 500;
+  outline: none;
+  padding: 0;
+}
+
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .product-card {
+    grid-template-columns: 1fr; /* dari 2 kolom jadi 1 */
+    gap: 20px;
+  }
+
+  .image-wrap {
+    max-width: 360px;
+    margin: 0 auto;
+  }
+
+  .title {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 14px;
+  }
+
+  .product-card {
+    padding: 14px;
+  }
+
+  .rating {
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 12px;
+  }
+
+  .quantity {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .action-row {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+    text-align: center;
+  }
+}
