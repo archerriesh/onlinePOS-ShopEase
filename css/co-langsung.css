@@ -52,12 +52,13 @@ body {
 
 .order-card {
     display: grid;
-    grid-template-columns: 80px 1fr 120px 80px 120px;
+    grid-template-columns: 80px 1fr 120px 60px 120px;
     align-items: center;
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 16px;
-    margin-bottom: 32px;
+    column-gap: 16px;
+}
+
+.order-card > * {
+    min-width: 0;
 }
 
 .order-card img {
@@ -67,6 +68,10 @@ body {
 .product-name {
     font-weight: 600;
     font-size: 16px;
+    white-space: normal;
+    word-break: normal;
+    overflow-wrap: break-word;
+    line-height: 1.4;
 }
 
 .price,
@@ -124,14 +129,21 @@ body {
     padding: 20px;
     border-radius: 16px;
     margin-bottom: 24px;
+    width: 100%;
 }
 
 .summary .row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 14px;
-    margin-bottom: 10px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    row-gap: 8px;
 }
+
+.summary .row span:last-child {
+    text-align: right;
+    white-space: nowrap;
+}
+
 
 .summary .total {
     font-weight: 700;
@@ -148,3 +160,8 @@ body {
     font-size: 16px;
     cursor: pointer;
 }
+
+
+
+
+
