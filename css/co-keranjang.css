@@ -44,7 +44,7 @@ html, body { margin: 0; padding: 0; font-family: "Inter", system-ui, -apple-syst
 
 .cart-item {
   display: grid;
-  grid-template-columns: 60px 1fr 90px;
+  grid-template-columns: 60px minmax(0, 1fr) auto;
   gap: 12px;
   align-items: center;
   padding: 10px 0;
@@ -64,17 +64,24 @@ html, body { margin: 0; padding: 0; font-family: "Inter", system-ui, -apple-syst
   font-weight: 700;
 }
 .cart-item input[type="number"] {
-  width: 52px; text-align: center; border: 1px solid #d6c5b0; border-radius: 6px; padding: 2px 6px;
+  width: 52px; 
+  text-align: center; 
+  border: 1px solid #d6c5b0; 
+  border-radius: 6px; 
+  padding: 2px 6px;
   background: #fff;
 }
 .price { 
-    font-weight: 500; color: #555; 
+    font-weight: 500; 
+    color: #555; 
     font-size: small;
+    text-align: right;
 }
 
 .summary {
   background: transparent;
   padding: 6px;
+  align-self: center;
 }
 .voucher { text-align: left; color: #6b6b6b; font-size: 14px; margin-bottom: 8px; }
 .voucher-box {
@@ -89,8 +96,16 @@ html, body { margin: 0; padding: 0; font-family: "Inter", system-ui, -apple-syst
   font-size: 13px;
   color: #6b6b6b;
 }
+
 .summary-panel .row {
-  display: flex; justify-content: space-between; padding: 6px 0;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    column-gap: 10px;
+  }
+
+  .summary-panel .row span:last-child {
+    white-space: nowrap;
+    text-align: right;
 }
 .summary-panel .row.total { font-weight: 700; color: #2b2b2b; }
 
@@ -105,3 +120,40 @@ html, body { margin: 0; padding: 0; font-family: "Inter", system-ui, -apple-syst
   margin-top: 14px;
 }
 .checkout-btn:hover { filter: brightness(0.95); }
+
+.item-info {
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr) 300px;
+  }
+
+  html, body {
+    overflow-x: hidden;
+  }
+
+  .summary-panel .row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    column-gap: 10px;
+  }
+
+  .summary-panel .row span:last-child {
+    white-space: nowrap;
+    text-align: right;
+  }
+
+  .cart-item {
+    grid-template-columns: 60px minmax(0, 1fr) auto;
+  }
+
+  .price {
+    white-space: nowrap;
+    text-align: right;
+  }
+
+}
+
+
