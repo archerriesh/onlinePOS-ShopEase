@@ -19,7 +19,7 @@ mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $user = mysqli_fetch_assoc($result);
 
-if ($user && $password === $user['password']) {
+if ($user && $password === $user['passwordPelanggan']) {
     $_SESSION['login'] = true;
     $_SESSION['username'] = $user['usernamePelanggan'];
 

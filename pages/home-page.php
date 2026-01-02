@@ -20,7 +20,7 @@ include '../includes/header-main.php';
 
         <!-- Lihat Produk -->
         <div class="col-12 col-md-4">
-            <a href="pages/liat-produk.php" class="feature-card">
+            <a href="liat-produk.php" class="feature-card">
                 <h4>View Products</h4>
                 <p>Browse and explore available products.</p>
             </a>
@@ -28,7 +28,7 @@ include '../includes/header-main.php';
 
         <!-- Checkout Keranjang -->
         <div class="col-12 col-md-4">
-            <a href="pages/co-keranjang.php" class="feature-card">
+            <a href="co-keranjang.php" class="feature-card">
                 <h4>Cart Checkout</h4>
                 <p>Checkout items added to your cart.</p>
             </a>
@@ -36,7 +36,7 @@ include '../includes/header-main.php';
 
         <!-- Checkout Langsung -->
         <div class="col-12 col-md-4">
-            <a href="pages/co-langsung.php" class="feature-card">
+            <a href="co-langsung.php" class="feature-card">
                 <h4>Direct Checkout</h4>
                 <p>Buy instantly without using cart.</p>
             </a>
