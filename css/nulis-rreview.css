@@ -1,26 +1,4 @@
-:root{  
-  /* Warna sesuai palet desain  (tetap tidak menampilkan swatch di halaman) */  
-  --bg: #f0e6de;  
-  --card: #e2d3c0;  
-  --text: #1e1e1e;  
-  --shadow: rgba(0,0,0,.25);  
-  --radius: 12px;  
-  --border: #b8a88f;  
-  --button: #5a4a2e;  
-  --text-muted: #6b6b6b;  
-}  
-
-* { box-sizing: border-box; }  
-html, body { margin: 0; padding: 0; height: 100%; font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial; background: var(--bg); color: var(--text); }  
-
-.page-bg {  
-  min-height: 100%;  
-  display: grid;  
-  place-items: center;  
-  padding: 40px;  
-}  
-
-.review-modal {  
+/* .review-modal {  
   width: 520px;  
   max-width: 92vw;  
   background: #e0d6cb;  
@@ -87,8 +65,7 @@ html, body { margin: 0; padding: 0; height: 100%; font-family: "Inter", system-u
 }
 .review-modal .comment:focus {
   border-color: #c4a07a;
-  box-shadow: 0 0 0 3px rgba( undefined, 0, 0, 0.1); /* opsional, bisa diubah */
-}
+  box-shadow: 0 0 0 3px rgba( undefined, 0, 0, 0.1); 
 
 .send-btn {
   background: #7a5a2a;
@@ -102,4 +79,4 @@ html, body { margin: 0; padding: 0; height: 100%; font-family: "Inter", system-u
 }
 .send-btn:hover {
   background: #6a4a1f;
-}
+} */

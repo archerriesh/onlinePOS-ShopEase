@@ -1,23 +1,14 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Inter", sans-serif;
-}
-
-body {
+/* body {
     background: #faf7f5;
-    color: #121212;
+    color: #121212; 
 }
 
-/* ===== CONTAINER ===== */
 .review-container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 40px 0;
 }
 
-/* ===== TITLE ===== */
 h1 {
     text-align: center;
     font-size: 26px;
@@ -25,7 +16,6 @@ h1 {
     margin-bottom: 32px;
 }
 
-/* ===== RATING SUMMARY ===== */
 .rating-summary {
     height: 96px;
     background: #e3bfa9;
@@ -37,7 +27,6 @@ h1 {
     margin-bottom: 32px;
 }
 
-/* LEFT */
 .left-rating {
     display: flex;
     align-items: center;
@@ -56,7 +45,6 @@ h1 {
     letter-spacing: 4px;
 }
 
-/* ===== FILTER ===== */
 .rating-filter {
     display: grid;
     grid-template-columns: repeat(3, 96px);
@@ -84,18 +72,14 @@ h1 {
     cursor: pointer;
 }
 
-/* STAR COLOR */
 .rating-filter .star {
     color: #fff2b3;
 }
 
-/* ACTIVE */
 .rating-filter input:checked + label {
     background: #ba704a;
 }
 
-/* CENTER BUTTON (4 & 5 STAR) */
-/* POSISI GRID YANG BENAR */
 .rating-filter label[for="star1"] {
     grid-column: 1;
     grid-row: 1;
@@ -121,16 +105,12 @@ h1 {
     grid-row: 2;
 }
 
-
-
-/* ===== REVIEW LIST ===== */
 .review-list {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 24px;
 }
 
-/* ===== REVIEW CARD ===== */
 .review-card {
     min-height: 140px;
     background: #ffffff;
@@ -140,7 +120,6 @@ h1 {
     gap: 14px;
 }
 
-/* AVATAR */
 .avatar {
     width: 36px;
     height: 36px;
@@ -149,7 +128,6 @@ h1 {
     flex-shrink: 0;
 }
 
-/* CONTENT */
 .review-stars {
     font-size: 14px;
     color: #c7965c;
@@ -166,6 +144,7 @@ h1 {
 .rating-filter input:checked + label .star {
     color: #ffffff;
 }
+<<<<<<< Updated upstream
 
 @media (max-width: 1100px) {
 
@@ -193,3 +172,6 @@ h1 {
         font-size: 20px;
     }
 }
+=======
+ */
+>>>>>>> Stashed changes

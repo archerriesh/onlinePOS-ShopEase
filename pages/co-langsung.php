@@ -3,7 +3,7 @@ $pageCSS = '../css/co-langsung.css';
 include '../includes/header-main.php';
 ?>
 
-<main class="container">
+<main class="checkout-page">
     <section class="left">
         <h3 class="section-title">Ordered item</h3>
 

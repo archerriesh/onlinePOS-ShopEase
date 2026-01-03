@@ -1,4 +1,4 @@
-* {
+/* * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -7,9 +7,9 @@
 
 body {
     background: #faf7f5;
-}
+} */
 
-.overlay {
+/* .overlay {
     width: 100vw;
     height: 100vh;
     display: flex;
@@ -87,4 +87,4 @@ body {
     color: #ffffff;
     font-size: 15px;
     cursor: pointer;
-}
+} */

@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 .container {
     padding: 40px 80px;
 }
@@ -7,68 +8,92 @@
     padding: 0;
     box-sizing: border-box;
     font-family: "Inter", sans-serif;
+=======
+.checkout-page {
+  display: flex;
+  gap: 48px;
+  padding: 40px 80px;
+  max-width: 1200px;
+  margin: 0 auto;
+>>>>>>> Stashed changes
 }
 
-body {
-    background-color: #faf7f5;
-    color: #121212;
+.checkout-left {
+  flex: 2.2;
 }
 
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    padding: 28px 80px;
-    align-items: center;
+.checkout-right {
+  flex: 1;
 }
 
-.logo {
-    font-size: 26px;
-    font-weight: 700;
-    color: #ba704a;
+.checkout-page .section-title {
+  font-size: 18px;
+  margin-bottom: 16px;
+  color: #61593d;
+  font-weight: 600;
 }
 
-.nav-menu a {
-    margin-left: 28px;
-    text-decoration: none;
-    color: #61593d;
-    font-size: 16px;
+.checkout-page .order-card {
+  display: grid;
+  grid-template-columns: 80px 1fr 120px 60px 120px;
+  align-items: center;
+  column-gap: 16px;
+  margin-bottom: 32px;
 }
 
-.container {
-    display: flex;
-    padding: 40px 80px;
-    gap: 48px;
+.checkout-page .order-card img {
+  width: 60px;
 }
 
-.left {
-    flex: 2.2;
+.checkout-page .product-name {
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.4;
 }
 
-.right {
-    flex: 1;
+.checkout-page .item-price,
+.checkout-page .item-qty,
+.checkout-page .item-subtotal {
+  text-align: center;
+  font-size: 15px;
 }
 
-.section-title {
-    font-size: 18px;
-    margin-bottom: 16px;
-    color: #61593d;
+.checkout-page .address-box {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 32px;
 }
 
+<<<<<<< Updated upstream
 .order-card {
     display: grid;
     grid-template-columns: 80px minmax(220px, 1fr) 120px 60px 120px;
     align-items: center;
     column-gap: 16px;
+=======
+.checkout-page .address-name {
+  font-weight: 600;
+  margin-bottom: 6px;
+>>>>>>> Stashed changes
 }
 
-.order-card > * {
-    min-width: 0;
+.checkout-page .address-detail {
+  font-size: 14px;
+  color: #61593d;
+  line-height: 1.5;
 }
 
-.order-card img {
-    width: 60px;
+.checkout-page .payment-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 16px;
 }
 
+<<<<<<< Updated upstream
 .product-name {
     font-weight: 600;
     font-size: 16px;
@@ -76,57 +101,64 @@ body {
     word-break: break-word;
     overflow-wrap: break-word;
     line-height: 1.4;
+=======
+.checkout-page .payment-box button {
+  background: #c7965c;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  color: #ffffff;
+  cursor: pointer;
+>>>>>>> Stashed changes
 }
 
-.price,
-.qty,
-.subtotal {
-    text-align: center;
-    font-size: 15px;
+.checkout-page .voucher-box {
+  height: 70px;
+  background: #e3d6cc;
+  border-radius: 16px;
+  margin-bottom: 24px;
 }
 
-.address-box {
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 16px;
-    margin-bottom: 32px;
+.checkout-page .summary-box {
+  background: #e3d6cc;
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 24px;
 }
 
-.address-name {
-    font-weight: 600;
-    margin-bottom: 6px;
+.checkout-page .summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
 }
 
-.address-detail {
-    font-size: 14px;
-    color: #61593d;
-    line-height: 1.5;
+.checkout-page .summary-total {
+  font-weight: 700;
+  margin-top: 10px;
 }
 
-.payment-box {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 16px;
+.checkout-page .checkout-btn {
+  width: 100%;
+  padding: 16px;
+  background: #61593d;
+  color: #ffffff;
+  border: none;
+  border-radius: 14px;
+  font-size: 16px;
+  cursor: pointer;
 }
 
-.payment-box button {
-    background: #c7965c;
-    border: none;
-    padding: 10px 18px;
-    border-radius: 10px;
-    color: #ffffff;
-    cursor: pointer;
+.checkout-page .checkout-btn:hover {
+  background: #c7965c;
 }
 
-.voucher-box {
-    height: 70px;
-    background: #e3d6cc;
-    border-radius: 16px;
-    margin-bottom: 24px;
+@media (max-width: 900px) {
+  .checkout-page {
+    flex-direction: column;
+    padding: 24px;
+  }
 }
+<<<<<<< Updated upstream
 
 .summary {
     background: #e3d6cc;
@@ -197,3 +229,5 @@ body {
 
 
 
+=======
+>>>>>>> Stashed changes

@@ -3,7 +3,7 @@ $pageCSS = '../css/co-keranjang.css';
 include '../includes/header-main.php';
 ?>
 
-<main class="container">
+<main class="cart-page">
     <section class="layout">
         <div class="cart-items" aria-label="Daftar Item">
         <h3 class="section-title">3 items</h3>
