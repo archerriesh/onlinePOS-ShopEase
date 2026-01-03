@@ -122,6 +122,34 @@
   background: #c7965c;
 }
 
+.summary { 
+  background: #e3d6cc; 
+  padding: 20px; 
+  border-radius: 16px; 
+  margin-bottom: 24px; 
+  width: 100%; 
+  font-size: 14px;
+} 
+.summary .row { 
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  margin-bottom: 10px; 
+} 
+
+.summary .row:last-child {
+    margin-bottom: 0;
+}
+
+.summary .row span:last-child { 
+  text-align: right; 
+  white-space: nowrap; 
+} 
+  .summary .total { 
+    font-weight: 700; 
+    margin-top: 10px; 
+  }
+
 @media (max-width: 900px) {
   .checkout-page {
     flex-direction: column;
