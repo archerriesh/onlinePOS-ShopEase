@@ -24,6 +24,7 @@ body {
     margin-bottom: 25px;
     font-size: 14px;
     color: #61593d;
+    justify-content: center;
 }
 
 .order-tabs .active {
