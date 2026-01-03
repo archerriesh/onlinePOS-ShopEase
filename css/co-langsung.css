@@ -1,21 +1,9 @@
-<<<<<<< Updated upstream
-.container {
-    padding: 40px 80px;
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Inter", sans-serif;
-=======
 .checkout-page {
   display: flex;
   gap: 48px;
   padding: 40px 80px;
   max-width: 1200px;
   margin: 0 auto;
->>>>>>> Stashed changes
 }
 
 .checkout-left {
@@ -65,17 +53,9 @@
   margin-bottom: 32px;
 }
 
-<<<<<<< Updated upstream
-.order-card {
-    display: grid;
-    grid-template-columns: 80px minmax(220px, 1fr) 120px 60px 120px;
-    align-items: center;
-    column-gap: 16px;
-=======
 .checkout-page .address-name {
   font-weight: 600;
   margin-bottom: 6px;
->>>>>>> Stashed changes
 }
 
 .checkout-page .address-detail {
@@ -93,15 +73,6 @@
   border-radius: 16px;
 }
 
-<<<<<<< Updated upstream
-.product-name {
-    font-weight: 600;
-    font-size: 16px;
-    white-space: normal;
-    word-break: break-word;
-    overflow-wrap: break-word;
-    line-height: 1.4;
-=======
 .checkout-page .payment-box button {
   background: #c7965c;
   border: none;
@@ -109,7 +80,6 @@
   border-radius: 10px;
   color: #ffffff;
   cursor: pointer;
->>>>>>> Stashed changes
 }
 
 .checkout-page .voucher-box {
@@ -158,76 +128,3 @@
     padding: 24px;
   }
 }
-<<<<<<< Updated upstream
-
-.summary {
-    background: #e3d6cc;
-    padding: 20px;
-    border-radius: 16px;
-    margin-bottom: 24px;
-    width: 100%;
-    font-size: 14px;
-}
-
-.summary .row {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: center;
-    row-gap: 8px;
-    margin-bottom: 10px;
-}
-
-.summary .row:last-child {
-    margin-bottom: 0;
-}
-
-.summary .row span:last-child {
-    text-align: right;
-    white-space: nowrap;
-}
-
-
-.summary .total {
-    font-weight: 700;
-    margin-top: 10px;
-    font-size: 14px;
-}
-
-.checkout-btn {
-    width: 100%;
-    padding: 16px;
-    background: #61593d;
-    color: #ffffff;
-    border: none;
-    border-radius: 14px;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-@media (max-width: 1100px) {
-    .container {
-        padding: 32px 32px;
-    }
-
-    .summary {
-        padding: 22px;
-        font-size: 13px;
-    }
-
-    .summary .row {
-        margin-bottom: 14px;
-    }
-
-    .summary .total {
-        margin-top: 16px;
-        font-size: 13px;
-    }
-}
-
-
-
-
-
-
-=======
->>>>>>> Stashed changes

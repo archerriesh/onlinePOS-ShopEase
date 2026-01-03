@@ -1,57 +1,48 @@
 <?php
-include '../includes/db.php';
-
-$idProduk = $_GET['id'];
-
-$query = mysqli_query($conn,
-    "SELECT idProduk, namaProduk, harga, keterangan
-     FROM tbProduk
-     WHERE idProduk = '$idProduk'"
-);
-
-$produk = mysqli_fetch_assoc($query);
+$pageCSS = '../css/liat-produk.css';
+include '../includes/header-main.php';
 ?>
 
 <main class="container">
-<section class="product-card" aria-label="Produk">
-    <div class="image-wrap">
-    <img src="https://via.placeholder.com/420x520?text=Cardigan+Pink" alt="Cardigan Pink" />
-    </div>
+    <section class="product-card">
+        <div class="image-wrap">
+            <img src="https://via.placeholder.com/420x520" alt="Produk">
+        </div>
 
-    <div class="info">
-    <h1 class="title">Cardigan Zip Bunnies - PINK</h1>
-    <p class="brand">COLORBOX Official</p>
+        <div class="info">
 
-    <div class="rating" aria-label="Rating">
-        <span class="stars">4.3 ★★★★☆</span>
-        <span class="reviews">38 reviews</span>
-        <span class="sold">59 sold</span>
-    </div>
+            <h1 class="title">Cardigan Zip Bunnies - PINK</h1>
 
-    <p class="description">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
-        incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco.
-    </p>
+            <p class="brand">COLORBOX Official</p>
 
-    <div class="purchase">
-
-        <div class="quantity">
-            <span>Quantity</span>
-            <div class="qty">
-            <button class="btn-icon">-</button>
-            <input type="number" value="1" min="1">
-            <button class="btn-icon">+</button>
+            <div class="rating">
+                <span class="stars">4.3 ★★★★☆</span>
+                <span class="reviews">38 reviews</span>
+                <span class="sold">59 sold</span>
             </div>
-        </div>
 
-        <div class="action-row">
-            <button class="btn add">🛒 Add to cart</button>
-            <button class="btn buy" href="../pages/co-langsung.php">Buy now</button>
-        </div>
+            <p class="description">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            </p>
+
+            <div class="purchase">
+
+            <div class="quantity">
+                <span>Quantity</span>
+                <div class="qty">
+                    <input type="number" value="1" min="1">
+                </div>
+            </div>
+
+            <div class="action-row">
+                <a href="co-keranjang.php"><button class="btn add">🛒 Add to cart</button></a>
+                <a href="co-langsung.php"><button class="btn buy">Buy now</button></a>
+            </div>
+
+            </div>
 
         </div>
-
-</section>
+    </section>
 </main>
 
 <?php include '../includes/footer.php'; ?>

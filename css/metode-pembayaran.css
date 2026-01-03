@@ -1,41 +1,31 @@
-/* * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Inter", sans-serif;
-}
-
-body {
-    background: #faf7f5;
-} */
-
-/* .overlay {
-    width: 100vw;
-    height: 100vh;
+.payment-page {
+    min-height: calc(100vh - 80px); /* aman sama navbar */
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
+    padding: 60px 20px;
+    background: #faf7f5;
 }
 
-.payment-card {
+.payment-page .payment-card {
     width: 520px;
     background: #e3d6cc;
     border-radius: 18px;
     padding: 32px 36px;
 }
 
-.payment-card h2 {
+.payment-page h2 {
     text-align: center;
     font-size: 22px;
     margin-bottom: 28px;
     color: #121212;
 }
 
-.method {
+.payment-page .method {
     margin-bottom: 26px;
 }
 
-.radio {
+.payment-page .radio {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -44,40 +34,39 @@ body {
     margin-bottom: 14px;
 }
 
-.radio input {
+.payment-page .radio input {
     display: none;
 }
 
-.custom-radio {
+.payment-page .custom-radio {
     width: 16px;
     height: 16px;
     border: 2px solid #61593d;
     border-radius: 50%;
 }
 
-.logos {
+.payment-page .logos {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 28px;
 }
 
-.logos img {
+.payment-page .logos img {
     height: 34px;
 }
 
-.logos.qris {
+.payment-page .logos.qris {
     justify-content: flex-start;
     padding-left: 28px;
 }
 
-.arrow {
+.payment-page .arrow {
     font-size: 20px;
     color: #121212;
-    cursor: default;
 }
 
-.choose-btn {
+.payment-page .choose-btn {
     width: 100%;
     margin-top: 18px;
     padding: 14px;
@@ -87,4 +76,4 @@ body {
     color: #ffffff;
     font-size: 15px;
     cursor: pointer;
-} */
+}

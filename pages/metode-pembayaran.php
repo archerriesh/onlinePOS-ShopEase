@@ -3,7 +3,7 @@ $pageCSS = '../css/metode-pembayaran.css';
 include '../includes/header-main.php';
 ?>
 
-<div class="overlay">
+<div class="payment-page">
     <div class="payment-card">
 
         <h2>Select a payment method</h2>

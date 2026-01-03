@@ -77,9 +77,11 @@ include '../includes/header-main.php';
             </div>
         </div>
 
-        <button class="checkout-btn" type="button" aria-label="Checkout">
-            Checkout
-        </button>
+        <a href="co-langsung.php">
+            <button class="checkout-btn" type="button" aria-label="Checkout">
+                Checkout
+            </button>
+        </a>
         </aside>
   </section>
 </main>
