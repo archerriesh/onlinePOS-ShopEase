@@ -1,0 +1,111 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #faf7f5;
+}
+
+/* ===== CONTAINER ===== */
+.shop-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: auto;
+    padding: 30px;
+}
+
+/* ===== TABS ===== */
+.order-tabs {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 25px;
+    font-size: 14px;
+    color: #61593d;
+}
+
+.order-tabs .active {
+    font-weight: bold;
+}
+
+/* ===== ORDER CARD ===== */
+.order-card {
+    background-color: #ffffff;
+    border-radius: 6px;
+    padding: 20px;
+}
+
+/* ===== STORE NAME ===== */
+.store-name {
+    font-size: 14px;
+    font-weight: bold;
+    color: #121212;
+    margin-bottom: 15px;
+}
+
+/* ===== PRODUCT ITEM ===== */
+.product-item {
+    display: grid;
+    grid-template-columns: 80px 1fr 50px 120px;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 0;
+}
+
+.product-item img {
+    width: 70px;
+}
+
+/* ===== PRODUCT INFO ===== */
+.product-name {
+    font-size: 14px;
+    color: #121212;
+}
+
+/* ===== QTY & PRICE ===== */
+.product-qty {
+    text-align: center;
+    font-size: 14px;
+}
+
+.product-price {
+    text-align: right;
+    font-size: 14px;
+}
+
+/* ===== DIVIDER ===== */
+.divider {
+    height: 1px;
+    background-color: #e3d6cc;
+}
+
+/* ===== FOOTER ===== */
+.order-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 20px;
+    gap: 20px;
+}
+
+.total-text {
+    font-size: 14px;
+}
+
+.total-text span {
+    color: #ba704a;
+    font-weight: bold;
+}
+
+/* ===== BUTTON ===== */
+.review-btn {
+    background-color: #ba704a;
+    color: #ffffff;
+    border: none;
+    padding: 8px 22px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+}
