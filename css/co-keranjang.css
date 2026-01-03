@@ -114,11 +114,30 @@
   font-size: 13px;
 }
 
-.cart-page .summary-panel .sum-row {
+.cart-page .summary-panel span:last-child {
+  white-space: nowrap;
+}
+
+.cart-page .summary-panel .row {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 6px;
 }
+
+.cart-page .summary-panel > .row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.cart-page .summary-panel > .row span:last-child {
+  white-space: nowrap;
+  text-align: right;
+}
+
 
 .cart-page .summary-panel .total {
   font-weight: 700;
