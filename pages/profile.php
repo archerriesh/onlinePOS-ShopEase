@@ -14,13 +14,18 @@ include '../includes/header-main.php';
   <div class="row g-4">
 
     <aside class="col-auto">
-      <div class="sidebar">
-        <div class="icon active">👤</div>
-        <div class="icon">🔔</div>
-        <div class="icon">📦</div>
-        <div class="icon">📄</div>
-      </div>
-    </aside>
+  <div class="sidebar">
+
+    <a href="profile.php" class="icon active">👤</a>
+
+    <a href="notifikasi.php" class="icon">🔔</a>
+
+    <a href="history.php" class="icon">📦</a>
+
+    <a href="liat-review.php" class="icon">📄</a>
+
+  </div>
+</aside>
 
     <section class="profile-content">
         <div class="profile-card row">

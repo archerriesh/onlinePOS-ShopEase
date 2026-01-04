@@ -3,24 +3,19 @@ $pageCSS = '../css/notifikasi.css';
 include '../includes/header-main.php';
 ?>
 
-<div class="notif-wrapper">
-    <aside class="notif-sidebar">
-        <div class="sidebar-item">
-            <span class="icon user"></span>
-        </div>
+<aside class="notif-sidebar">
+  <div class="sidebar">
 
-        <div class="sidebar-item active">
-            <span class="icon bell"></span>
-        </div>
+    <a href="profile.php" class="icon">👤</a>
 
-        <div class="sidebar-item">
-            <span class="icon graduate"></span>
-        </div>
+    <a href="notifikasi.php" class="icon active">🔔</a>
 
-        <div class="sidebar-item">
-            <span class="icon list"></span>
-        </div>
-    </aside>
+    <a href="history.php" class="icon">📦</a>
+
+    <a href="liat-review.php" class="icon">📄</a>
+
+  </div>
+</aside>
 
     <section class="notif-content">
         <h2>Notification</h2>
