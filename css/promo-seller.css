@@ -1,0 +1,235 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f5f5f5;
+    padding: 20px;
+}
+
+
+header {
+    padding: 20px 40px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: bold;
+    color: #c17a5a;
+}
+
+nav {
+    display: flex;
+    gap: 30px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #c17a5a;
+    font-size: 18px;
+    transition: opacity 0.3s;
+}
+
+nav a:hover {
+    opacity: 0.7;
+}
+
+.button-container {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.btn {
+    padding: 15px 50px;
+    border: none;
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-primary {
+    background-color: #b8956a;
+    color: white;
+}
+
+.btn-secondary {
+    background-color: #d4b896;
+    color: white;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.voucher-container {
+    background: linear-gradient(135deg, #e6d5c9 0%, #d4c4b8 100%);
+    border-radius: 30px;
+    padding: 50px;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #d4b896;
+    color: #c17a5a;
+    border: none;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+    z-index: 10;
+}
+
+.arrow:hover {
+    background-color: #a86849;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.arrow-left {
+    left: 20px;
+    color: #c17a5a;
+}
+
+.arrow-right {
+    right: 20px;
+    color: #c17a5a;
+}
+
+.voucher-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.voucher-card {
+    background: linear-gradient(135deg, #8a8466 0%, #6a6450 100%);
+    border-radius: 15px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    transition: transform 0.3s;
+}
+
+.voucher-card:hover {
+    transform: translateY(-5px);
+}
+
+.voucher-icon {
+    background-color: #2a2a1f;
+    color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.voucher-divider {
+    width: 2px;
+    height: 80px;
+    background: linear-gradient(to bottom, 
+        transparent 0%, 
+        transparent 10%, 
+        white 10%, 
+        white 15%, 
+        transparent 15%, 
+        transparent 25%, 
+        white 25%, 
+        white 30%, 
+        transparent 30%, 
+        transparent 40%, 
+        white 40%, 
+        white 45%, 
+        transparent 45%, 
+        transparent 55%, 
+        white 55%, 
+        white 60%, 
+        transparent 60%, 
+        transparent 70%, 
+        white 70%, 
+        white 75%, 
+        transparent 75%, 
+        transparent 85%, 
+        white 85%, 
+        white 90%, 
+        transparent 90%, 
+        transparent 100%
+    );
+    flex-shrink: 0;
+}
+
+.voucher-content {
+    flex-grow: 1;
+    color: white;
+}
+
+.voucher-title {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.voucher-value {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.voucher-terms {
+    font-size: 10px;
+    opacity: 0.8;
+}
+
+@media (max-width: 1024px) {
+    .voucher-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .voucher-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    header {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .button-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .btn {
+        width: 100%;
+        max-width: 300px;
+    }
+}

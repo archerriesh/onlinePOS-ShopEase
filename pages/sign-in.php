@@ -10,22 +10,51 @@ if (!isset($_POST['username'], $_POST['password'])) {
 $username = $_POST['username'];
 $password = $_POST['password'];
 
-/* query */
-$query = "SELECT * FROM tbPelanggan WHERE usernamePelanggan = ?";
-$stmt = mysqli_prepare($conn, $query);
-mysqli_stmt_bind_param($stmt, "s", $username);
-mysqli_stmt_execute($stmt);
 
-$result = mysqli_stmt_get_result($stmt);
-$user = mysqli_fetch_assoc($result);
+// =====================
+// CEK PELANGGAN
+// =====================
+$queryPelanggan = "SELECT * FROM tbPelanggan WHERE usernamePelanggan = ?";
+$stmtPelanggan = mysqli_prepare($conn, $queryPelanggan);
+mysqli_stmt_bind_param($stmtPelanggan, "s", $username);
+mysqli_stmt_execute($stmtPelanggan);
 
-if ($user && $password === $user['passwordPelanggan']) {
+$resultPelanggan = mysqli_stmt_get_result($stmtPelanggan);
+$pelanggan = mysqli_fetch_assoc($resultPelanggan);
+
+if ($pelanggan && $password === $pelanggan['passwordPelanggan']) {
     $_SESSION['login'] = true;
-    $_SESSION['username'] = $user['usernamePelanggan'];
+    $_SESSION['role'] = 'pelanggan';
+    $_SESSION['username'] = $pelanggan['usernamePelanggan'];
 
     header("Location: home-page.php");
     exit;
-} else {
-    header("Location: sign-in-page.php?error=1");
+}
+
+
+// =====================
+// CEK PENJUAL
+// =====================
+$queryPenjual = "SELECT * FROM tbPenjual WHERE usernamePenjual = ?";
+$stmtPenjual = mysqli_prepare($conn, $queryPenjual);
+mysqli_stmt_bind_param($stmtPenjual, "s", $username);
+mysqli_stmt_execute($stmtPenjual);
+
+$resultPenjual = mysqli_stmt_get_result($stmtPenjual);
+$penjual = mysqli_fetch_assoc($resultPenjual);
+
+if ($penjual && $password === $penjual['passwordPenjual']) {
+    $_SESSION['login'] = true;
+    $_SESSION['role'] = 'penjual';
+    $_SESSION['username'] = $penjual['usernamePenjual'];
+
+    header("Location: seller/index-seller.php");
     exit;
 }
+
+
+// =====================
+// JIKA GAGAL
+// =====================
+header("Location: sign-in-page.php?error=1");
+exit;

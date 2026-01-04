@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Product - ShopEase</title>
+    <link rel="stylesheet" href="/ONLINEPOS-SHOPEASE/css/editProduct-seller.css">
+</head>
+<body>
+
+<header class="navbar">
+    <h1 class="logo">ShopEase</h1>
+    <nav>
+        <a href="#">Home</a>
+        <a href="#">Products</a>
+        <a href="#">Sales</a>
+    </nav>
+</header>
+
+<main class="container">
+    <div class="left">
+        <div class="card">
+            <h2>General Information</h2>
+
+            <label>Product name</label>
+            <input type="text" value="Nike Free Metcon 6">
+
+            <label>Product Description</label>
+            <textarea rows="8">
+Lorem Ipsum is simply dummy text of the printing and typesetting industry...
+            </textarea>
+        </div>
+
+        <div class="card row">
+            <div>
+                <label>Category</label>
+                <input type="text" value="Shoes">
+            </div>
+            <div>
+                <label>Stock</label>
+                <input type="number" value="45">
+            </div>
+        </div>
+    </div>
+
+    <div class="right">
+        <div class="card">
+            <h2>Upload Image</h2>
+
+            <div class="image-box"></div>
+
+            <div class="thumbs">
+                <div class="thumb"></div>
+                <div class="thumb"></div>
+                <div class="thumb add">+</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <label>Set price</label>
+            <input type="text" value="Rp. 1.999.999">
+        </div>
+
+        <button class="btn">Save Changes</button>
+    </div>
+</main>
+
+</body>
+</html>

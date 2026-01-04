@@ -1,0 +1,80 @@
+/* Modal overlay */
+.modal {
+    display: none; /* default hidden */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+
+    display: flex;             /* supaya muncul di tengah */
+    justify-content: center;   /* center horizontal */
+    align-items: center;       /* center vertical */
+    flex-direction: column;    /* konten tersusun vertikal */
+}
+
+/* Modal content */
+.modal-content {
+    background-color: #f5e6d3;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    position: relative;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    z-index: 1010; /* pastikan modal muncul di atas overlay */
+}
+
+/* Close button */
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #333;
+}
+
+.close-btn:hover {
+    color: #000;
+}
+
+/* Icon tempat sampah */
+.trash-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+}
+
+.trash-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* Judul modal */
+.modal-content h2 {
+    font-size: 20px;
+    margin-bottom: 30px;
+    color: #333;
+    line-height: 1.4;
+}
+
+/* Tombol konfirmasi delete */
+.delete-confirm-btn {
+    background-color: #8d9b7a;
+    color: white;
+    border: none;
+    padding: 12px 40px;
+    border-radius: 25px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.delete-confirm-btn:hover {
+    background-color: #7a8768;
+}
