@@ -149,10 +149,6 @@
   margin: 0;
 }
 
-.qty input[type=number] {
-  -moz-appearance: textfield;
-}
-
 @media (max-width: 900px) {
   .product-card {
     grid-template-columns: 1fr;
