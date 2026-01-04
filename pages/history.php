@@ -5,10 +5,12 @@ include '../includes/header-main.php';
 
 <div class="shop-header">
     <div class="order-tabs">
-        <span class="active">All</span>
-        <span>Too Ship</span>
-        <span>To Receive</span>
-        <span>Completed</span>
+        <ul>
+            <li><a href="">All</a></li>
+            <li><a href="">To Ship</a></li>
+            <li><a href="">To Receive</a></li>
+            <li><a href="">Completed</a></li>
+        </ul>
     </div>
 
     <div class="order-card">

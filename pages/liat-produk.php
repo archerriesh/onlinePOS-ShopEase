@@ -27,11 +27,10 @@ include '../includes/header-main.php';
 
             <div class="purchase">
 
-            <div class="quantity">
-                <span>Quantity</span>
-                <div class="qty">
-                    <input type="number" value="1" min="1">
-                </div>
+            <div class="qty">
+                <button class="btn-icon minus" type="button">−</button>
+                <input type="number" value="1" min="1">
+                <button class="btn-icon plus" type="button">+</button>
             </div>
 
             <div class="action-row">

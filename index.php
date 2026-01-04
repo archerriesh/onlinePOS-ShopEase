@@ -1,4 +1,5 @@
 <?php
+$index = true;
 include 'includes/dbOnlinePOS.php';
 include 'includes/header-main.php';
 ?>

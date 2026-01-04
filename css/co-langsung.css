@@ -22,10 +22,13 @@
 }
 
 .checkout-page .order-card {
+  background-color: #fdfdfd;
   display: grid;
   grid-template-columns: 80px 1fr 120px 60px 120px;
   align-items: center;
   column-gap: 16px;
+  padding: 16px 20px; 
+  border-radius: 12px;   
   margin-bottom: 32px;
 }
 
@@ -47,7 +50,7 @@
 }
 
 .checkout-page .address-box {
-  background: #ffffff;
+  background: #fdfdfd;
   padding: 20px;
   border-radius: 16px;
   margin-bottom: 32px;
@@ -68,7 +71,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #ffffff;
+  background: #fdfdfd;
   padding: 20px;
   border-radius: 16px;
 }
@@ -111,7 +114,7 @@
   width: 100%;
   padding: 16px;
   background: #61593d;
-  color: #ffffff;
+  color: #fdfdfd;
   border: none;
   border-radius: 14px;
   font-size: 16px;
@@ -130,6 +133,7 @@
   width: 100%; 
   font-size: 14px;
 } 
+
 .summary .row { 
   display: grid;
   grid-template-columns: 1fr auto;

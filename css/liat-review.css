@@ -62,7 +62,7 @@
     gap: 6px;
     height: 32px;
     background: #c7965c;
-    color: #ffffff;
+    color: #fdfdfd;
     border-radius: 8px;
     font-size: 13px;
     font-weight: 500;
@@ -110,7 +110,7 @@
 
 .review-card {
     min-height: 140px;
-    background: #ffffff;
+    background: #fdfdfd;
     border-radius: 16px;
     padding: 20px 22px;
     display: flex;
@@ -139,7 +139,7 @@
 }
 
 .rating-filter input:checked + label .star {
-    color: #ffffff;
+    color: #fdfdfd;
 }
 
 @media (max-width: 1100px) {

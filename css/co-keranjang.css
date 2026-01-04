@@ -12,8 +12,8 @@
 }
 
 .cart-page .cart-items {
-  background: #fff;
-  border: 1px solid #e0c097;
+  background: #fdfdfd;
+  border: 1px solid #e3d6cc;
   border-radius: 12px;
   padding: 18px;
   box-shadow: 0 6px 18px rgba(0,0,0,.05);
@@ -22,7 +22,7 @@
 .cart-page .section-title {
   font-weight: 700;
   font-size: 14px;
-  color: #6b6b6b;
+  color: #a6996b;
   margin-bottom: 12px;
 }
 
@@ -32,7 +32,7 @@
   gap: 12px;
   align-items: center;
   padding: 12px 0;
-  border-bottom: 1px solid #f0e6dc;
+  border-bottom: 1px solid #e3d6cc;
 }
 
 .cart-page .cart-item:last-child {
@@ -42,7 +42,7 @@
 .cart-page .thumb {
   width: 60px;
   height: 60px;
-  background: #e6e6e6;
+  background: #faf7f5;
   border-radius: 6px;
 }
 
@@ -55,7 +55,7 @@
 
 .cart-page .item-name {
   font-size: 14px;
-  color: #333;
+  color: #121212;
 }
 
 .cart-page .qty {
@@ -67,9 +67,9 @@
 .cart-page .btn-icon {
   width: 26px;
   height: 26px;
-  border: 1px solid #d6c5b0;
+  border: 1px solid #e3d6cc;
   border-radius: 6px;
-  background: #f6f0e6;
+  background: #faf7f5;
   font-weight: 700;
   cursor: pointer;
 }
@@ -77,14 +77,14 @@
 .cart-page input[type="number"] {
   width: 52px;
   text-align: center;
-  border: 1px solid #d6c5b0;
+  border: 1px solid #e3d6cc;
   border-radius: 6px;
 }
 
 .cart-page .item-price {
   font-weight: 500;
   font-size: 13px;
-  color: #555;
+  color: #61593d;
   white-space: nowrap;
 }
 
@@ -94,23 +94,23 @@
 
 .cart-page .voucher {
   font-size: 14px;
-  color: #6b6b6b;
+  color: #61593d;
   margin-bottom: 8px;
 }
 
 .cart-page .voucher-box {
   height: 48px;
   border-radius: 12px;
-  background: #f5eadb;
-  border: 1px solid #d5c0a5;
+  background: #e3d6cc;
+  border: 1px solid #e3d6cc;
   margin-bottom: 14px;
 }
 
 .cart-page .summary-panel {
-  background: #e8d4bf;
+  background: #e3d6cc;
   border-radius: 12px;
   padding: 14px;
-  border: 1px solid #d9c5a8;
+  border: 1px solid #c7965c;
   font-size: 13px;
 }
 
@@ -141,7 +141,7 @@
 
 .cart-page .summary-panel .total {
   font-weight: 700;
-  color: #2b2b2b;
+  color: #61593d;
 }
 
 .cart-page .checkout-btn {

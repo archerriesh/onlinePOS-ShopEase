@@ -10,7 +10,7 @@ include '../includes/header-auth.php';
         </div>
 
         <div class="col-12 col-md-5 offset-md-1 order-2 order-md-2">
-            <h1 class="auth-title mb-4">Sign In</h1>
+            <h1 class="auth-title mb-4 text-center">Sign In</h1>
 
             <form method="POST" action="sign-in.php">
                 <div class="mb-3">
@@ -29,7 +29,7 @@ include '../includes/header-auth.php';
 
                 <p class="mt-3 text-center">
                     Don’t have account?
-                    <a href="../pages/sign-up-page.php" class="fw-semibold text-decoration-none">
+                    <a href="../pages/sign-up-page.php" class="auth-link">
                         Sign Up
                     </a>
                 </p>

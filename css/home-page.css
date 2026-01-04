@@ -1,10 +1,9 @@
 .home-page .home-container {
   width: min(1120px, 90%);
-  margin: 0 auto;
+  margin: auto;
 }
 
 .home-page .hero {
-  background: #fff8f0;
   padding: 48px 0 40px;
   text-align: center;
 }
@@ -12,24 +11,24 @@
 .home-page .hero h1 {
   font-size: 42px;
   margin-bottom: 12px;
-  color: #3a2e1b;
+  color: #61503d;
 }
 
 .home-page .hero .subtitle {
   max-width: 760px;
   margin: 0 auto;
   line-height: 1.6;
-  color: #5b5b5b;
+  color: #61593d;
 }
 
 .home-page .trending {
-  padding: 40px 0 60px;
+  padding: 40px 0;
 }
 
 .home-page .section-title {
   font-size: 22px;
   margin-bottom: 20px;
-  color: #4a4a4a;
+  color: #61593d;
 }
 
 .home-page .cards {
@@ -39,8 +38,8 @@
 }
 
 .home-page .card {
-  background: #ffffff;
-  border: 1px solid #e5d5c2;
+  background: #fdfdfd;
+  border: 1px solid #e3d6cc;
   border-radius: 12px;
   padding: 12px;
   display: flex;
@@ -63,7 +62,7 @@
 .home-page .card .price {
   font-size: 13px;
   font-weight: 700;
-  color: #333;
+  color: #61593d;
 }
 
 @media (max-width: 1024px) {

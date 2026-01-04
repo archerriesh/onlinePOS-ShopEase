@@ -1,3 +1,8 @@
+<?php
+$currentPage = basename($_SERVER['PHP_SELF']);
+$isIndex = isset($index) && $index === true;
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +12,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/style.css">           
+    <link rel="stylesheet" href="<?= $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].'/OnlinePOS/css/style.css' ?>">
 
     <?php if (!empty($pageCSS)) : ?>
     <link rel="stylesheet" href="<?= $pageCSS ?>">
@@ -16,23 +21,36 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-lg px-5 pt-4">
-    <a class="navbar-brand fw-bold" href="#">ShopEase</a>
+    <a class="navbar-brand fw-bold" href="../pages/home-page.php">ShopEase</a>
 
-    <button class="navbar-toggler" type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#mainNavbar">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+    <?php if (!$isIndex) : ?>
+        <button class="navbar-toggler" type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#mainNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-    <div class="collapse navbar-collapse" id="mainNavbar">
-        <ul class="navbar-nav ms-auto gap-3">
-            <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
-            <li class="nav-item"><a class="nav-link" href="../pages/liat-produk.php">Products</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">Categories</a></li>
-            <li class="nav-item"><a class="nav-link" href="../pages/co-keranjang.php">Cart</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">History</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">Profile</a></li>
-        </ul>
-    </div>
+        <div class="collapse navbar-collapse" id="mainNavbar">
+            <ul class="navbar-nav ms-auto gap-3">
+                <li class="nav-item">
+                    <a class="nav-link <?= ($currentPage === 'home-page.php') ? 'active' : '' ?>"  href="../pages/home-page.php">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <?= ($currentPage === 'liat-produk.php') ? 'active' : '' ?>" href="../pages/liat-produk.php">Products</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <?= ($currentPage === 'produk-per-kategori.php') ? 'active' : '' ?>" href="../pages/produk-per-kategori.php">Categories</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <?= ($currentPage === 'co-keranjang.php') ? 'active' : '' ?>" href="../pages/co-keranjang.php">Cart</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <?= ($currentPage === 'history.php') ? 'active' : ''?>" href="../pages/history.php">History</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link<?=($currentPage === 'profile.php') ? 'active' : ''?> " href="../pages/profile.php">Profile</a>
+                </li>
+            </ul>
+        </div>
+    <?php endif; ?>
 </nav>
-

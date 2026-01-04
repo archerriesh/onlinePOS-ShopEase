@@ -26,11 +26,11 @@
     <div class="collapse navbar-collapse" id="authNavbar">
         <div class="ms-auto">
             <?php if ($authPage === 'signin'): ?>
-                <a href="../pages/sign-up-page.php" class="btn btn-outline-dark">
+                <a href="../pages/sign-up-page.php" class="signbtn">
                     Sign Up
                 </a>
             <?php else: ?>
-                <a href="../pages/sign-in-page.php" class="btn btn-outline-dark">
+                <a href="../pages/sign-in-page.php" class="signbtn">
                     Sign In
                 </a>
             <?php endif; ?>

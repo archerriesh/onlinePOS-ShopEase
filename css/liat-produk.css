@@ -3,24 +3,41 @@
   grid-template-columns: 420px 1fr;  
   gap: 26px;  
   align-items: stretch;  
-  background: #fff;  
-  border: 2px solid #ecd9c2;  
+  background: #fdfdfd;  
+  border: 2px solid #ba704a;  
   border-radius: 15px;
   padding: 18px;  
   box-shadow: 0 6px 16px rgba(0,0,0,.04);  
 }  
+
 .image-wrap{  
   display:flex; align-items: center; justify-content: center;  
-  background: #fff;  
-  border: 1px solid #e8d8c3;  
+  background: #fdfdfd;  
+  border: 1px solid #e3d6cc;  
   border-radius: 10px;  
   padding: 8px;  
 }  
-.image-wrap img{ max-width: 100%; height: auto; display:block; }  
 
-.info{ padding: 4px 0 0 0; }  
-.title{ font-size: 24px; line-height: 1.25; margin: 6px 0 6px; color:#333; font-weight: 700; }  
-.brand{ color:#888; font-size: 14px; margin-bottom: 6px; }  
+.image-wrap img{ 
+  max-width: 100%; 
+  height: auto; 
+  display:block; }  
+
+.info { 
+  padding: 4px 0 0 0; 
+}  
+
+.title { 
+  font-size: 24px; 
+  line-height: 1.25; 
+  margin: 6px 0 6px; 
+  color:#121212; 
+  font-weight: 700; }  
+
+.brand { 
+  color:#121212; 
+  font-size: 14px; 
+  margin-bottom: 6px; }  
 
 .quantity {
   display: flex;
@@ -33,18 +50,15 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  color: #555;
+  color: #121212;
   font-size: 13px;
   margin: 6px 0 12px;
 }
 .rating .stars {
-  color: #f4a261; 
+  color: #ba704a; 
 }
-.rating .reviews {
-  color: #666;
-}
-.rating .sold {
-  color: #666;
+.rating .reviews .sold .description{
+  color: #121212;
 }
 
 .action-row {
@@ -63,7 +77,7 @@
 }
 
 .btn.add {
-  background: #fff;
+  background: #fdfdfd;
   border-color: #ba704a;
   color: #ba704a;
 }
@@ -71,21 +85,34 @@
 .btn.buy {
   background: #ba704a;
   border-color: #ba704a;
-  color: #fff;
+  color: #fdfdfd;
+}
+
+.quantity {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.quantity span {
+  font-size: 14px;
+  color: #61593d;
+  font-weight: 500;
 }
 
 .qty {
   display: flex;
   align-items: center;
-  gap: 8px; 
+  gap: 8px;
 }
 
 .qty .btn-icon {
   width: 34px;
   height: 34px;
-  border-radius: 50%;          
+  border-radius: 50%;
   border: 1.5px solid #ba704a;
-  background: #fff;
+  background: #fdfdfd;
   color: #ba704a;
   font-size: 18px;
   font-weight: 600;
@@ -94,17 +121,36 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
+  transition: all 0.2s ease;
+}
+
+.qty .btn-icon:hover {
+  background: #ba704a;
+  color: #fdfdfd;
 }
 
 .qty input {
-  width: 36px;
+  width: 44px;
+  height: 34px;
   text-align: center;
-  border: none;               
-  background: transparent;
-  font-size: 15px;
+  border: 1.5px solid #e3d6cc;
+  border-radius: 8px;
+  background: #faf7f5;
+  font-size: 14px;
   font-weight: 500;
+  color: #121212;
   outline: none;
-  padding: 0;
+}
+
+.qty input::-webkit-outer-spin-button,
+.qty input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.qty input[type=number] {
+  -moz-appearance: textfield;
 }
 
 @media (max-width: 900px) {
