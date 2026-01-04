@@ -10,10 +10,6 @@ if (!isset($_POST['username'], $_POST['password'])) {
 $username = $_POST['username'];
 $password = $_POST['password'];
 
-
-// =====================
-// CEK PELANGGAN
-// =====================
 $queryPelanggan = "SELECT * FROM tbPelanggan WHERE usernamePelanggan = ?";
 $stmtPelanggan = mysqli_prepare($conn, $queryPelanggan);
 mysqli_stmt_bind_param($stmtPelanggan, "s", $username);
@@ -27,14 +23,10 @@ if ($pelanggan && $password === $pelanggan['passwordPelanggan']) {
     $_SESSION['role'] = 'pelanggan';
     $_SESSION['username'] = $pelanggan['usernamePelanggan'];
 
-    header("Location: home-page.php");
+    header("Location: /onlinePOS/pages/home-page.php");
     exit;
 }
 
-
-// =====================
-// CEK PENJUAL
-// =====================
 $queryPenjual = "SELECT * FROM tbPenjual WHERE usernamePenjual = ?";
 $stmtPenjual = mysqli_prepare($conn, $queryPenjual);
 mysqli_stmt_bind_param($stmtPenjual, "s", $username);
@@ -48,13 +40,9 @@ if ($penjual && $password === $penjual['passwordPenjual']) {
     $_SESSION['role'] = 'penjual';
     $_SESSION['username'] = $penjual['usernamePenjual'];
 
-    header("Location: seller/index-seller.php");
+    header("Location: /onlinePOS/pages/seller/index-seller.php");
     exit;
 }
 
-
-// =====================
-// JIKA GAGAL
-// =====================
 header("Location: sign-in-page.php?error=1");
 exit;

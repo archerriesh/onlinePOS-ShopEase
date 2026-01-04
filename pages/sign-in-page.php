@@ -1,18 +1,18 @@
 <?php
 $authPage = 'signin';
-include '../includes/header-auth.php';
+include __DIR__ . '/../includes/header-auth.php';
 ?>
 
 <div class="container login-container pt-5 mt-5">
     <div class="row w-100">
         <div class="col-12 col-md-6 order-1 order-md-1 text-center mb-10 mb-md-0">
-            <img src="../foto/signin.png" class="img-fluid" alt="Shopping Illustration">
+            <img src="/onlinePOS/foto/signin.png" class="img-fluid" alt="Shopping Illustration">
         </div>
 
         <div class="col-12 col-md-5 offset-md-1 order-2 order-md-2">
             <h1 class="auth-title mb-4 text-center">Sign In</h1>
 
-            <form method="POST" action="sign-in.php">
+            <form method="POST" action="/onlinePOS/pages/sign-in.php">
                 <div class="mb-3">
                     <label class="form-label">Username</label>
                     <input type="text" name="username" class="form-control" placeholder="Username">
@@ -29,7 +29,7 @@ include '../includes/header-auth.php';
 
                 <p class="mt-3 text-center">
                     Don’t have account?
-                    <a href="../pages/sign-up-page.php" class="auth-link">
+                    <a href="sign-up-page.php" class="auth-link">
                         Sign Up
                     </a>
                 </p>
@@ -38,4 +38,4 @@ include '../includes/header-auth.php';
     </div>
 </div>
 
-<?php include '../includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

@@ -85,6 +85,10 @@ p {
   color: #121212;
 }
 
+a{
+  text-decoration: none;
+}
+
 .auth-link{
   text-decoration: none;
   color: #61593d;
