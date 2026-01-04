@@ -3,28 +3,6 @@
     font-family: Arial, sans-serif;
 }
 
-body {
-    margin: 0;
-    background: #faf6f1;
-}
-
-/* Navbar */
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 40px;
-}
-
-.logo {
-    color: #b07a5a;
-}
-
-.navbar a {
-    margin-left: 20px;
-    text-decoration: none;
-    color: #b07a5a;
-}
 
 /* Layout */
 .container {

@@ -1,23 +1,7 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ShopEase - Add New Promo</title>
-<link rel="stylesheet" href="/ONLINEPOS-SHOPEASE/css/addPromo-seller.css">
-</head>
-<body>
-
-
-<header>
-    <div class="logo">ShopEase</div>
-    <nav>
-        <a href="#home">Home</a>
-        <a href="#products">Products</a>
-        <a href="#sales">Sales</a>
-    </nav>
-</header>
-
+<?php
+$pageCSS = '../../css/addPromo-seller.css';
+include("../../includes/header-main.php");
+?>
 <div class="button-container">
     <button class="btn btn-secondary" onclick="window.location.href='promo-seller.php'">Your voucher</button>
     <button class="btn btn-primary">Add new voucher</button>
@@ -75,5 +59,4 @@ document.getElementById('promoForm').addEventListener('submit', function(e) {
     // window.location.href = 'promo-seller.html';
 });
 </script>
-</body>
-</html>
+<?php include '../../includes/footer.php'; ?>

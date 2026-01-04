@@ -1,22 +1,7 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShopEase - Promo</title>
-    <link rel="stylesheet" href="/ONLINEPOS-SHOPEASE/css/promo-seller.css">
-</head>
-<body>
-    
-
-    <header>
-        <div class="logo">ShopEase</div>
-        <nav>
-            <a href="#home">Home</a>
-            <a href="#products">Products</a>
-            <a href="#sales">Sales</a>
-        </nav>
-    </header>
+<?php
+$pageCSS = '../../css/promo-seller.css';
+include("../../includes/header-main.php");
+?>
 
     <div class="button-container">
     <button class="btn btn-primary" onclick="window.location.href='promo-seller.php'">Your voucher</button>
@@ -89,6 +74,4 @@
             </div>
         </div>
     </div>
-
-</body>
-</html>
+<?php include '../../includes/footer.php'; ?>

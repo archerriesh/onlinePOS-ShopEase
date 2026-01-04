@@ -3,30 +3,8 @@
     font-family: Arial, sans-serif;
 }
 
-body {
-    margin: 0;
-    background: #faf6f1;
-}
 
-/* Navbar */
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 40px;
-}
 
-.logo {
-    color: #b07a5a;
-}
-
-.navbar a {
-    margin-left: 20px;
-    text-decoration: none;
-    color: #b07a5a;
-}
-
-/* Layout */
 .container {
     display: flex;
     gap: 30px;
@@ -41,7 +19,6 @@ body {
     flex: 1;
 }
 
-/* Card */
 .card {
     background: #e5ddd3;
     padding: 20px;
@@ -49,7 +26,6 @@ body {
     margin-bottom: 20px;
 }
 
-/* Form */
 label {
     display: block;
     margin: 15px 0 5px;
@@ -63,13 +39,11 @@ input, textarea {
     background: #cfc6b4;
 }
 
-/* Row */
 .row {
     display: flex;
     gap: 20px;
 }
 
-/* Image */
 .image-box {
     height: 220px;
     background: #cfc6b4;
@@ -77,7 +51,6 @@ input, textarea {
     margin-bottom: 10px;
 }
 
-/* Button */
 .btn {
     width: 100%;
     padding: 15px;

@@ -16,31 +16,11 @@ $products = [];
 while ($row = mysqli_fetch_assoc($result)) {
     $products[] = $row;
 }
+
+$pageCSS = '../../css/seller-index.css';
+include("../../includes/header-main.php");
 ?>
 
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ShopEase - Tokoku</title>
-
-<!-- CSS -->
-<link rel="stylesheet" href="/ONLINEPOS-SHOPEASE/css/seller-index.css">
-</head>
-
-<body>
-
-<header class="navbar">
-    <h2 class="logo">ShopEase</h2>
-    <nav>
-        <a href="#">Home</a>
-        <a href="#">Products</a>
-        <a href="#">Sales</a>
-    </nav>
-</header>
 
 <section class="container">
     <div class="store-header">
@@ -74,7 +54,7 @@ while ($row = mysqli_fetch_assoc($result)) {
                 </div>
 
                 <!-- IMAGE -->
-                <img src="../../images/placeholder.png" alt="product">
+                <img src="../../foto/keano.jpg" alt="product">
 
                 <!-- PRODUCT NAME -->
                 <h4><?= htmlspecialchars($p['namaProduk']) ?></h4>
@@ -124,9 +104,8 @@ while ($row = mysqli_fetch_assoc($result)) {
 <?php endif; ?>
 
 <script>
-// HAPUS DUPLIKAT - HANYA SATU FUNCTION
 function openDeleteModal(productId, productName) {
-    console.log('Opening modal for ID:', productId); // untuk debug
+    console.log('Opening modal for ID:', productId);
     const modal = document.getElementById('deleteModal');
     document.getElementById('deleteProductId').value = productId;
     modal.style.display = 'flex';
@@ -156,6 +135,4 @@ if (notification) {
     }, 3000);
 }
 </script>
-
-</body>
-</html>
+<?php include '../../includes/footer.php'; ?>

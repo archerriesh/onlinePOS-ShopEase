@@ -1,20 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Edit Product - ShopEase</title>
-    <link rel="stylesheet" href="/ONLINEPOS-SHOPEASE/css/editProduct-seller.css">
-</head>
-<body>
+<?php
+$pageCSS = '../../css/editProduct-seller.css';  
+include("../../includes/header-main.php");
+?>
 
-<header class="navbar">
-    <h1 class="logo">ShopEase</h1>
-    <nav>
-        <a href="#">Home</a>
-        <a href="#">Products</a>
-        <a href="#">Sales</a>
-    </nav>
-</header>
 
 <main class="container">
     <div class="left">
@@ -64,5 +52,4 @@ Lorem Ipsum is simply dummy text of the printing and typesetting industry...
     </div>
 </main>
 
-</body>
-</html>
+<?php include '../../includes/footer.php'; ?>
