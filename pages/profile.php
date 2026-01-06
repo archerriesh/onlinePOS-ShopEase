@@ -58,7 +58,7 @@ include '../includes/header-main.php';
                 <a href="change-password.php" class="change-link">change password</a>
             </div>
 
-            <a href="edit-profile.php" class="btn custom-btn mt-4">
+            <a href="edit-profile-page.php" class="btn custom-btn mt-4">
                 Edit Profile
             </a>
         </div>
