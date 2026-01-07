@@ -2,59 +2,75 @@
 session_start();
 require '../includes/dbOnlinePOS.php';
 
+if (!isset($_SESSION['username'])) {
+    header("Location: sign-in.php");
+    exit;
+}
+
 $username = $_SESSION['username'];
+$idPelanggan = $_SESSION['idPelanggan'];
+$from = $_POST['from'] ?? 'profile';
 
-$current = $_POST['current_password'];
-$new     = $_POST['new_password'];
-$confirm = $_POST['confirm_password'];
+/* Ambil field dari form */
+$current = $_POST['current_password'] ?? '';
+$new     = $_POST['new_password'] ?? '';
+$confirm = $_POST['confirm_password'] ?? '';
 
-/* =========================
-   1. VALIDASI DASAR
-   ========================= */
-
-// confirm password harus sama
+/* Validasi */
 if ($new !== $confirm) {
-    die("New password does not match");
+    header("Location: ganti-pw-page.php?error=confirm&from=$from");
+    exit;
 }
 
-// panjang password minimal
 if (strlen($new) < 8) {
-    die("Password must be at least 8 characters");
+    header("Location: ganti-pw-page.php?error=length&from=$from");
+    exit;
 }
 
-/* =========================
-   2. AMBIL PASSWORD LAMA
-   ========================= */
-
-$query = "SELECT passwordPelanggan FROM tbPelanggan WHERE usernamePelanggan = ?";
+/* Ambil password lama dari DB */
+$query = "SELECT passwordPelanggan FROM tbPelanggan WHERE idPelanggan = ?";
 $stmt = mysqli_prepare($conn, $query);
-mysqli_stmt_bind_param($stmt, "s", $username);
+mysqli_stmt_bind_param($stmt, "s", $idPelanggan);
 mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+$data = mysqli_fetch_assoc($result);
 
-$data = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
-
-/* =========================
-   3. CEK PASSWORD LAMA
-   ========================= */
-
-if (!password_verify($current, $data['passwordPelanggan'])) {
-    die("Current password is incorrect");
+if (!$data) {
+    header("Location: ganti-pw-page.php?error=wrong&from=$from");
+    exit;
 }
 
-/* =========================
-   4. HASH & UPDATE
-   ========================= */
+/* Cek password lama */
+$dbPassword = $data['passwordPelanggan'];
+
+if (substr($dbPassword,0,4) === '$2y$') {
+    $valid = password_verify($current, $dbPassword);
+} else {
+    $valid = ($current === $dbPassword);
+}
+
+if (!$valid) {
+    header("Location: ganti-pw-page.php?error=wrong&from=$from");
+    exit;
+}
 
 $newHash = password_hash($new, PASSWORD_DEFAULT);
+$sql = "UPDATE tbPelanggan SET passwordPelanggan='$newHash' WHERE idPelanggan='$idPelanggan'";
+if (mysqli_query($conn, $sql)) {
+    echo "Berhasil, affected rows: ".mysqli_affected_rows($conn);
+} else {
+    echo "Gagal: ".mysqli_error($conn);
+}
+exit;
 
-$update = "UPDATE tbPelanggan SET passwordPelanggan = ? WHERE usernamePelanggan = ?";
-$stmt = mysqli_prepare($conn, $update);
-mysqli_stmt_bind_param($stmt, "ss", $newHash, $username);
-mysqli_stmt_execute($stmt);
 
-/* =========================
-   5. REDIRECT
-   ========================= */
+session_regenerate_id(true);
 
-header("Location: profile.php?password=success");
+/* ================= REDIRECT ================= */
+
+header(
+    $from === 'edit'
+        ? "Location: edit-profile-page.php?success=password"
+        : "Location: profile.php?success=password"
+);
 exit;

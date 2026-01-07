@@ -28,10 +28,30 @@
   justify-content: center;
 }
 
+.profile-page .sidebar .icon i {
+  font-size: 18px;
+  color: #61593d;
+}
+
+.profile-page .sidebar .icon.active i {
+  color: #ba704a;
+}
+
 .profile-page .sidebar .icon:not(.active):hover {
   background: #e3d6cc;
 }
 
+.profile-page .sidebar .icon.logout i {
+  color: #c0392b;
+}
+
+.profile-page .sidebar .icon.logout:hover {
+  background: #fcebea;
+}
+
+.profile-page .sidebar .icon.logout:hover i {
+  color: #a93226;
+}
 
 .profile-page .sidebar .icon.active {
   background: #e3d6cc;
@@ -109,6 +129,13 @@
   border: solid 3px #ba704a;
 }
 
+.modal-content {
+  border-radius: 16px;
+}
+
+.modal-title {
+  color: #61593d;
+}
 
 @media (max-width: 768px) {
   .profile-page > .row {

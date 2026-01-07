@@ -19,14 +19,30 @@ include '../includes/header-main.php';
     <div class="row g-4 align-items-start">
         <aside class="col-md-1">
             <div class="sidebar">
-                <a href="profile.php" class="icon active">👤</a>
-                <a href="notifikasi.php" class="icon">🔔</a>
-                <a href="history.php" class="icon">📦</a>
-                <a href="liat-review.php" class="icon">📄</a>
+                <a href="profile.php" class="icon active" title="Profile">
+                <i class="bi bi-person"></i>
+                </a>
+
+                <a href="notifikasi.php" class="icon" title="Notifications">
+                <i class="bi bi-bell"></i>
+                </a>
+
+                <a href="history.php" class="icon" title="Orders">
+                <i class="bi bi-box-seam"></i>
+                </a>
+
+                <a href="liat-review.php" class="icon" title="Reviews">
+                <i class="bi bi-chat-left-text"></i>
+                </a>
+
+                <a href="sign-out.php" class="icon logout" id="btnLogout">
+                <i class="bi bi-box-arrow-right"></i>
+                </a>
+
             </div>
         </aside>
 
-        <div class="col-md-10"> 
+        <div class="col-md-11"> 
             <section class="profile-content">
                 <div class="profile-card">
                     <div class="row align-items-start">
@@ -63,7 +79,7 @@ include '../includes/header-main.php';
                             <div class="info-item">
                                 <span class="label">Password</span>
                                 <span class="value">••••••••</span>
-                                <a href="change-password.php" class="change-link">
+                                <a href="ganti-pw-page.php?from=edit" class="change-link">
                                     change password
                                 </a>
                                 </div>
@@ -87,6 +103,32 @@ include '../includes/header-main.php';
         </div>  
     </div>
 </main>
+
+<div class="modal fade" id="logoutModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Confirm Logout</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        Are you sure you want to logout?
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <a href="sign-out.php" class="btn btn-danger">
+          Logout
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>
 
 
 <?php include '../includes/footer.php'; ?>
