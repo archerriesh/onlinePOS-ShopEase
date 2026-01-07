@@ -8,13 +8,13 @@ include '../includes/header-main.php';
 
     <aside class="col-md-1">
         <div class="sidebar">
-            <a href="profile.php" class="icon active" title="Profile">
+            <a href="profile.php" class="icon" title="Profile">
             <i class="bi bi-person"></i>
             </a>
             <a href="notifikasi.php" class="icon" title="Notifications">
             <i class="bi bi-bell"></i>
             </a>
-            <a href="liat-review.php" class="icon" title="Reviews">
+            <a href="liat-review.php" class="icon active" title="Reviews">
             <i class="bi bi-chat-left-text"></i>
             </a>
             <a href="sign-out.php" class="icon logout" id="btnLogout" data-bs-toggle="modal" data-bs-target="#logoutModal">
