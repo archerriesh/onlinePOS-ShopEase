@@ -1,6 +1,7 @@
 <?php
 session_start();
 require '../includes/dbOnlinePOS.php';
+mysqli_set_charset($conn, 'utf8mb4'); 
 
 if (!isset($_SESSION['username'])) {
     header("Location: sign-in.php");
@@ -8,15 +9,12 @@ if (!isset($_SESSION['username'])) {
 }
 
 $username = $_SESSION['username'];
-$idPelanggan = $_SESSION['idPelanggan'];
 $from = $_POST['from'] ?? 'profile';
 
-/* Ambil field dari form */
 $current = $_POST['current_password'] ?? '';
 $new     = $_POST['new_password'] ?? '';
 $confirm = $_POST['confirm_password'] ?? '';
 
-/* Validasi */
 if ($new !== $confirm) {
     header("Location: ganti-pw-page.php?error=confirm&from=$from");
     exit;
@@ -27,10 +25,11 @@ if (strlen($new) < 8) {
     exit;
 }
 
-/* Ambil password lama dari DB */
-$query = "SELECT passwordPelanggan FROM tbPelanggan WHERE idPelanggan = ?";
+$query = "SELECT passwordPelanggan FROM tbPelanggan WHERE usernamePelanggan = ?";
 $stmt = mysqli_prepare($conn, $query);
-mysqli_stmt_bind_param($stmt, "s", $idPelanggan);
+if (!$stmt) die("Prepare failed: " . mysqli_error($conn));
+
+mysqli_stmt_bind_param($stmt, "s", $username);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $data = mysqli_fetch_assoc($result);
@@ -40,14 +39,11 @@ if (!$data) {
     exit;
 }
 
-/* Cek password lama */
-$dbPassword = $data['passwordPelanggan'];
+$dbPassword = $data['passwordPelanggan'] ?? '';
 
-if (substr($dbPassword,0,4) === '$2y$') {
-    $valid = password_verify($current, $dbPassword);
-} else {
-    $valid = ($current === $dbPassword);
-}
+$valid = (substr($dbPassword,0,4) === '$2y$') 
+    ? password_verify($current, $dbPassword)
+    : ($current === $dbPassword);
 
 if (!$valid) {
     header("Location: ganti-pw-page.php?error=wrong&from=$from");
@@ -55,22 +51,19 @@ if (!$valid) {
 }
 
 $newHash = password_hash($new, PASSWORD_DEFAULT);
-$sql = "UPDATE tbPelanggan SET passwordPelanggan='$newHash' WHERE idPelanggan='$idPelanggan'";
-if (mysqli_query($conn, $sql)) {
-    echo "Berhasil, affected rows: ".mysqli_affected_rows($conn);
-} else {
-    echo "Gagal: ".mysqli_error($conn);
+
+$stmtUpdate = mysqli_prepare($conn, "UPDATE tbPelanggan SET passwordPelanggan = ? WHERE usernamePelanggan = ?");
+if (!$stmtUpdate) die("Prepare update failed: " . mysqli_error($conn));
+
+mysqli_stmt_bind_param($stmtUpdate, "ss", $newHash, $username);
+
+if (mysqli_stmt_execute($stmtUpdate)) {
+    session_regenerate_id(true);
+
+    $redirect = ($from === 'edit') 
+        ? "edit-profile-page.php?success=password" 
+        : "ganti-pw-page.php?success=password";
+
+    header("Location: $redirect");
+    exit;
 }
-exit;
-
-
-session_regenerate_id(true);
-
-/* ================= REDIRECT ================= */
-
-header(
-    $from === 'edit'
-        ? "Location: edit-profile-page.php?success=password"
-        : "Location: profile.php?success=password"
-);
-exit;

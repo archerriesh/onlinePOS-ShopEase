@@ -10,22 +10,28 @@ if (!isset($_POST['username'], $_POST['password'])) {
 $username = $_POST['username'];
 $password = $_POST['password'];
 
-$queryPelanggan = "SELECT * FROM tbPelanggan WHERE usernamePelanggan = ?";
-$stmtPelanggan = mysqli_prepare($conn, $queryPelanggan);
-mysqli_stmt_bind_param($stmtPelanggan, "s", $username);
-mysqli_stmt_execute($stmtPelanggan);
+$query = "SELECT * FROM tbPelanggan WHERE usernamePelanggan = ?";
+$stmt = mysqli_prepare($conn, $query);
+mysqli_stmt_bind_param($stmt, "s", $username);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+$user = mysqli_fetch_assoc($result);
 
-$resultPelanggan = mysqli_stmt_get_result($stmtPelanggan);
-$pelanggan = mysqli_fetch_assoc($resultPelanggan);
+if ($user) {
+    $dbPassword = $user['passwordPelanggan'];
 
-if ($pelanggan && $password === $pelanggan['passwordPelanggan']) {
-    $_SESSION['login'] = true;
-    $_SESSION['role'] = 'pelanggan';
-    $_SESSION['username'] = $pelanggan['usernamePelanggan'];
+    if ($password === $dbPassword || password_verify($password, $dbPassword)) {
+        $_SESSION['login'] = true;
+        $_SESSION['role'] = 'pelanggan';
+        $_SESSION['username'] = $user['usernamePelanggan'];
 
-    header("Location: /onlinePOS/pages/home-page.php");
-    exit;
+        header("Location: /onlinePOS/pages/home-page.php");
+        exit;
+    }
 }
+
+header("Location: sign-in-page.php?error=1");
+exit;
 
 $queryPenjual = "SELECT * FROM tbPenjual WHERE usernamePenjual = ?";
 $stmtPenjual = mysqli_prepare($conn, $queryPenjual);

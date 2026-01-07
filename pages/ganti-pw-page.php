@@ -52,19 +52,22 @@ include '../includes/header-main.php';
                             <?php if (isset($_GET['error'])): ?>
                                 <div class="alert alert-danger mb-3">
                                     <?php
-                                    switch ($_GET['error']) {
-                                        case 'wrong':
-                                            echo 'Current password is incorrect.';
-                                            break;
-                                        case 'confirm':
-                                            echo 'New password and confirmation do not match.';
-                                            break;
-                                        case 'length':
-                                            echo 'Password must be at least 8 characters.';
-                                            break;
-                                        default:
-                                            echo 'Something went wrong. Please try again.';
-                                    }
+                                        switch ($_GET['error'] ?? '') {
+                                            case 'wrong':
+                                                echo 'Current password is incorrect.';
+                                                break;
+                                            case 'confirm':
+                                                echo 'New password and confirmation do not match.';
+                                                break;
+                                            case 'length':
+                                                echo 'Password must be at least 8 characters.';
+                                                break;
+                                            case 'updatefail':
+                                                echo 'Password gagal diupdate.';
+                                                break;
+                                            default:
+                                                break;
+                                        }
                                     ?>
                                 </div>
                             <?php endif; ?>
