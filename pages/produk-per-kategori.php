@@ -1,73 +1,68 @@
 <?php
 $pageCSS = '../css/produk-per-kategori.css';
 include '../includes/header-main.php';
+include '../includes/dbOnlinePOS.php';
+
+$kategori = $_GET['kategori'] ?? '';
+
+if ($kategori == '') {
+    $sql = "
+        SELECT idProduk, namaProduk, harga
+        FROM tbproduk
+        ORDER BY RAND()
+        LIMIT 8
+    ";
+} else {
+    $sql = "
+        SELECT idProduk, namaProduk, harga
+        FROM tbproduk
+        WHERE kategoriProduk = '$kategori'
+    ";
+}
+
+$result = mysqli_query($conn, $sql);
 ?>
 
 <div class="shopease-wrapper">
   <aside class="sidebar">
     <div class="menu-title">☰ Categories</div>
     <ul class="category-list">
-      <li>electronics</li>
-      <li>Man clothes</li>
-      <li>Woman clothes</li>
-      <li>Man Shoes</li>
-      <li>Woman Shoes</li>
-      <li>Bags</li>
-      <li>Skincare & Makeup</li>
-      <li>Hobbies</li>
-      <li>Mom & Baby</li>
+      <li><a href="?kategori=Elektronik">electronics</a></li>
+      <li><a href="?kategori=Fashion Pria">Man clothes</a></li>
+      <li><a href="?kategori=Fashion Wanita">Woman clothes</a></li>
+      <li><a href="?kategori=Home & Living">Home & Living</a></li>
+      <li><a href="?kategori=Alat Musik">Music</a></li>
+      <li><a href="?kategori=Tas & Dompet">Bags & Wallet</a></li>
+      <li><a href="?kategori=Kecantikan">Skincare & Makeup</a></li>
+      <li><a href="?kategori=Hobi & Koleksi">Hobbies</a></li>
+      <li><a href="?kategori=Olahraga">Sport</a></li>
     </ul>
   </aside>
 
   <main class="content">
     <div class="product-grid">
-      <div class="product-card">
-        <img src="../assets/huawei.png" alt="">
-        <h3>Huawei Matepad 11.5</h3>
-        <p>Rp. 5.589.000</p>
-      </div>
+      <?php if ($result && mysqli_num_rows($result) > 0) { ?>
+  
+        <?php while ($row = mysqli_fetch_assoc($result)) { ?>
+          <div class="product-card">
+            <a href="liat-produk.php?id=<?= $row['idProduk']; ?>">
 
-      <div class="product-card">
-        <img src="../assets/iphone.png" alt="">
-        <h3>Iphone 14<br>128GB,Blue</h3>
-        <p>Rp. 9.000.000</p>
-      </div>
+              <img 
+                src="../foto/produk/<?= $row['idProduk']; ?>.jpg"
+                onerror="this.src='../assets/img/default.jpg'"
+              >
 
-      <div class="product-card">
-        <img src="../assets/watch.png" alt="">
-        <h3>Apple Watch SE 3<br>Aluminium case</h3>
-        <p>Rp. 4.499.000</p>
-      </div>
+              <h3><?= $row['namaProduk']; ?></h3>
+              <p>Rp. <?= number_format($row['harga'], 0, ',', '.'); ?></p>
 
-      <div class="product-card">
-        <img src="../assets/asus.png" alt="">
-        <h3>Asus Zenbook 14<br>OLED UX3405CA</h3>
-        <p>Rp. 22.999.000</p>
-      </div>
+            </a>
+          </div>
+        <?php } ?>
 
-      <div class="product-card">
-        <img src="../assets/earbuds.png" alt="">
-        <h3>Baseus BP1 NC<br>TWS Active Noise</h3>
-        <p>Rp. 249.000</p>
-      </div>
+      <?php } else { ?>
+        <p>Categories not found</p>
+      <?php } ?>
 
-      <div class="product-card">
-        <img src="../assets/robot.png" alt="">
-        <h3>Dreame D9 Max<br>Gen 2 Robot</h3>
-        <p>Rp. 3.790.000</p>
-      </div>
-
-      <div class="product-card">
-        <img src="../assets/airfryer.png" alt="">
-        <h3>Philips Airfryer Low<br>Watt</h3>
-        <p>Rp. 783.000</p>
-      </div>
-
-      <div class="product-card">
-        <img src="../assets/juicer.png" alt="">
-        <h3>Ecohome Slow<br>Juicer</h3>
-        <p>Rp. 1.280.000</p>
-      </div>
     </div>
   </main>
 </div>
