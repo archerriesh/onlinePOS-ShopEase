@@ -37,10 +37,7 @@ $isIndex = isset($index) && $index === true;
                     <a class="nav-link <?= ($currentPage === 'home-page.php') ? 'active' : '' ?>"  href="../pages/home-page.php">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <?= ($currentPage === 'liat-produk.php') ? 'active' : '' ?>" href="../pages/liat-produk.php">Products</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link <?= ($currentPage === 'produk-per-kategori.php') ? 'active' : '' ?>" href="../pages/produk-per-kategori.php">Categories</a>
+                    <a class="nav-link <?= ($currentPage === 'produk-per-kategori.php') ? 'active' : '' ?>" href="../pages/produk-per-kategori.php">Products</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link <?= ($currentPage === 'co-keranjang.php') ? 'active' : '' ?>" href="../pages/co-keranjang.php">Cart</a>
