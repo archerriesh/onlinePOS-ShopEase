@@ -1,78 +1,91 @@
 <?php
-$user = [
-    "username" => "Keano",
-    "name" => "Keano",
-    "phone" => "(+62) 80814022008",
-    "address" => "Jalan Surya Sumantri 37 (masuk gang sebelah Indomaret), Sukagalih, Sukajadi, Kota Bandung, Bandung Kulon, Jawa Barat (40212)",
-];
+session_start();
+require '../includes/dbOnlinePOS.php';
+
+if (!isset($_SESSION['login']) || $_SESSION['role'] !== 'pelanggan') {
+    header("Location: sign-in-page.php");
+    exit;
+}
+
+$username = $_SESSION['username'];
+
+$query = "SELECT 
+            usernamePelanggan,
+            namaPelanggan,
+            kontakPelanggan,
+            alamatPelanggan
+          FROM tbPelanggan
+          WHERE usernamePelanggan = ?";
+
+$stmt = mysqli_prepare($conn, $query);
+mysqli_stmt_bind_param($stmt, "s", $username);
+mysqli_stmt_execute($stmt);
+
+$result = mysqli_stmt_get_result($stmt);
+$user = mysqli_fetch_assoc($result);
 
 $pageCSS = '../css/profile.css';
 include '../includes/header-main.php';
 ?>
 
 <main class="profile-page container-fluid px-5 py-4">
-  <div class="row g-4">
+  <div class="row g-4 align-items-start">
+    <aside class="col-md-1">
+      <div class="sidebar">
+        <a href="profile.php" class="icon active">👤</a>
+        <a href="notifikasi.php" class="icon">🔔</a>
+        <a href="history.php" class="icon">📦</a>
+        <a href="liat-review.php" class="icon">📄</a>
+      </div>
+    </aside>
 
-    <aside class="col-auto">
-  <div class="sidebar">
-
-    <a href="profile.php" class="icon active">👤</a>
-
-    <a href="notifikasi.php" class="icon">🔔</a>
-
-    <a href="history.php" class="icon">📦</a>
-
-    <a href="liat-review.php" class="icon">📄</a>
-
-  </div>
-</aside>
-
-    <section class="profile-content">
+    <div class="col-md-10">
+      <section class="profile-content">
         <div class="profile-card row">
           <h2 class="text-center mb-4">My Profile</h2>
-            <div class="col-md-7 profile-info">
+          <div class="col-md-7 profile-info">
 
             <div class="info-item">
-                <span class="label">Username</span>
-                <span class="value"><?= $user['username']; ?></span>
+              <span class="label">Username</span>
+              <span class="value"><?= $user['usernamePelanggan']; ?></span>
             </div>
 
             <div class="info-item">
-                <span class="label">Name</span>
-                <span class="value"><?= $user['name']; ?></span>
+              <span class="label">Name</span>
+              <span class="value"><?= $user['namaPelanggan']; ?></span>
             </div>
 
             <div class="info-item">
-                <span class="label">Phone number</span>
-                <span class="value"><?= $user['phone']; ?></span>
+              <span class="label">Phone number</span>
+              <span class="value"><?= $user['kontakPelanggan']; ?></span>
             </div>
 
             <div class="info-item">
-                <span class="label">Address</span>
-                <p class="value"><?= $user['address']; ?></p>
+              <span class="label">Address</span>
+              <p class="value"><?= $user['alamatPelanggan']; ?></p>
             </div>
 
             <div class="info-item">
-                <span class="label">Password</span>
-                <span class="value">••••••••</span>
-                <a href="change-password.php" class="change-link">change password</a>
+              <span class="label">Password</span>
+              <span class="value">••••••••</span>
+              <a href="ganti-pw-page.php" class="change-link">change password</a>
             </div>
 
             <a href="edit-profile-page.php" class="btn custom-btn mt-4">
-                Edit Profile
+              Edit Profile
             </a>
-        </div>
+          </div>
 
-        <div class="col-md-5 image-section text-center">
+          <div class="col-md-5 image-section text-center">
             <img src="../foto/keano.jpg" alt="Profile">
             <br>
             <a href="change-photo.php" class="btn custom-btn mt-3">
-                Change Image
+              Change Image
             </a>
+          </div>
         </div>
-      </div>
-    </section>
-
+      </section>
+    </div>
   </div>
 </main>
 

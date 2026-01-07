@@ -15,37 +15,78 @@ $pageCSS = '../css/profile.css';
 include '../includes/header-main.php';
 ?>
 
-<form method="POST" action="update-profile.php" class="edit-profile-page container mt-5">
-    <div class="info-item">
-        <label>Username</label>
-        <input type="text" name="usernamePelanggan" value="<?=$user['usernamePelanggan']; ?>" class="form-control">
+<main class="profile-page container-fluid px-5 py-4">
+    <div class="row g-4 align-items-start">
+        <aside class="col-md-1">
+            <div class="sidebar">
+                <a href="profile.php" class="icon active">👤</a>
+                <a href="notifikasi.php" class="icon">🔔</a>
+                <a href="history.php" class="icon">📦</a>
+                <a href="liat-review.php" class="icon">📄</a>
+            </div>
+        </aside>
+
+        <div class="col-md-10"> 
+            <section class="profile-content">
+                <div class="profile-card">
+                    <div class="row align-items-start">
+                        <div class="col-md-7">
+                            <h2 class="text-center mb-4">Change Profile</h2>
+                            <form method="POST" action="update-profile.php" class="profile-info">
+                                <div class="info-item">
+                                <label>Username</label>
+                                <input type="text" name="usernamePelanggan"
+                                    value="<?= $user['usernamePelanggan']; ?>"
+                                    class="form-control">
+                                </div>
+
+                                <div class="info-item">
+                                    <label>Name</label>
+                                    <input type="text" name="namaPelanggan"
+                                    value="<?= $user['namaPelanggan']; ?>"
+                                    class="form-control">
+                                </div>
+
+                                <div class="info-item">
+                                <label>Phone number</label>
+                                <input type="text" name="kontakPelanggan"
+                                value="<?= $user['kontakPelanggan']; ?>"
+                                class="form-control">
+                                </div>
+                                
+                                <div class="info-item">
+                                    <label>Address</label>
+                                <textarea name="alamatPelanggan"
+                                class="form-control"><?= $user['alamatPelanggan']; ?></textarea>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="label">Password</span>
+                                <span class="value">••••••••</span>
+                                <a href="change-password.php" class="change-link">
+                                    change password
+                                </a>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary mt-3">
+                                    Save Changes
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="col-md-5 image-section text-center">
+                            <img src="../foto/keano.jpg" alt="Profile">
+                            <br>
+                            <a href="change-photo.php" class="btn custom-btn mt-3">
+                                Change Image
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>  
     </div>
+</main>
 
-    <div class="info-item">
-        <label>Name</label>
-        <input type="text" name="namaPelanggan" value="<?= $user['namaPelanggan']; ?>" class="form-control">
-    </div>
-
-    <div class="info-item">
-        <label>Phone number</label>
-        <input type="text" name="kontakPelanggan" value="<?= $user['kontakPelanggan']; ?>" class="form-control">
-    </div>
-
-    <div class="info-item">
-        <label>Address</label>
-        <textarea name="alamatPelanggan" class="form-control"><?= $user['alamatPelanggan']; ?></textarea>
-    </div>
-
-    <div class="info-item">
-        <span class="label">Password</span>
-        <span class="value">••••••••</span>
-        <a href="change-password.php" class="change-link">change password</a>
-     </div>
-
-    <button type="submit" class="btn btn-primary">
-        Save Changes
-    </button>
-
-</form>
 
 <?php include '../includes/footer.php'; ?>
