@@ -5,6 +5,11 @@ include '../includes/dbOnlinePOS.php';
 
 $idProduk = $_GET['id'] ?? '';
 
+if ($idProduk == '') {
+    echo "Produk tidak ditemukan";
+    exit;
+}
+
 $sql = "
 SELECT 
     p.idProduk,
@@ -33,19 +38,34 @@ if (!$produk) {
     echo "Produk tidak ditemukan";
     exit;
 }
+
+$basePath = "../foto/produk/";
+$extensions = ['webp', 'jpg', 'jpeg'];
+$gambarProduk = "../assets/img/default.jpg"; // fallback
+
+foreach ($extensions as $ext) {
+    $file = $basePath . $produk['idProduk'] . "." . $ext;
+    if (file_exists($file)) {
+        $gambarProduk = $file;
+        break;
+    }
+}
 ?>
 
 <main class="container">
     <section class="product-card">
+
         <div class="image-wrap">
-            <img src="https://via.placeholder.com/420x520" alt="Produk">
+            <img 
+                src="<?= $gambarProduk; ?>" 
+                alt="<?= htmlspecialchars($produk['namaProduk']); ?>">
         </div>
 
         <div class="info">
 
-            <h1 class="title"><?= $produk['namaProduk']; ?></h1>
+            <h1 class="title"><?= htmlspecialchars($produk['namaProduk']); ?></h1>
 
-            <p class="brand"><?= $produk['namaPenjual']; ?></p>
+            <p class="brand"><?= htmlspecialchars($produk['namaPenjual']); ?></p>
 
             <div class="rating">
                 <span class="stars">
@@ -61,21 +81,26 @@ if (!$produk) {
             </p>
 
             <p class="description">
-                <?= nl2br($produk['keterangan']); ?>
+                <?= nl2br(htmlspecialchars($produk['keterangan'])); ?>
             </p>
 
             <div class="purchase">
 
-            <div class="qty">
-                <button class="btn-icon minus" type="button">−</button>
-                <input type="number" value="1" min="1">
-                <button class="btn-icon plus" type="button">+</button>
-            </div>
+                <div class="qty">
+                    <button class="btn-icon minus" type="button">−</button>
+                    <input type="number" value="1" min="1" max="<?= $produk['stok']; ?>">
+                    <button class="btn-icon plus" type="button">+</button>
+                </div>
 
-            <div class="action-row">
-                <a href="co-keranjang.php"><button class="btn add">🛒 Add to cart</button></a>
-                <a href="co-langsung.php"><button class="btn buy">Buy now</button></a>
-            </div>
+                <div class="action-row">
+                    <a href="co-keranjang.php?id=<?= $produk['idProduk']; ?>">
+                        <button class="btn add">🛒 Add to cart</button>
+                    </a>
+
+                    <a href="co-langsung.php?id=<?= $produk['idProduk']; ?>">
+                        <button class="btn buy">Buy now</button>
+                    </a>
+                </div>
 
             </div>
 
