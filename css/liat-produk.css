@@ -149,6 +149,14 @@
   margin: 0;
 }
 
+.price {
+  font-size: 22px;
+  font-weight: 700;
+  color: #ba704a;
+  margin: 8px 0 10px;
+}
+
+
 @media (max-width: 900px) {
   .product-card {
     grid-template-columns: 1fr;
