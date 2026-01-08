@@ -39,9 +39,9 @@ $defaultImage = "../assets/img/default.jpg";
       <li><a href="?kategori=Elektronik">Electronics</a></li>
       <li><a href="?kategori=Fashion Pria">Man clothes</a></li>
       <li><a href="?kategori=Fashion Wanita">Woman clothes</a></li>
-      <li><a href="?kategori=Home & Living">Home & Living</a></li>
+      <li><a href="?kategori=Fashion Muslim">Muslim Fashion</a></li>
       <li><a href="?kategori=Alat Musik">Music</a></li>
-      <li><a href="?kategori=Tas & Dompet">Bags & Wallet</a></li>
+      <li><a href="?kategori=Alat Tulis">Stationery</a></li>
       <li><a href="?kategori=Kecantikan">Skincare & Makeup</a></li>
       <li><a href="?kategori=Hobi & Koleksi">Hobbies</a></li>
       <li><a href="?kategori=Olahraga">Sport</a></li>
