@@ -39,14 +39,16 @@ mysqli_stmt_execute($stmtPenjual);
 $resultPenjual = mysqli_stmt_get_result($stmtPenjual);
 $penjual = mysqli_fetch_assoc($resultPenjual);
 
-if ($penjual && $password === $penjual['passwordPenjual']) {
+if ($penjual && ($password === $penjual['passwordPenjual'] || password_verify($password, $penjual['passwordPenjual']))) {
     $_SESSION['login'] = true;
     $_SESSION['role'] = 'penjual';
     $_SESSION['username'] = $penjual['usernamePenjual'];
+    $_SESSION['idPenjual'] = $penjual['idPenjual']; 
 
     header("Location: /onlinePOS/pages/seller/index-seller.php");
     exit;
 }
+
 
 header("Location: sign-in-page.php?error=1");
 exit;

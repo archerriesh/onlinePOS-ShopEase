@@ -22,7 +22,7 @@ $isIndex = isset($index) && $index === true;
 </head>
 <body>
 <nav class="navbar navbar-expand-lg px-5 pt-4">
-    <a class="navbar-brand fw-bold" href="../pages/home-page.php">ShopEase</a>
+    <a class="navbar-brand fw-bold" href="../../pages/seller/home-seller.php">ShopEase</a>
 
     <?php if (!$isIndex) : ?>
         <button class="navbar-toggler" type="button"
