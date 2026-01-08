@@ -5,7 +5,7 @@ include '../includes/dbOnlinePOS.php';
 
 $idProduk = $_GET['id'] ?? '';
 
-if ($idProduk == '') {
+if ($idProduk === '') {
     echo "Produk tidak ditemukan";
     exit;
 }
@@ -18,16 +18,27 @@ SELECT
     p.stok,
     p.keterangan,
     pen.namaPenjual,
-    IFNULL(AVG(r.rating), 0) AS rating,
-    COUNT(r.idReview) AS totalReview
-FROM tbproduk p
-JOIN tbpenjual pen ON p.idPenjual = pen.idPenjual
-LEFT JOIN tbreview r ON p.idProduk = r.idProduk
+
+    IFNULL(fn_rating_Produk(p.idProduk), 0) AS rating,
+
+    (
+        SELECT COUNT(*)
+        FROM tbReview r
+        WHERE r.idProduk = p.idProduk
+    ) AS totalReview
+
+FROM tbProduk p
+JOIN tbPenjual pen ON p.idPenjual = pen.idPenjual
 WHERE p.idProduk = ?
-GROUP BY p.idProduk
+LIMIT 1
 ";
 
 $stmt = mysqli_prepare($conn, $sql);
+
+if (!$stmt) {
+    die("SQL Error: " . mysqli_error($conn));
+}
+
 mysqli_stmt_bind_param($stmt, "s", $idProduk);
 mysqli_stmt_execute($stmt);
 
@@ -40,8 +51,8 @@ if (!$produk) {
 }
 
 $basePath = "../foto/produk/";
-$extensions = ['webp', 'jpg', 'jpeg','png'];
-$gambarProduk = "../assets/img/default.jpg"; // fallback
+$extensions = ['webp', 'jpg', 'jpeg', 'png'];
+$gambarProduk = "../assets/img/default.jpg";
 
 foreach ($extensions as $ext) {
     $file = $basePath . $produk['idProduk'] . "." . $ext;
@@ -69,10 +80,10 @@ foreach ($extensions as $ext) {
 
             <div class="rating">
                 <span class="stars">
-                    <?= number_format($produk['rating'], 1); ?> ★
+                    <?= number_format((float)$produk['rating'], 1); ?> ★
                 </span>
                 <span class="reviews">
-                    <?= $produk['totalReview']; ?> reviews
+                    <?= (int)$produk['totalReview']; ?> reviews
                 </span>
             </div>
 
@@ -88,7 +99,11 @@ foreach ($extensions as $ext) {
 
                 <div class="qty">
                     <button class="btn-icon minus" type="button">−</button>
-                    <input type="number" value="1" min="1" max="<?= $produk['stok']; ?>">
+                    <input 
+                        type="number" 
+                        value="1" 
+                        min="1" 
+                        max="<?= $produk['stok']; ?>">
                     <button class="btn-icon plus" type="button">+</button>
                 </div>
 
