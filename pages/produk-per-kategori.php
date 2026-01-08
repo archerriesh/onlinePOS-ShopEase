@@ -31,10 +31,50 @@ $extensions = ['webp', 'jpg', 'jpeg','png'];
 $defaultImage = "../assets/img/default.jpg";
 ?>
 
+<script>
+function validateSearch() {
+  const input = document.getElementById("searchKategori");
+
+  if (input.value.trim() === "") {
+    showPopup("Please fill the category first");
+    return false;
+  }
+  return true;
+}
+
+function showPopup(message) {
+  document.getElementById("popupMessage").innerText = message;
+  document.getElementById("popupOverlay").style.display = "flex";
+}
+
+function closePopup() {
+  document.getElementById("popupOverlay").style.display = "none";
+}
+</script>
+
+
 <div class="shopease-wrapper">
+
+  <div id="popupOverlay" class="popup-overlay">
+    <div class="popup-box">
+      <p id="popupMessage"></p>
+      <button onclick="closePopup()">OK</button>
+    </div>
+  </div>
 
   <aside class="sidebar">
     <div class="menu-title">☰ Categories</div>
+
+    <form class="category-search" method="GET" onsubmit="return validateSearch()">
+      <input
+        type="text"
+        name="kategori"
+        id="searchKategori"
+        placeholder="Search category..."
+        value="<?= htmlspecialchars($kategori); ?>"
+      >
+    </form>
+
     <ul class="category-list">
       <li><a href="?kategori=Elektronik">Electronics</a></li>
       <li><a href="?kategori=Fashion Pria">Man clothes</a></li>
@@ -76,7 +116,7 @@ $defaultImage = "../assets/img/default.jpg";
 
         <?php } ?>
       <?php } else { ?>
-        <p class="empty">Produk tidak ditemukan</p>
+        <p class="empty">Categories not found</p>
       <?php } ?>
 
     </div>
