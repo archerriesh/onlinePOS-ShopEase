@@ -40,7 +40,7 @@ if (!$produk) {
 }
 
 $basePath = "../foto/produk/";
-$extensions = ['webp', 'jpg', 'jpeg'];
+$extensions = ['webp', 'jpg', 'jpeg','png'];
 $gambarProduk = "../assets/img/default.jpg"; // fallback
 
 foreach ($extensions as $ext) {

@@ -27,7 +27,7 @@ mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 
 $basePath = "../foto/produk/";
-$extensions = ['webp', 'jpg', 'jpeg'];
+$extensions = ['webp', 'jpg', 'jpeg','png'];
 $defaultImage = "../assets/img/default.jpg";
 ?>
 
