@@ -1,6 +1,6 @@
 <?php
 $pageCSS = '../../css/addPromo-seller.css';
-include("../../includes/header-main.php");
+include("../../includes/header-seller.php");
 ?>
 <div class="button-container">
     <button class="btn btn-secondary" onclick="window.location.href='promo-seller.php'">Your voucher</button>

@@ -1,6 +1,6 @@
 <?php
 $pageCSS = '../../css/promo-seller.css';
-include("../../includes/header-main.php");
+include("../../includes/header-seller.php");
 ?>
 
     <div class="button-container">

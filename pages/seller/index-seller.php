@@ -4,7 +4,6 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 require '../../includes/dbOnlinePOS.php';
-
 $query = "SELECT idProduk, namaProduk, harga FROM tbproduk";
 $result = mysqli_query($conn, $query);
 
@@ -17,10 +16,14 @@ while ($row = mysqli_fetch_assoc($result)) {
     $products[] = $row;
 }
 
-$pageCSS = '../../css/seller-index.css';
-include("../../includes/header-main.php");
-?>
+// ext gambar
+$basePath = "../../foto/produk/";
+$extensions = ['webp', 'jpg', 'jpeg'];
 
+// CSS halaman
+$pageCSS = '../../css/seller-index.css';
+include("../../includes/header-seller.php");
+?>
 
 <section class="container">
     <div class="store-header">
@@ -35,31 +38,37 @@ include("../../includes/header-main.php");
 
     <div class="product-grid">
         <?php foreach ($products as $p): ?>
-            <div class="card">
+            <?php
+            $gambarProduk = "../../assets/img/default.jpg";
 
+            // Cek pergambar
+            foreach ($extensions as $ext) {
+                $path = $basePath . $p['idProduk'] . '.' . $ext;
+                if (file_exists($path)) {
+                    $gambarProduk = $path;
+                    break;
+                }
+            }
+            ?>
+
+            <div class="card">
                 <div class="card-actions">
                     <!-- EDIT -->
-                    <a href="editProduct-seller.php?id=<?= $p['idProduk'] ?>" class="edit-btn">
-                        ✎
-                    </a>
+                    <a href="editProduct-seller.php?id=<?= $p['idProduk'] ?>" class="edit-btn">✎</a>
 
                     <!-- DELETE -->
-                    <span class="delete-btn"
-                          onclick="openDeleteModal(
-                              <?= $p['idProduk'] ?>,
-                              '<?= htmlspecialchars($p['namaProduk'], ENT_QUOTES) ?>'
-                          )">
+                    <span class="delete-btn" data-id="<?= $p['idProduk'] ?>">
                         🗑
                     </span>
                 </div>
 
                 <!-- IMAGE -->
-                <img src="../../foto/keano.jpg" alt="product">
+                <img src="<?= $gambarProduk ?>">
 
-                <!-- PRODUCT NAME -->
+                <!-- Nama Produk -->
                 <h4><?= htmlspecialchars($p['namaProduk']) ?></h4>
 
-                <!-- PRICE -->
+                <!-- Harga -->
                 <p>Rp <?= number_format($p['harga'], 0, ',', '.') ?></p>
             </div>
         <?php endforeach; ?>
@@ -69,7 +78,7 @@ include("../../includes/header-main.php");
 <!-- DELETE MODAL -->
 <div id="deleteModal" class="modal">
     <div class="modal-content">
-        <span class="close-btn" onclick="closeDeleteModal()">&times;</span>
+        <span class="close-btn">&times;</span>
 
         <div class="trash-icon">
             <svg viewBox="0 0 24 24" fill="currentColor">
@@ -77,18 +86,16 @@ include("../../includes/header-main.php");
             </svg>
         </div>
 
-        <h2>Are you sure you want delete this product?</h2>
+        <h2>Are you sure you want to delete this product?</h2>
 
         <form id="deleteForm" method="POST" action="deleteProduct-seller.php">
             <input type="hidden" name="idProduk" id="deleteProductId">
-            <button type="submit" class="delete-confirm-btn">
-                Delete
-            </button>
+            <button type="submit" class="delete-confirm-btn">Delete</button>
         </form>
     </div>
 </div>
 
-<!-- Notifikasi - PINDAHKAN KE SINI -->
+<!-- Notif -->
 <?php if (isset($_SESSION['success'])): ?>
     <div class="notification success" id="notification">
         <?= htmlspecialchars($_SESSION['success']) ?>
@@ -104,35 +111,40 @@ include("../../includes/header-main.php");
 <?php endif; ?>
 
 <script>
-function openDeleteModal(productId, productName) {
-    console.log('Opening modal for ID:', productId);
-    const modal = document.getElementById('deleteModal');
-    document.getElementById('deleteProductId').value = productId;
-    modal.style.display = 'flex';
-}
 
-function closeDeleteModal() {
-    const modal = document.getElementById('deleteModal');
-    modal.style.display = 'none';
-}
 
-// Close modal ketika klik di luar
-window.onclick = function(event) {
-    const modal = document.getElementById('deleteModal');
-    if (event.target === modal) {
-        closeDeleteModal();
-    }
-}
 
-// Auto hide notification
+// Modal delete
+const deleteModal = document.getElementById('deleteModal');
+const deleteBtns = document.querySelectorAll('.delete-btn');
+const closeBtn = deleteModal.querySelector('.close-btn');
+const deleteInput = document.getElementById('deleteProductId');
+
+deleteBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const productId = btn.getAttribute('data-id');
+        deleteInput.value = productId;
+        deleteModal.style.display = 'flex';
+    });
+});
+
+closeBtn.addEventListener('click', () => {
+    deleteModal.style.display = 'none';
+});
+
+//click diluar langsung close
+window.addEventListener('click', (event) => {
+    if (event.target === deleteModal) deleteModal.style.display = 'none';
+});
+
+// Auto hide notif
 const notification = document.getElementById('notification');
 if (notification) {
     setTimeout(() => {
         notification.style.opacity = '0';
-        setTimeout(() => {
-            notification.remove();
-        }, 300);
+        setTimeout(() => notification.remove(), 300);
     }, 3000);
 }
 </script>
+
 <?php include '../../includes/footer.php'; ?>

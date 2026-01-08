@@ -9,7 +9,6 @@
     height: 100%;
     background-color: rgba(0,0,0,0.5);
 
-    display: flex;             /* supaya muncul di tengah */
     justify-content: center;   /* center horizontal */
     align-items: center;       /* center vertical */
     flex-direction: column;    /* konten tersusun vertikal */

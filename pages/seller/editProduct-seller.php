@@ -1,6 +1,6 @@
 <?php
 $pageCSS = '../../css/editProduct-seller.css';  
-include("../../includes/header-main.php");
+include("../../includes/header-seller.php");
 ?>
 
 
