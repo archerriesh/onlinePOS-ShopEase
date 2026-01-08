@@ -3,52 +3,53 @@ $pageCSS = '../../css/addProduct-seller.css';
 include("../../includes/header-seller.php");
 ?>
 
-
+<form action="addProductProsesSeller.php" method="POST" enctype="multipart/form-data">
 <main class="container">
+
+    <!-- LEFT -->
     <div class="left">
+
         <div class="card">
             <h2>General Information</h2>
 
-            <label>Product name</label>
-            <input type="text" value="Nike Free Metcon 6">
+            <label>Product Name</label>
+            <input type="text" name="namaProduk" required>
 
             <label>Product Description</label>
-            <textarea rows="8">
-Lorem Ipsum is simply dummy text of the printing and typesetting industry...
-            </textarea>
+            <textarea name="keterangan" rows="8" required></textarea>
         </div>
 
         <div class="card row">
             <div>
                 <label>Category</label>
-                <input type="text" value="Shoes">
+                <input type="text" name="kategoriProduk" required>
             </div>
             <div>
                 <label>Stock</label>
-                <input type="number" value="45">
+                <input type="number" name="stok" min="0" required>
             </div>
         </div>
+
     </div>
 
+    <!-- RIGHT -->
     <div class="right">
+
         <div class="card">
             <h2>Upload Image</h2>
-
-            <div class="image-box"></div>
-
-            <div class="thumbs">
-                <div class="thumb"></div>
-                <div class="thumb"></div>
-                <div class="thumb add">+</div>
-            </div>
+            <input type="file" name="gambar" accept="image/*">
         </div>
 
         <div class="card">
-            <label>Set price</label>
-            <input type="text" value="Rp. 1.999.999">
+            <label>Set Price</label>
+            <input type="number" name="harga" min="0" required>
         </div>
 
-        <button class="btn">Add product</button>
+        <button type="submit" class="btn">Add Product</button>
+
     </div>
-</main> 
+
+</main>
+</form>
+
 <?php include '../../includes/footer.php'; ?>
