@@ -1,19 +1,14 @@
-/* =========================
-   HISTORY PAGE SCOPE
-========================= */
 .history-page {
     background: #faf7f5;
     padding: 40px 0;
 }
 
-/* ===== PAGE WRAPPER ===== */
 .history-page .shop-header {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 24px;
 }
 
-/* ===== ORDER TABS ===== */
 .history-page .order-tabs ul {
     display: flex;
     justify-content: center;
@@ -23,18 +18,20 @@
     margin-bottom: 28px;
 }
 
-.history-page .order-tabs ul li a {
+.history-page .order-tabs .tab-link {
     text-decoration: none;
     font-size: 14px;
     color: #61593d;
 }
 
-.history-page .order-tabs ul li a.active {
-    font-weight: 600;
-    color: #121212;
+.history-page .order-tabs .tab-link.active {
+    font-weight: bold;
 }
 
-/* ===== ORDER CARD ===== */
+.history-page .order-tabs .tab-link:hover {
+    color: #ba704a;
+}
+
 .history-page .order-card {
     background-color: #ffffff;
     border-radius: 12px;
@@ -42,7 +39,6 @@
     box-shadow: 0 6px 18px rgba(0,0,0,0.06);
 }
 
-/* ===== STORE NAME ===== */
 .history-page .store-name {
     font-size: 14px;
     font-weight: 600;
@@ -50,7 +46,6 @@
     color: #121212;
 }
 
-/* ===== PRODUCT ITEM ===== */
 .history-page .product-item {
     display: grid;
     grid-template-columns: 80px 1fr 40px 120px;
@@ -64,14 +59,12 @@
     border-radius: 6px;
 }
 
-/* ===== PRODUCT INFO ===== */
 .history-page .product-name {
     font-size: 14px;
     font-weight: 500;
     color: #121212;
 }
 
-/* ===== QTY & PRICE ===== */
 .history-page .product-qty {
     text-align: center;
     font-size: 14px;
@@ -84,14 +77,12 @@
     color: #121212;
 }
 
-/* ===== DIVIDER ===== */
 .history-page .divider {
     height: 1px;
     background-color: #e3d6cc;
     margin: 4px 0;
 }
 
-/* ===== FOOTER ===== */
 .history-page .order-footer {
     display: flex;
     justify-content: flex-end;
@@ -100,7 +91,6 @@
     margin-top: 18px;
 }
 
-/* ===== TOTAL ===== */
 .history-page .total-text {
     font-size: 14px;
     color: #121212;
@@ -111,7 +101,6 @@
     font-weight: 600;
 }
 
-/* ===== REVIEW BUTTON ===== */
 .history-page .review-btn {
     background-color: #ba704a;
     color: #ffffff;

@@ -24,14 +24,12 @@ if ($user) {
         $_SESSION['login'] = true;
         $_SESSION['role'] = 'pelanggan';
         $_SESSION['username'] = $user['usernamePelanggan'];
+        $_SESSION['idPelanggan'] = $user['idPelanggan'];
 
         header("Location: /onlinePOS/pages/home-page.php");
         exit;
     }
 }
-
-header("Location: sign-in-page.php?error=1");
-exit;
 
 $queryPenjual = "SELECT * FROM tbPenjual WHERE usernamePenjual = ?";
 $stmtPenjual = mysqli_prepare($conn, $queryPenjual);
