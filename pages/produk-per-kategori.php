@@ -5,7 +5,6 @@ include '../includes/dbOnlinePOS.php';
 
 $kategori = $_GET['kategori'] ?? '';
 
-/* ================= QUERY ================= */
 if ($kategori == '') {
     $sql = "
         SELECT idProduk, namaProduk, harga
@@ -27,7 +26,6 @@ if ($kategori == '') {
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 
-/* ================= GAMBAR ================= */
 $basePath = "../foto/produk/";
 $extensions = ['webp', 'jpg', 'jpeg'];
 $defaultImage = "../assets/img/default.jpg";
