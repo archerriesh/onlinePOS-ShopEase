@@ -18,15 +18,12 @@ SELECT
     p.stok,
     p.keterangan,
     pen.namaPenjual,
-
     IFNULL(fn_rating_Produk(p.idProduk), 0) AS rating,
-
     (
-        SELECT COUNT(*)
-        FROM tbReview r
+        SELECT COUNT(*) 
+        FROM tbReview r 
         WHERE r.idProduk = p.idProduk
     ) AS totalReview
-
 FROM tbProduk p
 JOIN tbPenjual pen ON p.idPenjual = pen.idPenjual
 WHERE p.idProduk = ?
@@ -34,14 +31,8 @@ LIMIT 1
 ";
 
 $stmt = mysqli_prepare($conn, $sql);
-
-if (!$stmt) {
-    die("SQL Error: " . mysqli_error($conn));
-}
-
 mysqli_stmt_bind_param($stmt, "s", $idProduk);
 mysqli_stmt_execute($stmt);
-
 $result = mysqli_stmt_get_result($stmt);
 $produk = mysqli_fetch_assoc($result);
 
@@ -64,63 +55,92 @@ foreach ($extensions as $ext) {
 ?>
 
 <main class="container">
-    <section class="product-card">
+<section class="product-card">
 
-        <div class="image-wrap">
-            <img 
-                src="<?= $gambarProduk; ?>" 
-                alt="<?= htmlspecialchars($produk['namaProduk']); ?>">
+    <div class="image-wrap">
+        <img src="<?= $gambarProduk; ?>" alt="<?= htmlspecialchars($produk['namaProduk']); ?>">
+    </div>
+
+    <div class="info">
+
+        <h1 class="title"><?= htmlspecialchars($produk['namaProduk']); ?></h1>
+        <p class="brand"><?= htmlspecialchars($produk['namaPenjual']); ?></p>
+
+        <div class="rating">
+            <span><?= number_format((float)$produk['rating'], 1); ?> ★</span>
+            <span><?= (int)$produk['totalReview']; ?> reviews</span>
         </div>
 
-        <div class="info">
+        <p class="price">
+            Rp <?= number_format($produk['harga'], 0, ',', '.'); ?>
+        </p>
 
-            <h1 class="title"><?= htmlspecialchars($produk['namaProduk']); ?></h1>
+        <p class="description">
+            <?= nl2br(htmlspecialchars($produk['keterangan'])); ?>
+        </p>
 
-            <p class="brand"><?= htmlspecialchars($produk['namaPenjual']); ?></p>
+        <div class="purchase">
 
-            <div class="rating">
-                <span class="stars">
-                    <?= number_format((float)$produk['rating'], 1); ?> ★
-                </span>
-                <span class="reviews">
-                    <?= (int)$produk['totalReview']; ?> reviews
-                </span>
+            <div class="qty">
+                <button class="btn-icon minus" type="button">−</button>
+
+                <input 
+                    type="number"
+                    id="qtyInput"
+                    value="1"
+                    min="1"
+                    max="<?= $produk['stok']; ?>"
+                    readonly
+                >
+
+                <button class="btn-icon plus" type="button">+</button>
             </div>
 
-            <p class="price">
-                Rp <?= number_format($produk['harga'], 0, ',', '.'); ?>
-            </p>
+            <div class="action-row">
+                <button class="btn add" id="addToCart">
+                    🛒 Add to cart
+                </button>
 
-            <p class="description">
-                <?= nl2br(htmlspecialchars($produk['keterangan'])); ?>
-            </p>
-
-            <div class="purchase">
-
-                <div class="qty">
-                    <button class="btn-icon minus" type="button">−</button>
-                    <input 
-                        type="number" 
-                        value="1" 
-                        min="1" 
-                        max="<?= $produk['stok']; ?>">
-                    <button class="btn-icon plus" type="button">+</button>
-                </div>
-
-                <div class="action-row">
-                    <a href="co-keranjang.php?id=<?= $produk['idProduk']; ?>">
-                        <button class="btn add">🛒 Add to cart</button>
-                    </a>
-
-                    <a href="co-langsung.php?id=<?= $produk['idProduk']; ?>">
-                        <button class="btn buy">Buy now</button>
-                    </a>
-                </div>
-
+                <button class="btn buy" id="buyNow">
+                    Buy now
+                </button>
             </div>
 
         </div>
-    </section>
+
+    </div>
+</section>
 </main>
+
+<script>
+const qtyInput = document.getElementById('qtyInput');
+const plusBtn = document.querySelector('.btn-icon.plus');
+const minusBtn = document.querySelector('.btn-icon.minus');
+const addBtn = document.getElementById('addToCart');
+const buyBtn = document.getElementById('buyNow');
+
+const maxStock = <?= (int)$produk['stok']; ?>;
+const idProduk = <?= json_encode($produk['idProduk']); ?>;
+
+plusBtn.addEventListener('click', () => {
+    let qty = parseInt(qtyInput.value);
+    if (qty < maxStock) qtyInput.value = qty + 1;
+});
+
+minusBtn.addEventListener('click', () => {
+    let qty = parseInt(qtyInput.value);
+    if (qty > 1) qtyInput.value = qty - 1;
+});
+
+addBtn.addEventListener('click', () => {
+    window.location.href =
+        `co-keranjang.php?id=${idProduk}&qty=${qtyInput.value}`;
+});
+
+buyBtn.addEventListener('click', () => {
+    window.location.href =
+        `co-langsung.php?id=${idProduk}&qty=${qtyInput.value}`;
+});
+</script>
 
 <?php include '../includes/footer.php'; ?>
