@@ -3,53 +3,56 @@ $pageCSS = '../../css/addProduct-seller.css';
 include("../../includes/header-seller.php");
 ?>
 
-<form action="addProductProsesSeller.php" method="POST" enctype="multipart/form-data">
-<main class="container">
+<div class="page-wrapper">
+    <form action="addProductProsesSeller.php" method="POST" enctype="multipart/form-data">
 
-    <!-- LEFT -->
-    <div class="left">
+        <main class="container">
 
-        <div class="card">
-            <h2>General Information</h2>
+            <!-- LEFT -->
+            <div class="left">
 
-            <label>Product Name</label>
-            <input type="text" name="namaProduk" required>
+                <div class="card">
+                    <h2>General Information</h2>
 
-            <label>Product Description</label>
-            <textarea name="keterangan" rows="8" required></textarea>
-        </div>
+                    <label>Product Name</label>
+                    <input type="text" name="namaProduk" required>
 
-        <div class="card row">
-            <div>
-                <label>Category</label>
-                <input type="text" name="kategoriProduk" required>
+                    <label>Product Description</label>
+                    <textarea name="keterangan" rows="8" required></textarea>
+                </div>
+
+                <div class="card row">
+                    <div>
+                        <label>Category</label>
+                        <input type="text" name="kategoriProduk" required>
+                    </div>
+                    <div>
+                        <label>Stock</label>
+                        <input type="number" name="stok" min="0" required>
+                    </div>
+                </div>
+
             </div>
-            <div>
-                <label>Stock</label>
-                <input type="number" name="stok" min="0" required>
+
+            <!-- RIGHT -->
+            <div class="right">
+
+                <div class="card">
+                    <h2>Upload Image</h2>
+                    <input type="file" name="gambar" accept="image/*">
+                </div>
+
+                <div class="card">
+                    <label>Set Price</label>
+                    <input type="number" name="harga" min="0" required>
+                </div>
+
+                <button type="submit" class="btn">Add Product</button>
+
             </div>
-        </div>
 
-    </div>
-
-    <!-- RIGHT -->
-    <div class="right">
-
-        <div class="card">
-            <h2>Upload Image</h2>
-            <input type="file" name="gambar" accept="image/*">
-        </div>
-
-        <div class="card">
-            <label>Set Price</label>
-            <input type="number" name="harga" min="0" required>
-        </div>
-
-        <button type="submit" class="btn">Add Product</button>
-
-    </div>
-
-</main>
-</form>
+        </main>
+    </form>
+</div>
 
 <?php include '../../includes/footer.php'; ?>

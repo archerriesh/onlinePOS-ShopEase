@@ -2,20 +2,35 @@
 session_start();
 require '../includes/dbOnlinePOS.php';
 
-if (!isset($_SESSION['login']) || $_SESSION['role'] !== 'pelanggan') {
+if (!isset($_SESSION['login']) || 
+    ($_SESSION['role'] !== 'pelanggan' && $_SESSION['role'] !== 'penjual')) {
     header("Location: sign-in-page.php");
     exit;
 }
 
 $username = $_SESSION['username'];
 
-$query = "SELECT 
+if ($_SESSION['role'] === 'pelanggan'){
+    $query = "SELECT 
             usernamePelanggan,
             namaPelanggan,
             kontakPelanggan,
             alamatPelanggan
           FROM tbPelanggan
           WHERE usernamePelanggan = ?";
+
+} elseif ($_SESSION['role'] === 'penjual'){
+    $query = "SELECT 
+            usernamePenjual,
+            namaPenjual,
+            kontakPenjual,
+            alamatPenjual
+          FROM tbPenjual
+          WHERE usernamePenjual = ?";
+} else {
+    header("Location: sign-in-page.php");
+    exit;
+}
 
 $stmt = mysqli_prepare($conn, $query);
 mysqli_stmt_bind_param($stmt, "s", $username);
