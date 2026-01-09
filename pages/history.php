@@ -11,20 +11,15 @@ include '../includes/dbOnlinePOS.php';
 $idPelanggan = $_SESSION['idPelanggan'];
 
 $stmt = mysqli_prepare($conn, "
-        SELECT DISTINCT
-        t.idTransaksi,
-        t.totalTransaksi,
-        t.statusTransaksi,
-        t.statusPengiriman,
-        t.tglTransaksi,
-        pj.idPenjual,
-        pj.namaPenjual
-    FROM tbTransaksi t
-    JOIN tbDetTransaksi dt ON t.idTransaksi = dt.idTransaksi
-    JOIN tbProduk p ON dt.idProduk = p.idProduk
-    JOIN tbPenjual pj ON p.idPenjual = pj.idPenjual
-    WHERE t.idPelanggan = ?
-    ORDER BY t.tglTransaksi DESC
+    SELECT
+        idTransaksi,
+        totalTransaksi,
+        statusTransaksi,
+        statusPengiriman,
+        tglTransaksi
+    FROM tbTransaksi
+    WHERE idPelanggan = ?
+    ORDER BY tglTransaksi DESC
 ");
 
 if (!$stmt) {
@@ -59,9 +54,18 @@ include '../includes/header-main.php';
                 </div>
 
                 <?php 
+                    $stmtSeller = mysqli_prepare($conn, "
+                        SELECT DISTINCT
+                            pj.idPenjual,
+                            pj.namaPenjual
+                        FROM tbDetTransaksi d
+                        JOIN tbProduk p ON d.idProduk = p.idProduk
+                        JOIN tbPenjual pj ON p.idPenjual = pj.idPenjual
+                        WHERE d.idTransaksi = ?
+                    ");
+
                     $stmtDetail = mysqli_prepare($conn, "
-                        SELECT 
-                            d.idDetail,
+                        SELECT
                             d.hargaSatuan,
                             d.jumlah,
                             d.idReview,
@@ -86,21 +90,28 @@ include '../includes/header-main.php';
                     $detail = mysqli_stmt_get_result($stmtDetail);
                 ?>
 
-                <?php while ($item = mysqli_fetch_assoc($detail)) { ?>
-                    <div class="product-item">
-                        <img src="../foto/produk/default.png" alt="<?= htmlspecialchars($item['namaProduk']) ?>">
-                        <div class="product-info">
-                            <p class="product-name">
-                                <?= htmlspecialchars($item['namaProduk']) ?>
-                            </p>
+                <?php 
+                    $items = [];
+                    while ($row = mysqli_fetch_assoc($detail)) {
+                        $items[] = $row;
+                    }
+                    ?>
+
+                    <?php foreach ($items as $i => $item) { ?>
+                        <div class="product-item">
+                            <img src="../foto/produk/default.png" alt="<?= htmlspecialchars($item['namaProduk']) ?>">
+                            <div class="product-info">
+                                <p class="product-name"><?= htmlspecialchars($item['namaProduk']) ?></p>
+                            </div>
+                            <div class="product-qty"><?= $item['jumlah'] ?></div>
+                            <div class="product-price">
+                                Rp<?= number_format($item['hargaSatuan'], 0, ',', '.') ?>
+                            </div>
                         </div>
-                        <div class="product-qty">
-                            <?= $item['jumlah'] ?>
-                        </div>
-                        <div class="product-price">
-                            Rp<?= number_format($item['hargaSatuan'], 0, ',', '.') ?>
-                        </div>
-                    </div>
+
+                        <?php if ($i < count($items) - 1) { ?>
+                            <div class="divider"></div>
+                    <?php } ?>
                 <?php } ?>
 
                 <div class="order-footer">
