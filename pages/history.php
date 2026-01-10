@@ -52,6 +52,7 @@ $stmtToko = mysqli_prepare($conn, "
 
 $stmtDetail = mysqli_prepare($conn, "
     SELECT
+        d.idProduk,
         d.hargaSatuan,
         d.jumlah,
         p.namaProduk
@@ -63,6 +64,10 @@ $stmtDetail = mysqli_prepare($conn, "
 
 $pageCSS = '../css/history.css';
 include '../includes/header-main.php';
+
+$basePath = "../foto/produk/";
+$extensions = ['webp', 'jpg', 'jpeg','png'];
+$defaultImage = "../assets/img/default.jpg";
 ?>
 
 <div class="history-page">
@@ -114,8 +119,19 @@ include '../includes/header-main.php';
                     ?>
 
                     <?php foreach ($items as $i => $item) { ?>
+                        <?php
+                            $imgPath = $defaultImage; 
+
+                            foreach ($extensions as $ext) {
+                                $try = $basePath . $item['idProduk'] . '.' . $ext;
+                                if (file_exists($try)) {
+                                    $imgPath = $try;
+                                    break;
+                                }
+                            }
+                        ?>
                         <div class="product-item">
-                            <img src="../foto/produk/default.png" alt="">
+                            <img src="<?= $imgPath ?>" alt="<?= htmlspecialchars($item['namaProduk']) ?>">
                             <div class="product-info">
                                 <p class="product-name"><?= htmlspecialchars($item['namaProduk']) ?></p>
                             </div>
