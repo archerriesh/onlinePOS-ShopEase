@@ -7,7 +7,6 @@ include '../includes/dbOnlinePOS.php';
 
 /* ===============================
    AMBIL ID PELANGGAN (TANPA VALIDASI LOGIN)
-   idPelanggan = VARCHAR
 ================================ */
 $idPelanggan = $_SESSION['idPelanggan'] ?? '';
 
@@ -16,24 +15,14 @@ $idPelanggan = $_SESSION['idPelanggan'] ?? '';
 ================================ */
 if (isset($_POST['add_cart']) || isset($_POST['update_cart'])) {
 
-    $idProduk = $_POST['idProduk']; // VARCHAR
+    $idProduk = $_POST['idProduk'];
     $qty      = (int) $_POST['qty'];
 
     if ($qty < 0) $qty = 0;
 
-    $stmt = mysqli_prepare(
-        $conn,
-        "CALL sp_kelola_keranjang(?, ?, ?)"
-    );
+    $stmt = mysqli_prepare($conn, "CALL sp_kelola_keranjang(?, ?, ?)");
 
-    mysqli_stmt_bind_param(
-        $stmt,
-        "ssi",
-        $idPelanggan,
-        $idProduk,
-        $qty
-    );
-
+    mysqli_stmt_bind_param($stmt, "ssi", $idPelanggan, $idProduk, $qty);
     mysqli_stmt_execute($stmt);
 
     // WAJIB bersihin result set SP
@@ -97,7 +86,6 @@ $totalHarga += $subtotal;
             <?= htmlspecialchars($row['namaProduk']); ?>
         </div>
 
-        <!-- FORM QTY -->
         <form method="POST" class="qty-form">
             <input type="hidden" name="update_cart" value="1">
             <input type="hidden" name="idProduk" value="<?= $row['idProduk']; ?>">
@@ -130,7 +118,7 @@ $totalHarga += $subtotal;
 <aside class="summary">
     <div class="voucher">Voucher</div>
     <div class="voucher-box"></div>
-    
+
     <div class="summary-panel">
         <div class="row">
             <span><?= $totalItem; ?> Item</span>
@@ -145,8 +133,7 @@ $totalHarga += $subtotal;
         </div>
     </div>
 
-<button class="checkout-btn">Checkout</button>
-
+    <button class="checkout-btn">Checkout</button>
 </aside>
 
 </section>
@@ -160,7 +147,6 @@ function changeQty(btn, delta) {
     let qty = parseInt(input.value) + delta;
 
     if (qty < 0) return;
-
     if (qty === 0 && !confirm("Hapus produk dari keranjang?")) return;
 
     input.value = qty;

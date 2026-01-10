@@ -1,8 +1,13 @@
 <?php
+session_start();
+
 $pageCSS = '../css/liat-produk.css';
 include '../includes/header-main.php';
 include '../includes/dbOnlinePOS.php';
 
+/* ======================================
+   AMBIL DATA PRODUK
+====================================== */
 $idProduk = $_GET['id'] ?? '';
 
 if ($idProduk === '') {
@@ -41,6 +46,9 @@ if (!$produk) {
     exit;
 }
 
+/* ======================================
+   GAMBAR PRODUK
+====================================== */
 $basePath = "../foto/produk/";
 $extensions = ['webp', 'jpg', 'jpeg', 'png'];
 $gambarProduk = "../assets/img/default.jpg";
