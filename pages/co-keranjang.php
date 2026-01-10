@@ -5,29 +5,36 @@ $pageCSS = '../css/co-keranjang.css';
 include '../includes/header-main.php';
 include '../includes/dbOnlinePOS.php';
 
-$idPelanggan = $_SESSION['idPelanggan'] ?? '';
+$idPelanggan = isset($_SESSION['idPelanggan'])
+    ? (int) $_SESSION['idPelanggan']
+    : 0;
 
-if (isset($_POST['add_cart'])) {
+if (
+    $idPelanggan > 0 &&
+    (isset($_POST['add_cart']) || isset($_POST['update_cart']))
+) {
     $idProduk = $_POST['idProduk'];
-    $qty = (int)$_POST['qty'];
+    $qty = (int) $_POST['qty'];
 
     $sql = "CALL sp_kelola_keranjang(?, ?, ?)";
     $stmt = mysqli_prepare($conn, $sql);
-    mysqli_stmt_bind_param($stmt, "isi", $idPelanggan, $idProduk, $qty);
+
+    mysqli_stmt_bind_param(
+        $stmt,
+        "isi",
+        $idPelanggan,
+        $idProduk,
+        $qty
+    );
+
     mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
 
-    header("Location: co-keranjang.php");
-    exit;
-}
-
-if (isset($_POST['update_cart'])) {
-    $idProduk = $_POST['idProduk'];
-    $qty = (int)$_POST['qty'];
-
-    $sql = "CALL sp_kelola_keranjang(?, ?, ?)";
-    $stmt = mysqli_prepare($conn, $sql);
-    mysqli_stmt_bind_param($stmt, "isi", $idPelanggan, $idProduk, $qty);
-    mysqli_stmt_execute($stmt);
+    /* WAJIB untuk CALL procedure */
+    while (mysqli_more_results($conn)) {
+        mysqli_next_result($conn);
+    }
+    
 
     header("Location: co-keranjang.php");
     exit;
@@ -49,7 +56,7 @@ mysqli_stmt_bind_param($stmt, "i", $idPelanggan);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 
-$totalItem = 0;
+$totalItem  = 0;
 $totalHarga = 0;
 ?>
 
@@ -57,9 +64,7 @@ $totalHarga = 0;
 <section class="layout">
 
 <div class="cart-items">
-<h3 class="section-title">
-    <?= mysqli_num_rows($result); ?> items
-</h3>
+<h3 class="section-title"><?= mysqli_num_rows($result); ?> items</h3>
 
 <?php if (mysqli_num_rows($result) === 0) { ?>
     <p class="empty">Cart is empty</p>
@@ -86,14 +91,14 @@ $totalHarga += $subtotal;
             <input type="hidden" name="idProduk" value="<?= $row['idProduk']; ?>">
 
             <div class="qty">
-                <button type="button" class="btn-icon"onclick="updateQty('<?= $row['idProduk']; ?>', <?= $qty - 1; ?>)">-</button>
+                <button type="button" class="btn-icon"onclick="updateQty('<?= $row['idProduk']; ?>', <?= $row['jumlah'] - 1; ?>)">-</button>
 
                 <input type="number" value="<?= $row['jumlah']; ?>" readonly>
 
                 <button 
                     type="button" 
                     class="btn-icon"
-                    onclick="updateQty('<?= $row['idProduk']; ?>', <?= $qty + 1; ?>)">
+                    onclick="updateQty('<?= $row['idProduk']; ?>', <?= $row['jumlah'] + 1; ?>)">
                     +
                 </button>
             </div>
