@@ -28,12 +28,15 @@ if (
     );
 
     mysqli_stmt_execute($stmt);
-    mysqli_stmt_close($stmt);
 
-    /* WAJIB untuk CALL procedure */
+    mysqli_stmt_store_result($stmt);
+    mysqli_stmt_free_result($stmt);
+
     while (mysqli_more_results($conn)) {
         mysqli_next_result($conn);
     }
+
+    mysqli_stmt_close($stmt);
     
 
     header("Location: co-keranjang.php");
