@@ -9,88 +9,109 @@ if (!isset($_SESSION['idPelanggan'])) {
 include '../includes/dbOnlinePOS.php';
 
 $idPelanggan = $_SESSION['idPelanggan'];
+$tab = $_GET['tab'] ?? 'all';
 
-$stmt = mysqli_prepare($conn, "
-    SELECT
-        idTransaksi,
-        totalTransaksi,
-        statusTransaksi,
-        statusPengiriman,
-        tglTransaksi
-    FROM tbTransaksi
-    WHERE idPelanggan = ?
-    ORDER BY tglTransaksi DESC
-");
-
-if (!$stmt) {
-    die(mysqli_error($conn));
+$whereStatus = "";
+if ($tab === 'topay') {
+    $whereStatus = "AND tp.statusPesanan = 'Menunggu Pembayaran'";
+} elseif ($tab === 'toship') {
+    $whereStatus = "AND tp.statusPengiriman = 'Menunggu Pengiriman'";
+} elseif ($tab === 'toreceive') {
+    $whereStatus = "AND tp.statusPengiriman = 'Dikirim'";
+} elseif ($tab === 'completed') {
+    $whereStatus = "AND tp.statusPesanan = 'Selesai'";
 }
 
-mysqli_stmt_bind_param($stmt, "s", $idPelanggan);
-mysqli_stmt_execute($stmt);
-$query = mysqli_stmt_get_result($stmt);
+$sqlTrx = "
+    SELECT DISTINCT
+        t.idTransaksi,
+        t.tglTransaksi
+    FROM tbTransaksi t
+    JOIN tbTransaksiPenjual tp ON t.idTransaksi = tp.idTransaksi
+    WHERE t.idPelanggan = ?
+    $whereStatus
+    ORDER BY t.tglTransaksi DESC
+";
+
+$stmtTrx = mysqli_prepare($conn, $sqlTrx);
+mysqli_stmt_bind_param($stmtTrx, "s", $idPelanggan);
+mysqli_stmt_execute($stmtTrx);
+$transaksi = mysqli_stmt_get_result($stmtTrx);
+
+$stmtToko = mysqli_prepare($conn, "
+    SELECT
+        tp.idTrxPenjual,
+        tp.idPenjual,
+        pj.namaPenjual,
+        tp.totalPenjual,
+        tp.statusPesanan
+    FROM tbTransaksiPenjual tp
+    JOIN tbPenjual pj ON tp.idPenjual = pj.idPenjual
+    WHERE tp.idTransaksi = ?
+");
+
+$stmtDetail = mysqli_prepare($conn, "
+    SELECT
+        d.idProduk,
+        d.hargaSatuan,
+        d.jumlah,
+        p.namaProduk
+    FROM tbDetTransaksi d
+    JOIN tbProduk p ON d.idProduk = p.idProduk
+    WHERE d.idTransaksi = ?
+      AND p.idPenjual = ?
+");
 
 $pageCSS = '../css/history.css';
 include '../includes/header-main.php';
+
+$basePath = "../foto/produk/";
+$extensions = ['webp', 'jpg', 'jpeg','png'];
+$defaultImage = "../assets/img/default.jpg";
 ?>
 
 <div class="history-page">
     <div class="shop-header">
+
         <div class="order-tabs">
             <ul>
-                <li><a href="#" class="tab-link active">All</a></li>
-                <li><a href="#" class="tab-link">To Pay</a></li>
-                <li><a href="#" class="tab-link">To Ship</a></li>
-                <li><a href="#" class="tab-link">To Receive</a></li>
-                <li><a href="#" class="tab-link">Completed</a></li>
+                <li><a href="?tab=all" class="tab-link <?= $tab=='all'?'active':'' ?>">All</a></li>
+                <li><a href="?tab=topay" class="tab-link <?= $tab=='topay'?'active':'' ?>">To Pay</a></li>
+                <li><a href="?tab=toship" class="tab-link <?= $tab=='toship'?'active':'' ?>">To Ship</a></li>
+                <li><a href="?tab=toreceive" class="tab-link <?= $tab=='toreceive'?'active':'' ?>">To Receive</a></li>
+                <li><a href="?tab=completed" class="tab-link <?= $tab=='completed'?'active':'' ?>">Completed</a></li>
             </ul>
         </div>
 
-        <?php while ($trx = mysqli_fetch_assoc($query)) { ?>
-            <div class="order-card">
+        <?php if (mysqli_num_rows($transaksi) === 0): ?>
+            <p class="text-center mt-5">TIDAK ADA TRANSAKSI</p>
+        <?php endif; ?>
 
-                <div class="store-name">
-                    <?= htmlspecialchars($trx['namaPenjual']) ?>
-                </div>
+        <?php while ($trx = mysqli_fetch_assoc($transaksi)) { ?>
 
-                <?php 
-                    $stmtSeller = mysqli_prepare($conn, "
-                        SELECT DISTINCT
-                            pj.idPenjual,
-                            pj.namaPenjual
-                        FROM tbDetTransaksi d
-                        JOIN tbProduk p ON d.idProduk = p.idProduk
-                        JOIN tbPenjual pj ON p.idPenjual = pj.idPenjual
-                        WHERE d.idTransaksi = ?
-                    ");
+            <?php
+            mysqli_stmt_bind_param($stmtToko, "s", $trx['idTransaksi']);
+            mysqli_stmt_execute($stmtToko);
+            $tokos = mysqli_stmt_get_result($stmtToko);
+            ?>
 
-                    $stmtDetail = mysqli_prepare($conn, "
-                        SELECT
-                            d.hargaSatuan,
-                            d.jumlah,
-                            d.idReview,
-                            p.namaProduk
-                        FROM tbDetTransaksi d
-                        JOIN tbProduk p ON d.idProduk = p.idProduk
-                        WHERE d.idTransaksi = ?
-                        AND p.idPenjual = ?
-                    ");
+            <?php while ($toko = mysqli_fetch_assoc($tokos)) { ?>
+                <div class="order-card">
 
-                    if (!$stmtDetail) {
-                        die(mysqli_error($conn));
-                    }
+                    <div class="store-name">
+                        <?= htmlspecialchars($toko['namaPenjual']) ?>
+                    </div>
 
+                    <?php
                     mysqli_stmt_bind_param(
                         $stmtDetail,
                         "ss",
                         $trx['idTransaksi'],
-                        $trx['idPenjual']
+                        $toko['idPenjual']
                     );
                     mysqli_stmt_execute($stmtDetail);
                     $detail = mysqli_stmt_get_result($stmtDetail);
-                ?>
 
-                <?php 
                     $items = [];
                     while ($row = mysqli_fetch_assoc($detail)) {
                         $items[] = $row;
@@ -98,8 +119,19 @@ include '../includes/header-main.php';
                     ?>
 
                     <?php foreach ($items as $i => $item) { ?>
+                        <?php
+                            $imgPath = $defaultImage; 
+
+                            foreach ($extensions as $ext) {
+                                $try = $basePath . $item['idProduk'] . '.' . $ext;
+                                if (file_exists($try)) {
+                                    $imgPath = $try;
+                                    break;
+                                }
+                            }
+                        ?>
                         <div class="product-item">
-                            <img src="../foto/produk/default.png" alt="<?= htmlspecialchars($item['namaProduk']) ?>">
+                            <img src="<?= $imgPath ?>" alt="<?= htmlspecialchars($item['namaProduk']) ?>">
                             <div class="product-info">
                                 <p class="product-name"><?= htmlspecialchars($item['namaProduk']) ?></p>
                             </div>
@@ -109,25 +141,26 @@ include '../includes/header-main.php';
                             </div>
                         </div>
 
-                        <?php if ($i < count($items) - 1) { ?>
+                        <?php if ($i < count($items) - 1): ?>
                             <div class="divider"></div>
+                        <?php endif; ?>
                     <?php } ?>
-                <?php } ?>
 
-                <div class="order-footer">
-                    <div class="total-text">
-                        Total Order:
-                        <span>
-                            Rp<?= number_format($trx['totalTransaksi'], 0, ',', '.') ?>
-                        </span>
+                    <div class="order-footer">
+                        <div class="total-text">
+                            Total:
+                            <span>Rp<?= number_format($toko['totalPenjual'], 0, ',', '.') ?></span>
+                        </div>
+
+                        <?php if ($toko['statusPesanan'] === 'Selesai'): ?>
+                            <a href="nulis-review.php?id=<?= $toko['idTrxPenjual'] ?>" class="review-btn">
+                                Review
+                            </a>
+                        <?php endif; ?>
                     </div>
 
-                        <a href="nulis-review.php?id=<?= $trx['idTransaksi'] ?>" class="review-btn">
-                            Review
-                        </a>
                 </div>
-
-            </div>
+            <?php } ?>
         <?php } ?>
 
     </div>
