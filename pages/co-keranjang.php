@@ -5,22 +5,50 @@ $pageCSS = '../css/co-keranjang.css';
 include '../includes/header-main.php';
 include '../includes/dbOnlinePOS.php';
 
-/* UPDATE CART */
-if (isset($_POST['update_cart'])) {
+$idPelanggan = $_SESSION['idPelanggan'] ?? '';
+
+if (isset($_POST['add_cart'])) {
     $idProduk = $_POST['idProduk'];
     $qty = (int)$_POST['qty'];
 
-    if ($qty <= 0) {
-        unset($_SESSION['cart'][$idProduk]);
-    } else {
-        $_SESSION['cart'][$idProduk] = $qty;
-    }
+    $sql = "CALL sp_kelola_keranjang(?, ?, ?)";
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "isi", $idPelanggan, $idProduk, $qty);
+    mysqli_stmt_execute($stmt);
 
     header("Location: co-keranjang.php");
     exit;
 }
 
-$cart = $_SESSION['cart'] ?? [];
+if (isset($_POST['update_cart'])) {
+    $idProduk = $_POST['idProduk'];
+    $qty = (int)$_POST['qty'];
+
+    $sql = "CALL sp_kelola_keranjang(?, ?, ?)";
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "isi", $idPelanggan, $idProduk, $qty);
+    mysqli_stmt_execute($stmt);
+
+    header("Location: co-keranjang.php");
+    exit;
+}
+
+$sql = "
+SELECT 
+    k.idProduk,
+    p.namaProduk,
+    k.jumlah,
+    k.hargaSatuan
+FROM tbKeranjang k
+JOIN tbProduk p ON k.idProduk = p.idProduk
+WHERE k.idPelanggan = ?
+";
+
+$stmt = mysqli_prepare($conn, $sql);
+mysqli_stmt_bind_param($stmt, "i", $idPelanggan);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+
 $totalItem = 0;
 $totalHarga = 0;
 ?>
@@ -29,25 +57,19 @@ $totalHarga = 0;
 <section class="layout">
 
 <div class="cart-items">
-<h3 class="section-title"><?= count($cart); ?> items</h3>
+<h3 class="section-title">
+    <?= mysqli_num_rows($result); ?> items
+</h3>
 
-<?php if (empty($cart)) { ?>
+<?php if (mysqli_num_rows($result) === 0) { ?>
     <p class="empty">Cart is empty</p>
 <?php } else { ?>
 
-<?php foreach ($cart as $idProduk => $qty): ?>
+<?php while ($row = mysqli_fetch_assoc($result)) : ?>
 
 <?php
-$sql = "SELECT idProduk, namaProduk, harga FROM tbProduk WHERE idProduk = ?";
-$stmt = mysqli_prepare($conn, $sql);
-mysqli_stmt_bind_param($stmt, "s", $idProduk);
-mysqli_stmt_execute($stmt);
-$result = mysqli_stmt_get_result($stmt);
-$produk = mysqli_fetch_assoc($result);
-if (!$produk) continue;
-
-$subtotal = $produk['harga'] * $qty;
-$totalItem += $qty;
+$subtotal = $row['jumlah'] * $row['hargaSatuan'];
+$totalItem += $row['jumlah'];
 $totalHarga += $subtotal;
 ?>
 
@@ -57,26 +79,21 @@ $totalHarga += $subtotal;
 
     <div class="item-info">
         <div class="item-name">
-            <?= htmlspecialchars($produk['namaProduk']); ?>
+            <?= htmlspecialchars($row['namaProduk']); ?>
         </div>
 
         <form method="POST" class="qty-form">
-            <input type="hidden" name="idProduk" value="<?= $idProduk; ?>">
+            <input type="hidden" name="idProduk" value="<?= $row['idProduk']; ?>">
 
             <div class="qty">
-                <button 
-                    type="button" 
-                    class="btn-icon"
-                    onclick="updateQty('<?= $idProduk; ?>', <?= $qty - 1; ?>)">
-                    -
-                </button>
+                <button type="button" class="btn-icon"onclick="updateQty('<?= $row['idProduk']; ?>', <?= $qty - 1; ?>)">-</button>
 
-                <input type="number" value="<?= $qty; ?>" readonly>
+                <input type="number" value="<?= $row['jumlah']; ?>" readonly>
 
                 <button 
                     type="button" 
                     class="btn-icon"
-                    onclick="updateQty('<?= $idProduk; ?>', <?= $qty + 1; ?>)">
+                    onclick="updateQty('<?= $row['idProduk']; ?>', <?= $qty + 1; ?>)">
                     +
                 </button>
             </div>
@@ -89,14 +106,13 @@ $totalHarga += $subtotal;
 
 </div>
 
-<?php endforeach; ?>
+<?php endwhile; ?>
 <?php } ?>
 
 </div>
 
 <aside class="summary">
 
-<!-- 🔥 VOUCHER SECTION (INI YANG KURANG) -->
 <div class="voucher">Voucher</div>
 <div class="voucher-box"></div>
 
@@ -132,7 +148,9 @@ $totalHarga += $subtotal;
 
 <script>
 function updateQty(idProduk, qty) {
-    if (qty <= 0) {
+    if (qty < 0) return;
+
+    if (qty === 0) {
         if (!confirm("Are you sure you want to remove the product from your cart?")) {
             return;
         }
@@ -140,6 +158,7 @@ function updateQty(idProduk, qty) {
 
     const form = document.createElement("form");
     form.method = "POST";
+    form.action = "co-keranjang.php";
 
     form.innerHTML = `
         <input type="hidden" name="update_cart" value="1">
