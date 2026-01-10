@@ -1,0 +1,81 @@
+/* Container utama */
+.toko-container {
+    padding: 30px 40px;
+    background-color: #faf7f5;
+}
+
+/* Header section */
+.toko-header {
+    background: linear-gradient(90deg, #e3d6cc, #c7965c);
+    border-radius: 16px;
+    padding: 25px 30px;
+    position: relative;
+    margin-bottom: 40px;
+}
+
+.section-label {
+    font-size: 14px;
+    color: #61593d;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 28px;
+    color: #121212;
+    margin: 5px 0;
+    text-transform: lowercase;
+}
+
+.add-product {
+    position: absolute;
+    right: 30px;
+    top: 30px;
+    background: transparent;
+    border: none;
+    color: #121212;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.add-product span {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+/* Grid produk */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 25px;
+}
+
+/* Card produk */
+.product-card {
+    background-color: #e3d6cc;
+    border-radius: 18px;
+    padding: 12px;
+    position: relative;
+}
+
+/* Gambar produk */
+.product-image {
+    border: 1px solid #a6996b;
+    border-radius: 12px;
+    height: 160px;
+    margin-bottom: 10px;
+}
+
+/* Info produk */
+.product-info {
+    text-align: center;
+}
+
+.product-name {
+    font-size: 14px;
+    color: #121212;
+    margin-bottom: 4px;
+}
+
