@@ -5,6 +5,7 @@ $pageCSS = '../css/co-keranjang.css';
 include '../includes/header-main.php';
 include '../includes/dbOnlinePOS.php';
 
+/* UPDATE CART */
 if (isset($_POST['update_cart'])) {
     $idProduk = $_POST['idProduk'];
     $qty = (int)$_POST['qty'];
@@ -55,17 +56,29 @@ $totalHarga += $subtotal;
     <div class="thumb"></div>
 
     <div class="item-info">
-        <div class="item-name"><?= htmlspecialchars($produk['namaProduk']); ?></div>
+        <div class="item-name">
+            <?= htmlspecialchars($produk['namaProduk']); ?>
+        </div>
 
         <form method="POST" class="qty-form">
             <input type="hidden" name="idProduk" value="<?= $idProduk; ?>">
 
             <div class="qty">
-                <button type="button" class="btn-icon" onclick="updateQty('<?= $idProduk; ?>', <?= $qty - 1; ?>)">-</button>
+                <button 
+                    type="button" 
+                    class="btn-icon"
+                    onclick="updateQty('<?= $idProduk; ?>', <?= $qty - 1; ?>)">
+                    -
+                </button>
 
                 <input type="number" value="<?= $qty; ?>" readonly>
 
-                <button type="button" class="btn-icon" onclick="updateQty('<?= $idProduk; ?>', <?= $qty + 1; ?>)">+</button>
+                <button 
+                    type="button" 
+                    class="btn-icon"
+                    onclick="updateQty('<?= $idProduk; ?>', <?= $qty + 1; ?>)">
+                    +
+                </button>
             </div>
         </form>
     </div>
@@ -82,6 +95,10 @@ $totalHarga += $subtotal;
 </div>
 
 <aside class="summary">
+
+<!-- 🔥 VOUCHER SECTION (INI YANG KURANG) -->
+<div class="voucher">Voucher</div>
+<div class="voucher-box"></div>
 
 <div class="summary-panel">
 
@@ -117,7 +134,7 @@ $totalHarga += $subtotal;
 function updateQty(idProduk, qty) {
     if (qty <= 0) {
         if (!confirm("Are you sure you want to remove the product from your cart?")) {
-            qty = 1;
+            return;
         }
     }
 

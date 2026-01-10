@@ -133,8 +133,18 @@ minusBtn.addEventListener('click', () => {
 });
 
 addBtn.addEventListener('click', () => {
-    window.location.href =
-        `co-keranjang.php?id=${idProduk}&qty=${qtyInput.value}`;
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = "co-keranjang.php";
+
+    form.innerHTML = `
+        <input type="hidden" name="add_cart" value="1">
+        <input type="hidden" name="idProduk" value="${idProduk}">
+        <input type="hidden" name="qty" value="${qtyInput.value}">
+    `;
+
+    document.body.appendChild(form);
+    form.submit();
 });
 
 buyBtn.addEventListener('click', () => {
