@@ -9,25 +9,34 @@ if (!isset($_SESSION['idPelanggan'])) {
 include '../includes/dbOnlinePOS.php';
 
 $idPelanggan = $_SESSION['idPelanggan'];
+$tab = $_GET['tab'] ?? 'all';
 
-$stmtTrx = mysqli_prepare($conn, "
-    SELECT idTransaksi, tglTransaksi
-    FROM tbTransaksi
-    WHERE idPelanggan = ?
-    ORDER BY tglTransaksi DESC
-");
-
-if (!$stmtTrx) {
-    die(mysqli_error($conn));
+$whereStatus = "";
+if ($tab === 'topay') {
+    $whereStatus = "AND tp.statusPesanan = 'Menunggu Pembayaran'";
+} elseif ($tab === 'toship') {
+    $whereStatus = "AND tp.statusPengiriman = 'Menunggu Pengiriman'";
+} elseif ($tab === 'toreceive') {
+    $whereStatus = "AND tp.statusPengiriman = 'Dikirim'";
+} elseif ($tab === 'completed') {
+    $whereStatus = "AND tp.statusPesanan = 'Selesai'";
 }
 
+$sqlTrx = "
+    SELECT DISTINCT
+        t.idTransaksi,
+        t.tglTransaksi
+    FROM tbTransaksi t
+    JOIN tbTransaksiPenjual tp ON t.idTransaksi = tp.idTransaksi
+    WHERE t.idPelanggan = ?
+    $whereStatus
+    ORDER BY t.tglTransaksi DESC
+";
+
+$stmtTrx = mysqli_prepare($conn, $sqlTrx);
 mysqli_stmt_bind_param($stmtTrx, "s", $idPelanggan);
 mysqli_stmt_execute($stmtTrx);
 $transaksi = mysqli_stmt_get_result($stmtTrx);
-
-if (mysqli_num_rows($transaksi) === 0) {
-    echo "<p style='color:red'>TIDAK ADA TRANSAKSI</p>";
-}
 
 $stmtToko = mysqli_prepare($conn, "
     SELECT
@@ -58,15 +67,20 @@ include '../includes/header-main.php';
 
 <div class="history-page">
     <div class="shop-header">
+
         <div class="order-tabs">
             <ul>
-                <li><a href="#" class="tab-link active">All</a></li>
-                <li><a href="#" class="tab-link">To Pay</a></li>
-                <li><a href="#" class="tab-link">To Ship</a></li>
-                <li><a href="#" class="tab-link">To Receive</a></li>
-                <li><a href="#" class="tab-link">Completed</a></li>
+                <li><a href="?tab=all" class="tab-link <?= $tab=='all'?'active':'' ?>">All</a></li>
+                <li><a href="?tab=topay" class="tab-link <?= $tab=='topay'?'active':'' ?>">To Pay</a></li>
+                <li><a href="?tab=toship" class="tab-link <?= $tab=='toship'?'active':'' ?>">To Ship</a></li>
+                <li><a href="?tab=toreceive" class="tab-link <?= $tab=='toreceive'?'active':'' ?>">To Receive</a></li>
+                <li><a href="?tab=completed" class="tab-link <?= $tab=='completed'?'active':'' ?>">Completed</a></li>
             </ul>
         </div>
+
+        <?php if (mysqli_num_rows($transaksi) === 0): ?>
+            <p class="text-center mt-5">TIDAK ADA TRANSAKSI</p>
+        <?php endif; ?>
 
         <?php while ($trx = mysqli_fetch_assoc($transaksi)) { ?>
 
@@ -103,41 +117,34 @@ include '../includes/header-main.php';
                         <div class="product-item">
                             <img src="../foto/produk/default.png" alt="">
                             <div class="product-info">
-                                <p class="product-name">
-                                    <?= htmlspecialchars($item['namaProduk']) ?>
-                                </p>
+                                <p class="product-name"><?= htmlspecialchars($item['namaProduk']) ?></p>
                             </div>
-                            <div class="product-qty">
-                                <?= $item['jumlah'] ?>
-                            </div>
+                            <div class="product-qty"><?= $item['jumlah'] ?></div>
                             <div class="product-price">
                                 Rp<?= number_format($item['hargaSatuan'], 0, ',', '.') ?>
                             </div>
                         </div>
 
-                        <?php if ($i < count($items) - 1) { ?>
+                        <?php if ($i < count($items) - 1): ?>
                             <div class="divider"></div>
-                        <?php } ?>
+                        <?php endif; ?>
                     <?php } ?>
 
                     <div class="order-footer">
                         <div class="total-text">
                             Total:
-                            <span>
-                                Rp<?= number_format($toko['totalPenjual'], 0, ',', '.') ?>
-                            </span>
+                            <span>Rp<?= number_format($toko['totalPenjual'], 0, ',', '.') ?></span>
                         </div>
 
-                        <?php if ($toko['statusPesanan'] === 'Selesai') { ?>
+                        <?php if ($toko['statusPesanan'] === 'Selesai'): ?>
                             <a href="nulis-review.php?id=<?= $toko['idTrxPenjual'] ?>" class="review-btn">
                                 Review
                             </a>
-                        <?php } ?>
+                        <?php endif; ?>
                     </div>
 
                 </div>
             <?php } ?>
-
         <?php } ?>
 
     </div>
