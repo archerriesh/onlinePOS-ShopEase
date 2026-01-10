@@ -35,7 +35,7 @@ $defaultImage = "../assets/img/default.jpg";
 
     <section class="trending">
         <div class="home-container">
-            <h2 class="section-title">Now Trending</h2>
+            <h2 class="section-title">For you</h2>
 
             <div class="cards">
                 <?php while ($row = mysqli_fetch_assoc($result)) { ?>
@@ -51,7 +51,7 @@ $defaultImage = "../assets/img/default.jpg";
                     }
                     ?>
 
-                    <article class="card">
+                    <article class="card text-decoration-none">
                         <a href="liat-produk.php?id=<?= $row['idProduk']; ?>">
                             <img src="<?= $gambarProduk; ?>" alt="<?= $row['namaProduk']; ?>">
                             <div class="card-content">

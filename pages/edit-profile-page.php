@@ -25,9 +25,6 @@ include '../includes/header-main.php';
                 <a href="notifikasi.php" class="icon" title="Notifications">
                 <i class="bi bi-bell"></i>
                 </a>
-                <a href="liat-review.php" class="icon" title="Reviews">
-                <i class="bi bi-chat-left-text"></i>
-                </a>
                 <a href="sign-out.php" class="icon logout" id="btnLogout" data-bs-toggle="modal" data-bs-target="#logoutModal">
                 <i class="bi bi-box-arrow-right"></i>
                 </a>

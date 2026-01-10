@@ -23,9 +23,7 @@ if ($tab === 'topay') {
 }
 
 $sqlTrx = "
-    SELECT DISTINCT
-        t.idTransaksi,
-        t.tglTransaksi
+    SELECT DISTINCT t.idTransaksi, t.tglTransaksi
     FROM tbTransaksi t
     JOIN tbTransaksiPenjual tp ON t.idTransaksi = tp.idTransaksi
     WHERE t.idPelanggan = ?
@@ -39,27 +37,17 @@ mysqli_stmt_execute($stmtTrx);
 $transaksi = mysqli_stmt_get_result($stmtTrx);
 
 $stmtToko = mysqli_prepare($conn, "
-    SELECT
-        tp.idTrxPenjual,
-        tp.idPenjual,
-        pj.namaPenjual,
-        tp.totalPenjual,
-        tp.statusPesanan
+    SELECT tp.idTrxPenjual, tp.idPenjual, pj.namaPenjual, tp.totalPenjual, tp.statusPesanan
     FROM tbTransaksiPenjual tp
     JOIN tbPenjual pj ON tp.idPenjual = pj.idPenjual
     WHERE tp.idTransaksi = ?
 ");
 
 $stmtDetail = mysqli_prepare($conn, "
-    SELECT
-        d.idProduk,
-        d.hargaSatuan,
-        d.jumlah,
-        p.namaProduk
+    SELECT d.idProduk, d.hargaSatuan, d.jumlah, p.namaProduk
     FROM tbDetTransaksi d
     JOIN tbProduk p ON d.idProduk = p.idProduk
-    WHERE d.idTransaksi = ?
-      AND p.idPenjual = ?
+    WHERE d.idTransaksi = ? AND p.idPenjual = ?
 ");
 
 $pageCSS = '../css/history.css';
@@ -84,52 +72,40 @@ $defaultImage = "../assets/img/default.jpg";
         </div>
 
         <?php if (mysqli_num_rows($transaksi) === 0): ?>
-            <p class="text-center mt-5">TIDAK ADA TRANSAKSI</p>
+            <p class="text-center mt-5">There's no order yet.</p>
         <?php endif; ?>
 
-        <?php while ($trx = mysqli_fetch_assoc($transaksi)) { ?>
-
-            <?php
+        <?php while ($trx = mysqli_fetch_assoc($transaksi)) { 
             mysqli_stmt_bind_param($stmtToko, "s", $trx['idTransaksi']);
             mysqli_stmt_execute($stmtToko);
             $tokos = mysqli_stmt_get_result($stmtToko);
+        ?>
+
+            <?php while ($toko = mysqli_fetch_assoc($tokos)) { 
+                mysqli_stmt_bind_param($stmtDetail, "ss", $trx['idTransaksi'], $toko['idPenjual']);
+                mysqli_stmt_execute($stmtDetail);
+                $detail = mysqli_stmt_get_result($stmtDetail);
+
+                $items = [];
+                while ($row = mysqli_fetch_assoc($detail)) {
+                    $items[] = $row;
+                }
             ?>
-
-            <?php while ($toko = mysqli_fetch_assoc($tokos)) { ?>
                 <div class="order-card">
-
                     <div class="store-name">
                         <?= htmlspecialchars($toko['namaPenjual']) ?>
                     </div>
 
-                    <?php
-                    mysqli_stmt_bind_param(
-                        $stmtDetail,
-                        "ss",
-                        $trx['idTransaksi'],
-                        $toko['idPenjual']
-                    );
-                    mysqli_stmt_execute($stmtDetail);
-                    $detail = mysqli_stmt_get_result($stmtDetail);
-
-                    $items = [];
-                    while ($row = mysqli_fetch_assoc($detail)) {
-                        $items[] = $row;
-                    }
-                    ?>
-
-                    <?php foreach ($items as $i => $item) { ?>
-                        <?php
-                            $imgPath = $defaultImage; 
-
-                            foreach ($extensions as $ext) {
-                                $try = $basePath . $item['idProduk'] . '.' . $ext;
-                                if (file_exists($try)) {
-                                    $imgPath = $try;
-                                    break;
-                                }
+                    <?php foreach ($items as $i => $item) { 
+                        $imgPath = $defaultImage;
+                        foreach ($extensions as $ext) {
+                            $try = $basePath . $item['idProduk'] . '.' . $ext;
+                            if (file_exists($try)) {
+                                $imgPath = $try;
+                                break;
                             }
-                        ?>
+                        }
+                    ?>
                         <div class="product-item">
                             <img src="<?= $imgPath ?>" alt="<?= htmlspecialchars($item['namaProduk']) ?>">
                             <div class="product-info">
@@ -146,24 +122,54 @@ $defaultImage = "../assets/img/default.jpg";
                         <?php endif; ?>
                     <?php } ?>
 
+                    <div class="detail" style="text-align: right; font-size:13px;">
+                        <a class="toggle-details-btn" style="color:#A6996C;font-weight:bold;text-decoration:none;">See Details</a>
+                        <div class="order-details" style="display:none;">
+                            <div class="detail-row">
+                                <span>Subtotal:</span>
+                                <span>Rp<?= number_format($toko['totalPenjual'],0,',','.') ?></span>
+                            </div>
+                            <div class="detail-row">
+                                <span>Biaya Admin:</span>
+                                <span>Rp5.000</span>
+                            </div>
+                            <div class="detail-row">
+                                <span>Ongkir:</span>
+                                <span>Rp10.000</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="order-footer">
-                        <div class="total-text">
-                            Total:
+
+                        <div class="total-text font">
+                            Total: 
                             <span>Rp<?= number_format($toko['totalPenjual'], 0, ',', '.') ?></span>
                         </div>
 
                         <?php if ($toko['statusPesanan'] === 'Selesai'): ?>
-                            <a href="nulis-review.php?id=<?= $toko['idTrxPenjual'] ?>" class="review-btn">
-                                Review
-                            </a>
+                            <a href="nulis-review.php?id=<?= $toko['idTrxPenjual'] ?>" class="review-btn">Review</a>
                         <?php endif; ?>
                     </div>
-
                 </div>
             <?php } ?>
         <?php } ?>
-
     </div>
-</div>
+</div> 
+
+<script>
+document.querySelectorAll('.toggle-details-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const details = this.nextElementSibling;
+        if(details.style.display === 'none' || details.style.display === '') {
+            details.style.display = 'block';
+            this.textContent = 'Hide Details';
+        } else {
+            details.style.display = 'none';
+            this.textContent = 'See Details';
+        }
+    });
+});
+</script>
 
 <?php include '../includes/footer.php'; ?>
