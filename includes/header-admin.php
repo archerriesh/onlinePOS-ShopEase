@@ -42,9 +42,9 @@ $isIndex = isset($index) && $index === true;
                 <li class="nav-item">
                     <a class="nav-link <?= ($currentPage === 'produk-per-kategori.php') ? 'active' : '' ?>" href="../pages/produk-per-kategori.php">Products</a>
                 </li>
-                <!-- <li class="nav-item">
-                    <a class="nav-link <?= ($currentPage === 'co-keranjang.php') ? 'active' : '' ?>" href="../pages/co-keranjang.php">Cart</a>
-                </li> -->
+                <li class="nav-item">
+                    <a class="nav-link <?= ($currentPage === 'liat-promo.php') ? 'active' : '' ?>" href="../pages/admin/liat-promo.php">Voucher</a>
+                </li>
                 <!-- <li class="nav-item">
                     <a class="nav-link <?= ($currentPage === 'history.php') ? 'active' : ''?>" href="../pages/history.php">History</a> -->
                 </li>
