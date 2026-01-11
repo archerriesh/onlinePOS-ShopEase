@@ -1,10 +1,8 @@
 <?php
-
 $pageCSS = '../../css/admin/liat-promo.css';
 
 include __DIR__ . '/../../includes/header-admin.php';
 include __DIR__ . '/../../includes/dbOnlinePOS.php';
-
 ?>
 
 <div class="promo-page">
@@ -87,6 +85,18 @@ include __DIR__ . '/../../includes/dbOnlinePOS.php';
 
             <!-- CARD 6 -->
             <div class="voucher-card">
-                <div class="vou
+                <div class="voucher-icon">%</div>
+                <div class="voucher-divider"></div>
+                <div class="voucher-content">
+                    <div class="voucher-title">Discount</div>
+                    <div class="voucher-value">50%</div>
+                    <div class="voucher-terms">*Term and Condition</div>
+                </div>
+            </div>
+
+        </div> 
+    </div> 
+
+</div> 
 
 <?php include __DIR__ . '/../../includes/footer.php'; ?>
