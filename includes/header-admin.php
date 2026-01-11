@@ -34,15 +34,18 @@ $isIndex = isset($index) && $index === true;
         <div class="collapse navbar-collapse" id="mainNavbar">
             <ul class="navbar-nav ms-auto gap-3">
                 <li class="nav-item">
-                    <a class="nav-link <?= ($currentPage === 'admin/liat-toko.php') ? 'active' : '' ?>"  href="../pages/home-page.php">Toko</a>
+                    <a class="nav-link <?= ($currentPage === 'home-page.php') ? 'active' : '' ?>"  href="../pages/home-page.php">Home</a>
                 </li>
-                <!-- <li class="nav-item">
+                <li class="nav-item">
+                    <a class="nav-link <?= ($currentPage === 'liat-toko.php') ? 'active' : '' ?>"  href="../admin/liat-toko.php">Daftar Toko</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link <?= ($currentPage === 'produk-per-kategori.php') ? 'active' : '' ?>" href="../pages/produk-per-kategori.php">Products</a>
                 </li>
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a class="nav-link <?= ($currentPage === 'co-keranjang.php') ? 'active' : '' ?>" href="../pages/co-keranjang.php">Cart</a>
-                </li>
-                <li class="nav-item">
+                </li> -->
+                <!-- <li class="nav-item">
                     <a class="nav-link <?= ($currentPage === 'history.php') ? 'active' : ''?>" href="../pages/history.php">History</a> -->
                 </li>
                 <li class="nav-item">
