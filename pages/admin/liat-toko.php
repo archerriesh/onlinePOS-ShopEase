@@ -2,7 +2,7 @@
 
 $pageCSS = '../../css/admin/liat-toko.css';
 
-include __DIR__ . '/../../includes/header-main.php';
+include __DIR__ . '/../../includes/header-admin.php';
 include __DIR__ . '/../../includes/dbOnlinePOS.php';
 
 ?>
