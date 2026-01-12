@@ -5,40 +5,47 @@ $pageCSS = '../css/co-keranjang.css';
 include '../includes/header-main.php';
 include '../includes/dbOnlinePOS.php';
 
-/* ===============================
-   AMBIL ID PELANGGAN (TANPA VALIDASI LOGIN)
-================================ */
-$idPelanggan = $_SESSION['idPelanggan'] ?? '';
+if (!isset($_SESSION['idPelanggan'])) {
+    header("Location: sign-in-page.php");
+    exit;
+}
 
-/* ===============================
-   HANDLE ADD / UPDATE CART
-================================ */
-if (isset($_POST['add_cart']) || isset($_POST['update_cart'])) {
+$idPelanggan = $_SESSION['idPelanggan'];
 
-    $idProduk = $_POST['idProduk'];
-    $qty      = (int) $_POST['qty'];
+if (isset($_POST['update_cart'])) {
 
-    if ($qty < 0) $qty = 0;
+    $idProduk = $_POST['idProduk'] ?? '';
+    $qty      = (int) ($_POST['qty'] ?? 0);
 
-    $stmt = mysqli_prepare($conn, "CALL sp_kelola_keranjang(?, ?, ?)");
+    if ($idProduk !== '') {
 
-    mysqli_stmt_bind_param($stmt, "ssi", $idPelanggan, $idProduk, $qty);
-    mysqli_stmt_execute($stmt);
+        $stmt = mysqli_prepare(
+            $conn,
+            "CALL sp_kelola_keranjang(?, ?, ?)"
+        );
 
-    // WAJIB bersihin result set SP
-    while (mysqli_more_results($conn)) {
-        mysqli_next_result($conn);
+        mysqli_stmt_bind_param(
+            $stmt,
+            "ssi",
+            $idPelanggan,
+            $idProduk,
+            $qty
+        );
+
+        mysqli_stmt_execute($stmt);
+
+        // WAJIB bersihin result set SP
+        while (mysqli_more_results($conn)) {
+            mysqli_next_result($conn);
+        }
+
+        mysqli_stmt_close($stmt);
     }
-
-    mysqli_stmt_close($stmt);
 
     header("Location: co-keranjang.php");
     exit;
 }
 
-/* ===============================
-   AMBIL DATA KERANJANG
-================================ */
 $sql = "
 SELECT 
     k.idProduk,
@@ -57,13 +64,17 @@ $result = mysqli_stmt_get_result($stmt);
 
 $totalItem  = 0;
 $totalHarga = 0;
+
+$basePath   = "../foto/produk/";
+$extensions = ['webp', 'jpg', 'jpeg', 'png'];
+$defaultImg = "../assets/img/default.jpg";
 ?>
 
 <main class="cart-page">
 <section class="layout">
 
 <div class="cart-items">
-<h3 class="section-title"><?= mysqli_num_rows($result); ?> items</h3>
+    <h3 class="section-title"><?= mysqli_num_rows($result); ?> items</h3>
 
 <?php if (mysqli_num_rows($result) === 0): ?>
     <p class="empty">Cart is empty</p>
@@ -75,11 +86,22 @@ $totalHarga = 0;
 $subtotal    = $row['jumlah'] * $row['hargaSatuan'];
 $totalItem  += $row['jumlah'];
 $totalHarga += $subtotal;
+
+$gambar = $defaultImg;
+foreach ($extensions as $ext) {
+    $file = $basePath . $row['idProduk'] . "." . $ext;
+    if (file_exists($file)) {
+        $gambar = $file;
+        break;
+    }
+}
 ?>
 
 <div class="cart-item">
 
-    <div class="thumb"></div>
+    <div class="thumb">
+        <img src="<?= $gambar; ?>" alt="<?= htmlspecialchars($row['namaProduk']); ?>">
+    </div>
 
     <div class="item-info">
         <div class="item-name">
@@ -91,7 +113,7 @@ $totalHarga += $subtotal;
             <input type="hidden" name="idProduk" value="<?= $row['idProduk']; ?>">
 
             <div class="qty">
-                <button type="button" onclick="changeQty(this, -1)">-</button>
+                <button type="button" onclick="changeQty(this, -1)">−</button>
 
                 <input
                     type="number"

@@ -251,10 +251,9 @@ minusBtn.addEventListener('click', () => {
 addBtn.addEventListener('click', () => {
     const form = document.createElement("form");
     form.method = "POST";
-    form.action = "co-keranjang.php";
+    form.action = "prosess-add-keranjang.php";
 
     form.innerHTML = `
-        <input type="hidden" name="add_cart" value="1">
         <input type="hidden" name="idProduk" value="${idProduk}">
         <input type="hidden" name="qty" value="${qtyInput.value}">
     `;
