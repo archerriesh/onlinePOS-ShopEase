@@ -1,6 +1,9 @@
 <?php
 $pageCSS = '../css/metode-pembayaran.css';
 include '../includes/header-main.php';
+
+$payment = $_SESSION['payment'] ?? 'Virtual Account';
+$sub     = $_SESSION['sub_payment'] ?? 'BCA';
 ?>
 
 <div class="payment-page">
@@ -11,7 +14,7 @@ include '../includes/header-main.php';
         <!-- ===== VIRTUAL ACCOUNT ===== -->
         <div class="method">
             <label class="radio">
-                <input type="radio" name="payment" value="Virtual Account">
+                <input type="radio" name="payment" value="Virtual Account" <?= $payment === 'Virtual Account' ? 'checked' : '' ?>>
                 <span class="custom-radio"></span>
                 Virtual Account
             </label>
@@ -26,7 +29,7 @@ include '../includes/header-main.php';
         <!-- ===== E-WALLET ===== -->
         <div class="method">
             <label class="radio">
-                <input type="radio" name="payment" value="E-Wallet">
+                <input type="radio" name="payment" value="E-Wallet" <?= $payment === 'E-Wallet' ? 'checked' : '' ?>>
                 <span class="custom-radio"></span>
                 E-Wallet
             </label>
@@ -41,7 +44,7 @@ include '../includes/header-main.php';
         <!-- ===== QRIS ===== -->
         <div class="method">
             <label class="radio">
-                <input type="radio" name="payment" value="QRIS">
+                <input type="radio" name="payment" value="QRIS" <?= $payment === 'QRIS' ? 'checked' : '' ?>>
                 <span class="custom-radio"></span>
                 QRIS
             </label>
@@ -60,14 +63,17 @@ const bankBox   = document.querySelector('.bank-options');
 const walletBox = document.querySelector('.wallet-options');
 const chooseBtn = document.querySelector('.choose-btn');
 
-let selectedSub = null;
+let selectedSub = "<?= $sub ?>";
 
-/* ===== INITIAL STATE ===== */
-chooseBtn.disabled = true;
-banks.forEach(b => b.classList.add('disabled'));
-wallets.forEach(w => w.classList.add('disabled'));
+/* ===== RESET ALL ===== */
+function resetAll() {
+    banks.forEach(b => b.classList.remove('active', 'disabled'));
+    wallets.forEach(w => w.classList.remove('active', 'disabled'));
+    bankBox.classList.remove('active');
+    walletBox.classList.remove('active');
+}
 
-/* ===== CHECK BUTTON STATE ===== */
+/* ===== UPDATE BUTTON ===== */
 function updateButtonState() {
     const selectedRadio = document.querySelector('input[name="payment"]:checked');
 
@@ -84,17 +90,54 @@ function updateButtonState() {
     chooseBtn.disabled = !selectedSub;
 }
 
+/* ===== INITIAL LOAD (INI YANG PENTING) ===== */
+(function init() {
+    resetAll();
+
+    const checkedRadio = document.querySelector('input[name="payment"]:checked');
+
+    if (!checkedRadio) {
+        chooseBtn.disabled = true;
+        banks.forEach(b => b.classList.add('disabled'));
+        wallets.forEach(w => w.classList.add('disabled'));
+        return;
+    }
+
+    if (checkedRadio.value === 'Virtual Account') {
+        bankBox.classList.add('active');
+        wallets.forEach(w => w.classList.add('disabled'));
+
+        banks.forEach(b => {
+            if (b.dataset.value === selectedSub) {
+                b.classList.add('active');
+            }
+        });
+    }
+
+    if (checkedRadio.value === 'E-Wallet') {
+        walletBox.classList.add('active');
+        banks.forEach(b => b.classList.add('disabled'));
+
+        wallets.forEach(w => {
+            if (w.dataset.value === selectedSub) {
+                w.classList.add('active');
+            }
+        });
+    }
+
+    if (checkedRadio.value === 'QRIS') {
+        banks.forEach(b => b.classList.add('disabled'));
+        wallets.forEach(w => w.classList.add('disabled'));
+    }
+
+    updateButtonState();
+})();
+
 /* ===== RADIO CHANGE ===== */
 radios.forEach(radio => {
     radio.addEventListener('change', () => {
         selectedSub = null;
-        chooseBtn.disabled = true;
-
-        banks.forEach(b => b.classList.remove('active', 'disabled'));
-        wallets.forEach(w => w.classList.remove('active', 'disabled'));
-
-        bankBox.classList.remove('active');
-        walletBox.classList.remove('active');
+        resetAll();
 
         if (radio.value === 'Virtual Account') {
             bankBox.classList.add('active');
@@ -107,7 +150,6 @@ radios.forEach(radio => {
         else {
             banks.forEach(b => b.classList.add('disabled'));
             wallets.forEach(w => w.classList.add('disabled'));
-            chooseBtn.disabled = false; // QRIS
         }
 
         updateButtonState();
@@ -141,9 +183,9 @@ wallets.forEach(wallet => {
 
 /* ===== SUBMIT ===== */
 chooseBtn.addEventListener('click', () => {
-    const selectedRadio = document.querySelector('input[name="payment"]:checked');
-
     if (chooseBtn.disabled) return;
+
+    const selectedRadio = document.querySelector('input[name="payment"]:checked');
 
     const form = document.createElement('form');
     form.method = 'POST';
@@ -158,6 +200,5 @@ chooseBtn.addEventListener('click', () => {
     form.submit();
 });
 </script>
-
 
 <?php include '../includes/footer.php'; ?>

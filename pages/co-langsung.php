@@ -1,6 +1,15 @@
 <?php
+session_start();
 $pageCSS = '../css/co-langsung.css';
 include '../includes/header-main.php';
+
+if (!isset($_SESSION['payment'])) {
+    $_SESSION['payment'] = 'Virtual Account';
+    $_SESSION['sub_payment'] = 'BCA';
+}
+
+$payment = $_SESSION['payment'];
+$sub     = $_SESSION['sub_payment'];
 ?>
 
 <main class="checkout-page">
@@ -29,9 +38,16 @@ include '../includes/header-main.php';
 
         <h3 class="section-title">Payment Method</h3>
         <div class="payment-box">
-            <span>Virtual Account Transfer</span>
-            <button>See all methods</button>
+            <span>
+                <?= $payment ?>
+                <?= $sub ? " - $sub" : "" ?>
+            </span>
+
+            <button onclick="window.location.href='metode-pembayaran.php'">
+                See all methods
+            </button>
         </div>
+
     </section>
 
     <aside class="right">
