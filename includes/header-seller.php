@@ -13,16 +13,21 @@ $isIndex = isset($index) && $index === true;
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
     <link rel="stylesheet" href="<?= $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].'/OnlinePOS/css/style.css' ?>">
 
     <?php if (!empty($pageCSS)) : ?>
-    <link rel="stylesheet" href="<?= $pageCSS ?>">
+        <link rel="stylesheet" href="<?= $pageCSS ?>">
     <?php endif; ?>
-
 </head>
+
 <body>
+
 <nav class="navbar navbar-expand-lg px-5 pt-4">
-    <a class="navbar-brand fw-bold" href="../../pages/seller/home-seller.php">ShopEase</a>
+    <!-- LOGO -->
+    <a class="navbar-brand fw-bold" href="../../pages/seller/home-seller.php">
+        ShopEase
+    </a>
 
     <?php if (!$isIndex) : ?>
         <button class="navbar-toggler" type="button"
@@ -33,18 +38,31 @@ $isIndex = isset($index) && $index === true;
 
         <div class="collapse navbar-collapse" id="mainNavbar">
             <ul class="navbar-nav ms-auto gap-3">
+
+                <!-- HOME -->
                 <li class="nav-item">
-                    <a class="nav-link <?= ($currentPage === 'home-seller.php') ? 'active' : '' ?>"  href="../../pages/seller/home-seller.php">Home</a>
+                    <a class="nav-link <?= ($currentPage === 'home-seller.php') ? 'active' : '' ?>"
+                       href="../../pages/seller/home-seller.php">
+                        Home
+                    </a>
                 </li>
+
+                <!-- PRODUCTS -->
                 <li class="nav-item">
-                    <a class="nav-link <?= ($currentPage === 'index-seller.php') ? 'active' : '' ?>" href="../../pages/seller/index-seller.php">Products</a>
+                    <a class="nav-link <?= ($currentPage === 'kelola-produk.php') ? 'active' : '' ?>"
+                       href="../../pages/seller/kelola-produk.php">
+                        Products
+                    </a>
                 </li>
+
+                <!-- SALES -->
                 <li class="nav-item">
-                    <a class="nav-link <?= ($currentPage === 'addPromo-seller.php') ? 'active' : '' ?>" href="../../pages/seller/addPromo-seller.php">Promo</a>
+                    <a class="nav-link <?= ($currentPage === 'promo-seller.php') ? 'active' : '' ?>"
+                       href="../../pages/seller/promo-seller.php">
+                        Sales
+                    </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link<?=($currentPage === 'profile.php') ? 'active' : ''?> " href="../../pages/profile.php">Profile</a>
-                </li>
+
             </ul>
         </div>
     <?php endif; ?>
