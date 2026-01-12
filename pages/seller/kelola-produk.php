@@ -24,7 +24,7 @@ include __DIR__ . '/../../includes/dbOnlinePOS.php';
 
                 <div class="product-info">
                     <p class="product-name">nama produk</p>
-                    <p class="product-name">harga</p>
+                    <p class="product-price">harga</p>
                 </div>
 
             </div>
