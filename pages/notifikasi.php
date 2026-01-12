@@ -1,6 +1,32 @@
 <?php
 $pageCSS = '../css/notifikasi.css';
 include '../includes/header-main.php';
+
+session_start();
+
+if (!isset($_SESSION['idPelanggan'])) {
+    header("Location: sign-in-page.php");
+    exit;
+}
+
+include '../includes/dbOnlinePOS.php';
+
+$idPelanggan = $_SESSION['idPelanggan'];
+
+$stmtNotif = mysqli_prepare($conn, "
+    SELECT judul, isiPesan, tglNotifikasi
+    FROM tbnotifikasi
+    WHERE idPelanggan = ?
+    ORDER BY tglNotifikasi DESC
+");
+
+if (!$stmtNotif) {
+    die(mysqli_error($conn));
+}
+
+mysqli_stmt_bind_param($stmtNotif, "s", $idPelanggan);
+mysqli_stmt_execute($stmtNotif);
+$notifs = mysqli_stmt_get_result($stmtNotif);
 ?>
 
 <div class="notif-wrapper">
@@ -19,35 +45,25 @@ include '../includes/header-main.php';
             </div>
         </aside>
     </div>
+
     <section class="notif-content">
         <h2>Notification</h2>
 
-        <div class="notif-card">
-            <img src="../assets/img/shoes.png" alt="">
-            <div class="notif-text">
-                <h4>Order Arrived at Destination</h4>
-                <p>Check the completeness of the product for order 251228AJXC. Satisfied with your order ? Rate it !</p>
-                <span>31-12-2025&nbsp;&nbsp;08:38</span>
-            </div>
-        </div>
+        <?php if (mysqli_num_rows($notifs) === 0): ?>
+            <p class="text-muted">No notifications yet.</p>
+        <?php endif; ?>
 
-        <div class="notif-card">
-            <img src="../assets/img/bag.png" alt="">
-            <div class="notif-text">
-                <h4>Order Arrived at Destination</h4>
-                <p>Check the completeness of the product for order 251228AJXC. Satisfied with your order ? Rate it !</p>
-                <span>31-12-2025&nbsp;&nbsp;08:38</span>
+        <?php while ($notif = mysqli_fetch_assoc($notifs)) { ?>
+            <div class="notif-card">
+                <div class="notif-text">
+                    <h4><?= htmlspecialchars($notif['judul']) ?></h4>
+                    <p><?= htmlspecialchars($notif['isiPesan']) ?></p>
+                    <span>
+                        <?= date('d-m-Y H:i', strtotime($notif['tglNotifikasi'])) ?>
+                    </span>
+                </div>
             </div>
-        </div>
-
-        <div class="notif-card">
-            <img src="../assets/img/shoes2.png" alt="">
-            <div class="notif-text">
-                <h4>Order Handed Over to Shipping Service</h4>
-                <p>Check the details and track order 251358JCAX here.</p>
-                <span>29-12-2025&nbsp;&nbsp;08:38</span>
-            </div>
-        </div>
+        <?php } ?>
     </section>
 </div>
 
