@@ -1,6 +1,6 @@
 <?php
 $pageCSS = '../../css/editProduct-seller.css';  
-include("../../includes/header-seller.php");
+include __DIR__ . '/../../includes/header-seller.php';
 ?>
 
 
@@ -52,4 +52,4 @@ Lorem Ipsum is simply dummy text of the printing and typesetting industry...
     </div>
 </main>
 
-<?php include '../../includes/footer.php'; ?>
+<?php include __DIR__ . '/../../includes/footer.php'; ?>

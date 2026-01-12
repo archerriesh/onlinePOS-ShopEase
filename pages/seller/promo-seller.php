@@ -1,6 +1,6 @@
 <?php
 $pageCSS = '../../css/promo-seller.css';
-include("../../includes/header-seller.php");
+include __DIR__ . '/../../includes/header-seller.php';
 ?>
 
     <div class="button-container">
@@ -74,4 +74,4 @@ include("../../includes/header-seller.php");
             </div>
         </div>
     </div>
-<?php include '../../includes/footer.php'; ?>
+<?php include __DIR__ . '/../../includes/footer.php'; ?>

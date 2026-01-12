@@ -1,6 +1,6 @@
 <?php
 $pageCSS = '../../css/addPromo-seller.css';
-include("../../includes/header-seller.php");
+include __DIR__ . '/../../includes/header-seller.php';
 ?>
 <div class="button-container">
     <button class="btn btn-secondary" onclick="window.location.href='promo-seller.php'">Your voucher</button>
@@ -59,4 +59,4 @@ document.getElementById('promoForm').addEventListener('submit', function(e) {
     // window.location.href = 'promo-seller.html';
 });
 </script>
-<?php include '../../includes/footer.php'; ?>
+<?php include __DIR__ . '/../../includes/footer.php'; ?>

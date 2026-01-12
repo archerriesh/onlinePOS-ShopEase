@@ -1,6 +1,6 @@
 <?php
 $pageCSS = '../../css/home-seller.css';  
-include("../../includes/header-seller.php");
+include __DIR__ . '/../../includes/header-seller.php';
 ?>
 
 <div class="page-wrapper">
@@ -21,6 +21,6 @@ include("../../includes/header-seller.php");
         </div>
     </div>
 
-    <?php include '../../includes/footer.php'; ?>
+    <?php include __DIR__ . '/../../includes/footer.php'; ?>
 
 </div>
