@@ -37,7 +37,16 @@ mysqli_stmt_execute($stmtTrx);
 $transaksi = mysqli_stmt_get_result($stmtTrx);
 
 $stmtToko = mysqli_prepare($conn, "
-    SELECT tp.idTrxPenjual, tp.idPenjual, pj.namaPenjual, tp.totalPenjual, tp.statusPesanan
+    SELECT 
+        tp.idTrxPenjual, 
+        tp.idPenjual, 
+        pj.namaPenjual, 
+        tp.totalPenjual, 
+        tp.statusPesanan, 
+        tp.subTotal,
+        tp.biayaAdmin,
+        tp.ongkir,
+        tp.potonganPromo
     FROM tbTransaksiPenjual tp
     JOIN tbPenjual pj ON tp.idPenjual = pj.idPenjual
     WHERE tp.idTransaksi = ?
@@ -122,34 +131,41 @@ $defaultImage = "../assets/img/default.jpg";
                         <?php endif; ?>
                     <?php } ?>
 
-                    <div class="detail" style="text-align: right; font-size:13px;">
-                        <a class="toggle-details-btn" style="color:#A6996C;font-weight:bold;text-decoration:none;">See Details</a>
-                        <div class="order-details" style="display:none;">
-                            <div class="detail-row">
-                                <span>Subtotal:</span>
-                                <span>Rp<?= number_format($toko['totalPenjual'],0,',','.') ?></span>
-                            </div>
-                            <div class="detail-row">
-                                <span>Biaya Admin:</span>
-                                <span>Rp5.000</span>
-                            </div>
-                            <div class="detail-row">
-                                <span>Ongkir:</span>
-                                <span>Rp10.000</span>
-                            </div>
-                        </div>
-                    </div>
-
+                    
                     <div class="order-footer">
+                        <div class="footer-right">
+                            <div class="detail">
+                                <a class="toggle-details-btn">See Details</a>
+                                <div class="order-details">
+                                    <div class="detail-row">
+                                        <span>Subtotal</span>
+                                        <span>Rp<?= number_format($toko['subTotal'],0,',','.') ?></span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span>Service Fee</span>
+                                        <span>Rp<?= number_format($toko['biayaAdmin'],0,',','.') ?></span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span>Shipping Fee</span>
+                                        <span>Rp<?= number_format($toko['ongkir'],0,',','.') ?></span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span>Voucher Applied</span>
+                                        <span>Rp<?= number_format($toko['ongkir'],0,',','.') ?></span>
+                                    </div>
+                                </div>
+                            </div>
 
-                        <div class="total-text font">
-                            Total: 
-                            <span>Rp<?= number_format($toko['totalPenjual'], 0, ',', '.') ?></span>
+                            <div class="total-text">
+                                Total:
+                                <span>Rp<?= number_format($toko['totalPenjual'], 0, ',', '.') ?></span>
+                            </div>
+
+                            <?php if ($toko['statusPesanan'] === 'Selesai'): ?>
+                                <a href="nulis-review.php?id=<?= $toko['idTrxPenjual'] ?>" class="review-btn">Review</a>
+                            <?php endif; ?>
+
                         </div>
-
-                        <?php if ($toko['statusPesanan'] === 'Selesai'): ?>
-                            <a href="nulis-review.php?id=<?= $toko['idTrxPenjual'] ?>" class="review-btn">Review</a>
-                        <?php endif; ?>
                     </div>
                 </div>
             <?php } ?>

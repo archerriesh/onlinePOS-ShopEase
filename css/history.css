@@ -76,6 +76,10 @@
     text-align: right;
     font-size: 14px;
     color: #121212;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; 
+    gap: 4px;
 }
 
 .history-page .divider {
@@ -87,47 +91,43 @@
 .order-footer {
     display: flex;
     justify-content: flex-end;
+}
+
+.footer-right {
+    display: flex;
+    flex-direction: column;
     align-items: flex-end;
-    gap: 10px;
+    gap: 6px;
     position: relative;
 }
 
 .detail {
-    display: flex;
-    flex-direction: column; 
-    align-items: flex-end;
-    position: relative;
+    font-size: 12px;
+    text-align: right;
+    max-width: fit-content;
 }
 
 .toggle-details-btn {
     color: #A6996C;
     font-weight: bold;
-    text-decoration: none;
+    font-size: 13px; 
     cursor: pointer;
-    font-size: 14px;
-    margin-bottom: 5px;
+    display: inline-block;
+    margin-bottom: 6px;
 }
 
 .order-details {
     display: none;
-    position: absolute;
-    right: 0;
-    bottom: calc(100% + 5px);
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    padding: 10px;
-    border-radius: 5px;
-    min-width: 220px;
-    z-index: 10;
-    flex-direction: column;
 }
 
 .order-details .detail-row {
     display: flex;
-    justify-content: space-between; 
-    margin: 3px 0;
+    justify-content: space-between;
+    margin: 2px 0;
+    gap: 20px;
 }
 
-.order-details .detail-row.total {
+.total-text{
     font-weight: bold;
+    color: #ba704a
 }
