@@ -137,7 +137,7 @@ $defaultImg = "../assets/img/default.jpg";
                 <span style="color: #61593d; font-size: 18px;">Rp <?= number_format($totalHarga, 0, ',', '.'); ?></span>
             </div>
 
-            <button class="checkout-btn" style="margin-top: 15px;">Checkout</button>
+            <button type="button" onclick="window.location.href='co-langsung.php'" class="checkout-btn">Checkout</button>
         </aside>
 
     </section>
