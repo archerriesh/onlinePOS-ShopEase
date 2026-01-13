@@ -12,6 +12,31 @@ if (!isset($_SESSION['idPelanggan'])) {
 
 $idPelanggan = $_SESSION['idPelanggan'];
 
+if (isset($_GET['action']) && $_GET['action'] == 'cek_promo') {
+    header('Content-Type: application/json');
+    $idPromo = $_GET['idPromo'] ?? '';
+    
+    // Ambil jenis pembayaran dari tbpromo (berdasarkan screenshot kolom kamu)
+    $sqlCek = "SELECT jenisPembayaran FROM tbpromo WHERE idPromo = ?";
+    $stmtCek = mysqli_prepare($conn, $sqlCek);
+    mysqli_stmt_bind_param($stmtCek, "s", $idPromo);
+    mysqli_stmt_execute($stmtCek);
+    $resPromo = mysqli_stmt_get_result($stmtCek);
+    $dataPromo = mysqli_fetch_assoc($resPromo);
+
+    $metode = ($dataPromo['jenisPembayaran'] == 'Semua' || empty($dataPromo['jenisPembayaran'])) ? 'Tunai' : $dataPromo['jenisPembayaran'];
+
+    // Panggil fungsi database kamu
+    $sql = "SELECT fn_promo_terpakai(?, ?, 'JNE', ?) AS potongan";
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "sss", $idPromo, $idPelanggan, $metode);
+    mysqli_stmt_execute($stmt);
+    $row = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+
+    echo json_encode(['potongan' => (float)($row['potongan'] ?? 0)]);
+    exit; 
+}
+
 if (isset($_POST['update_cart'])) {
     $idProduk = $_POST['idProduk'] ?? '';
     $qty      = (int) ($_POST['qty'] ?? 0);
@@ -166,6 +191,12 @@ $defaultImg = "../assets/img/default.jpg";
                         <span style="font-weight: 500;">Rp <?= number_format($detail['jumlah'] * $detail['hargaSatuan'], 0, ',', '.'); ?></span>
                     </div>
                 <?php endwhile; ?>
+
+                <div id="rowPotongan">
+                    <span id="labelPromoUsed">Potongan Promo</span>
+                    <span id="txtPotongan">- Rp 0</span>
+                </div>
+
             </div>
 
             <hr>
