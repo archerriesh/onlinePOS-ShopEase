@@ -5,8 +5,7 @@ include __DIR__ . '/../../includes/header-seller.php';
 
 <div class="page-wrapper">
 
-    <div class="container">
-        <!-- LEFT CONTENT -->
+    <div class="seller-container">
         <div class="left">
             <h1>Welcome to ShopEase</h1>
             <p>
@@ -15,12 +14,11 @@ include __DIR__ . '/../../includes/header-seller.php';
             </p>
         </div>
 
-        <!-- RIGHT CONTENT -->
         <div class="right">
             <img src="../../foto/landing.png" alt="Landing Image" class="auth-img">
         </div>
     </div>
 
-    <?php include __DIR__ . '/../../includes/footer.php'; ?>
-
 </div>
+
+<?php include __DIR__ . '/../../includes/footer.php'; ?>
