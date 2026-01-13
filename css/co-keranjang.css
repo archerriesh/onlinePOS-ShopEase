@@ -135,6 +135,86 @@
   background: #c7965c;
 }
 
+/* Voucher Section Styles */
+.cart-page .voucher-wrapper {
+    margin-bottom: 15px;
+}
+
+.cart-page .voucher-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #121212;
+}
+
+.cart-page .voucher-box {
+    background-color: #dfd5cc; /* Warna krem sesuai gambar */
+    border-radius: 15px;
+    padding: 20px;
+    cursor: pointer;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+}
+
+.cart-page .voucher-placeholder {
+    color: #8a817c;
+    font-size: 14px;
+}
+
+/* Promo Dropdown List */
+.cart-page .promo-dropdown {
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.4s ease-in-out;
+    background: #fdfdfd;
+    border-radius: 0 0 15px 15px;
+    margin-top: -10px;
+    padding: 0 15px;
+}
+
+.cart-page .voucher-wrapper.active .promo-dropdown {
+    max-height: 200px;
+    padding: 15px;
+    border: 1px solid #e3d6cc;
+    border-top: none;
+}
+
+.cart-page .promo-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.cart-page .promo-item:last-child {
+    border-bottom: none;
+}
+
+.cart-page .apply-btn {
+    background: #61593d;
+    color: #fff;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+/* Warna Summary Panel agar matching dengan gambar */
+.cart-page .summary-panel {
+    background-color: #e8e0d9 !important;
+    border: none !important;
+    border-radius: 15px !important;
+}
+
+.cart-page .summary-panel hr {
+    border: 0;
+    border-top: 1px solid #c7965c;
+    margin: 15px 0;
+}
+
 @media (max-width: 900px) {
   .cart-page .layout {
     grid-template-columns: 1fr;

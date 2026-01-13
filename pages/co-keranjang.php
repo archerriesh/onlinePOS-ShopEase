@@ -114,6 +114,26 @@ $defaultImg = "../assets/img/default.jpg";
         </div>
 
         <aside class="summary-panel">
+            <div class="voucher-wrapper">
+                <p class="voucher-title">Voucher</p>
+                <div class="voucher-box" id="voucherToggle">
+                    <div class="voucher-placeholder">
+                        <span id="selectedVoucherText">Pilih promo yang tersedia</span>
+                    </div>
+                </div>
+                
+                <div class="promo-dropdown" id="voucherContent">
+                    <div class="promo-item">
+                        <span>Diskon Member Baru 10%</span>
+                        <button type="button" class="apply-btn" data-discount="0.1" data-name="Member Baru 10%">Gunakan</button>
+                    </div>
+                    <div class="promo-item">
+                        <span>Potongan Flat Rp 10.000</span>
+                        <button type="button" class="apply-btn" data-discount="10000" data-name="Flat Rp 10rb">Gunakan</button>
+                    </div>
+                </div>
+            </div>
+
             <div class="summary-header">
                 <strong>Total <?= $totalItem; ?> Barang</strong>
             </div>
@@ -145,31 +165,71 @@ $defaultImg = "../assets/img/default.jpg";
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('.qty-form').forEach(form => {
-    const minus = form.querySelector('.minus');
-    const plus  = form.querySelector('.plus');
-    const input = form.querySelector('.qty-input');
+    // ===== LOGIKA UPDATE QUANTITY (TIDAK DIUBAH) =====
+    document.querySelectorAll('.qty-form').forEach(form => {
+        const minus = form.querySelector('.minus');
+        const plus  = form.querySelector('.plus');
+        const input = form.querySelector('.qty-input');
 
-    plus.addEventListener('click', (e) => {
-      e.preventDefault(); 
-      let qty = parseInt(input.value, 10) || 0;
-      input.value = qty + 1;
-      form.submit(); 
+        plus.addEventListener('click', (e) => {
+            e.preventDefault(); 
+            input.value = (parseInt(input.value, 10) || 0) + 1;
+            form.submit(); 
+        });
+
+        minus.addEventListener('click', (e) => {
+            e.preventDefault();
+            let qty = parseInt(input.value, 10) || 0;
+            if (qty - 1 <= 0) {
+                if (!confirm('Hapus produk dari keranjang?')) return;
+                input.value = 0;
+            } else {
+                input.value = qty - 1;
+            }
+            form.submit();
+        });
     });
 
-    minus.addEventListener('click', (e) => {
-      e.preventDefault();
-      let qty = parseInt(input.value, 10) || 0;
+    // ===== LOGIKA VOUCHER (DIPERBAIKI) =====
+    const voucherToggle = document.getElementById('voucherToggle');
+    const voucherWrapper = document.querySelector('.voucher-wrapper');
+    const selectedVoucherText = document.getElementById('selectedVoucherText');
 
-      if (qty - 1 <= 0) {
-        if (!confirm('Hapus produk dari keranjang?')) return;
-        input.value = 0;
-      } else {
-        input.value = qty - 1;
-      }
-      form.submit();
+    let activeVoucher = null; // penanda voucher aktif
+
+    if (voucherToggle) {
+        voucherToggle.addEventListener('click', () => {
+            voucherWrapper.classList.toggle('active');
+        });
+    }
+
+    document.querySelectorAll('.apply-btn').forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+
+            const promoName = this.getAttribute('data-name');
+
+            // JIKA voucher yang sama ditekan lagi → BATALKAN
+            if (activeVoucher === promoName) {
+                activeVoucher = null;
+
+                selectedVoucherText.textContent = "Pilih promo yang tersedia";
+                selectedVoucherText.style.color = "#8a817c";
+
+                voucherWrapper.classList.remove('active');
+                return;
+            }
+
+            // PASANG voucher baru
+            activeVoucher = promoName;
+
+            selectedVoucherText.innerHTML =
+                `Voucher Digunakan: <strong>${promoName}</strong>`;
+            selectedVoucherText.style.color = "#61593d";
+
+            voucherWrapper.classList.remove('active');
+        });
     });
-  });
 });
 </script>
 
