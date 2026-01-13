@@ -52,6 +52,13 @@ $result = mysqli_stmt_get_result($stmt);
 $totalItem  = 0;
 $totalHarga = 0;
 
+$currentDate = date('Y-m-d H:i:s');
+$sqlPromo = "SELECT * FROM tbpromo WHERE startDate <= ? AND endDate >= ?";
+$stmtPromo = mysqli_prepare($conn, $sqlPromo);
+mysqli_stmt_bind_param($stmtPromo, "ss", $currentDate, $currentDate);
+mysqli_stmt_execute($stmtPromo);
+$resultPromo = mysqli_stmt_get_result($stmtPromo);
+
 $basePath   = "../foto/produk/";
 $extensions = ['webp', 'jpg', 'jpeg', 'png'];
 $defaultImg = "../assets/img/default.jpg";
@@ -123,14 +130,25 @@ $defaultImg = "../assets/img/default.jpg";
                 </div>
                 
                 <div class="promo-dropdown" id="voucherContent">
-                    <div class="promo-item">
-                        <span>Diskon Member Baru 10%</span>
-                        <button type="button" class="apply-btn" data-discount="0.1" data-name="Member Baru 10%">Gunakan</button>
-                    </div>
-                    <div class="promo-item">
-                        <span>Potongan Flat Rp 10.000</span>
-                        <button type="button" class="apply-btn" data-discount="10000" data-name="Flat Rp 10rb">Gunakan</button>
-                    </div>
+                    <?php if (mysqli_num_rows($resultPromo) === 0): ?>
+                        <div class="promo-item"><span>Tidak ada promo tersedia</span></div>
+                    <?php else: ?>
+                        <?php while ($promo = mysqli_fetch_assoc($resultPromo)): 
+                            // Logika menentukan tipe diskon
+                            $isPercent = ($promo['persentasePotongan'] > 0);
+                            $discountVal = $isPercent ? $promo['persentasePotongan'] : $promo['nominalPotongan'];
+                            $type = $isPercent ? 'percent' : 'flat';
+                            $label = $isPercent ? $discountVal."%" : "Rp ".number_format($discountVal,0,',','.');
+                        ?>
+                            <div class="promo-item">
+                                <span><?= htmlspecialchars($promo['namaPromo']); ?> (<?= $label ?>)</span>
+                                <button type="button" class="apply-btn" 
+                                        data-type="<?= $type; ?>" 
+                                        data-discount="<?= $discountVal; ?>" 
+                                        data-name="<?= htmlspecialchars($promo['namaPromo']); ?>">Gunakan</button>
+                            </div>
+                        <?php endwhile; ?>
+                    <?php endif; ?>
                 </div>
             </div>
 
