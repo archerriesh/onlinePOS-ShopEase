@@ -13,10 +13,12 @@ if (!isset($_SESSION['idPelanggan'])) {
 $idPelanggan = $_SESSION['idPelanggan'];
 
 if (isset($_GET['action']) && $_GET['action'] == 'cek_promo') {
+    ob_clean();
     header('Content-Type: application/json');
+    
     $idPromo = $_GET['idPromo'] ?? '';
     
-    // Ambil jenis pembayaran dari tbpromo (berdasarkan screenshot kolom kamu)
+    // 1. Ambil data promo untuk melihat syarat metode pembayarannya
     $sqlCek = "SELECT jenisPembayaran FROM tbpromo WHERE idPromo = ?";
     $stmtCek = mysqli_prepare($conn, $sqlCek);
     mysqli_stmt_bind_param($stmtCek, "s", $idPromo);
@@ -24,12 +26,14 @@ if (isset($_GET['action']) && $_GET['action'] == 'cek_promo') {
     $resPromo = mysqli_stmt_get_result($stmtCek);
     $dataPromo = mysqli_fetch_assoc($resPromo);
 
-    $metode = ($dataPromo['jenisPembayaran'] == 'Semua' || empty($dataPromo['jenisPembayaran'])) ? 'Tunai' : $dataPromo['jenisPembayaran'];
+    // 2. Gunakan metode pembayaran yang ada di database agar 'v_jenisBayar <> p_metodePembayaran' bernilai FALSE
+    // Jika di DB 'Semua', kita kirim 'Semua'. Jika NULL, kita kirim 'Tunai'.
+    $metodeKirim = $dataPromo['jenisPembayaran'] ?? 'transferbank';
 
-    // Panggil fungsi database kamu
+    // 3. Panggil fungsi database dengan parameter yang sudah disesuaikan
     $sql = "SELECT fn_promo_terpakai(?, ?, 'JNE', ?) AS potongan";
     $stmt = mysqli_prepare($conn, $sql);
-    mysqli_stmt_bind_param($stmt, "sss", $idPromo, $idPelanggan, $metode);
+    mysqli_stmt_bind_param($stmt, "sss", $idPromo, $idPelanggan, $metodeKirim);
     mysqli_stmt_execute($stmt);
     $row = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 
@@ -168,8 +172,7 @@ $defaultImg = "../assets/img/default.jpg";
                             <div class="promo-item">
                                 <span><?= htmlspecialchars($promo['namaPromo']); ?> (<?= $label ?>)</span>
                                 <button type="button" class="apply-btn" 
-                                        data-type="<?= $type; ?>" 
-                                        data-discount="<?= $discountVal; ?>" 
+                                        data-idpromo="<?= $promo['idPromo']; ?>" 
                                         data-name="<?= htmlspecialchars($promo['namaPromo']); ?>">Gunakan</button>
                             </div>
                         <?php endwhile; ?>
@@ -213,72 +216,112 @@ $defaultImg = "../assets/img/default.jpg";
 </main>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    // ===== LOGIKA UPDATE QUANTITY (TIDAK DIUBAH) =====
+    document.addEventListener('DOMContentLoaded', () => {
+    // === 1. LOGIKA UPDATE QUANTITY ===
     document.querySelectorAll('.qty-form').forEach(form => {
         const minus = form.querySelector('.minus');
         const plus  = form.querySelector('.plus');
         const input = form.querySelector('.qty-input');
 
-        plus.addEventListener('click', (e) => {
-            e.preventDefault(); 
-            input.value = (parseInt(input.value, 10) || 0) + 1;
-            form.submit(); 
-        });
+        if(plus) {
+            plus.onclick = (e) => {
+                e.preventDefault(); 
+                input.value = (parseInt(input.value, 10) || 0) + 1;
+                form.submit(); 
+            };
+        }
 
-        minus.addEventListener('click', (e) => {
-            e.preventDefault();
-            let qty = parseInt(input.value, 10) || 0;
-            if (qty - 1 <= 0) {
-                if (!confirm('Hapus produk dari keranjang?')) return;
-                input.value = 0;
-            } else {
-                input.value = qty - 1;
-            }
-            form.submit();
-        });
+        if(minus) {
+            minus.onclick = (e) => {
+                e.preventDefault();
+                let qty = parseInt(input.value, 10) || 0;
+                if (qty - 1 <= 0) {
+                    if (!confirm('Hapus produk dari keranjang?')) return;
+                    input.value = 0;
+                } else {
+                    input.value = qty - 1;
+                }
+                form.submit();
+            };
+        }
     });
 
-    // ===== LOGIKA VOUCHER (DIPERBAIKI) =====
+    // === 2. LOGIKA VOUCHER ===
     const voucherToggle = document.getElementById('voucherToggle');
     const voucherWrapper = document.querySelector('.voucher-wrapper');
     const selectedVoucherText = document.getElementById('selectedVoucherText');
+    const txtPotongan = document.getElementById('txtPotongan');
+    const txtTotalHarga = document.querySelector('.row.total span:last-child');
+    
+    const totalHargaAsli = parseFloat("<?= $totalHarga ?>") || 0;
+    let activeVoucherId = null;
 
-    let activeVoucher = null; // penanda voucher aktif
-
+    // Toggle Dropdown
     if (voucherToggle) {
-        voucherToggle.addEventListener('click', () => {
+        voucherToggle.onclick = (e) => {
+            e.stopPropagation();
             voucherWrapper.classList.toggle('active');
-        });
+        };
     }
 
+    // Klik tombol Gunakan
     document.querySelectorAll('.apply-btn').forEach(btn => {
-        btn.addEventListener('click', function (e) {
+        btn.onclick = function (e) {
+            e.preventDefault();
             e.stopPropagation();
 
+            const promoId = this.getAttribute('data-idpromo');
             const promoName = this.getAttribute('data-name');
 
-            // JIKA voucher yang sama ditekan lagi → BATALKAN
-            if (activeVoucher === promoName) {
-                activeVoucher = null;
-
-                selectedVoucherText.textContent = "Pilih promo yang tersedia";
-                selectedVoucherText.style.color = "#8a817c";
-
-                voucherWrapper.classList.remove('active');
+            if (activeVoucherId === promoId) {
+                resetVoucher();
                 return;
             }
 
-            // PASANG voucher baru
-            activeVoucher = promoName;
+            // Memanggil file yang sama (co-keranjang.php)
+            const url = `co-keranjang.php?action=cek_promo&idPromo=${promoId}`;
 
-            selectedVoucherText.innerHTML =
-                `Voucher Digunakan: <strong>${promoName}</strong>`;
-            selectedVoucherText.style.color = "#61593d";
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) throw new Error('Gagal memuat data promo');
+                    return response.json();
+                })
+                .then(data => {
+                    const potongan = parseFloat(data.potongan) || 0;
+                    
+                    activeVoucherId = promoId;
+                    selectedVoucherText.innerHTML = `Voucher: <strong>${promoName}</strong>`;
+                    selectedVoucherText.style.color = "#61593d";
 
-            voucherWrapper.classList.remove('active');
-        });
+                    txtPotongan.textContent = `- Rp ${new Intl.NumberFormat('id-ID').format(potongan)}`;
+                    
+                    const totalBaru = totalHargaAsli - potongan;
+                    txtTotalHarga.textContent = `Rp ${new Intl.NumberFormat('id-ID').format(totalBaru)}`;
+
+                    voucherWrapper.classList.remove('active');
+                })
+                .catch(err => {
+                    console.error("Detail Error:", err);
+                    alert("Terjadi kesalahan saat memasang voucher.");
+                });
+        };
     });
+
+    function resetVoucher() {
+        activeVoucherId = null;
+        selectedVoucherText.textContent = "Pilih promo yang tersedia";
+        selectedVoucherText.style.color = "#8a817c";
+        txtPotongan.textContent = "- Rp 0";
+        txtTotalHarga.textContent = `Rp ${new Intl.NumberFormat('id-ID').format(totalHargaAsli)}`;
+        voucherWrapper.classList.remove('active');
+    }
+
+    // Klik di luar untuk menutup dropdown
+    window.onclick = (e) => {
+        if (voucherWrapper && !voucherWrapper.contains(e.target)) {
+            voucherWrapper.classList.remove('active');
+        }
+    };
 });
 </script>
 
