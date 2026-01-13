@@ -3,23 +3,23 @@
     font-family: Arial, sans-serif;
 }
 
-
-
-.container {
+.seller-edit-container {
     display: flex;
     gap: 30px;
     padding: 30px 40px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-.left {
+.seller-edit-container .left {
     flex: 2;
 }
 
-.right {
+.seller-edit-container .right {
     flex: 1;
 }
 
-.card {
+.card-seller {
     background: #e5ddd3;
     padding: 20px;
     border-radius: 20px;
@@ -31,7 +31,8 @@ label {
     margin: 15px 0 5px;
 }
 
-input, textarea {
+input,
+textarea {
     width: 100%;
     padding: 10px;
     border-radius: 10px;

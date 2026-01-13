@@ -3,10 +3,9 @@ $pageCSS = '../../css/editProduct-seller.css';
 include __DIR__ . '/../../includes/header-seller.php';
 ?>
 
-
-<main class="container">
+<main class="seller-edit-container">
     <div class="left">
-        <div class="card">
+        <div class="card-seller">
             <h2>General Information</h2>
 
             <label>Product name</label>
@@ -18,7 +17,7 @@ Lorem Ipsum is simply dummy text of the printing and typesetting industry...
             </textarea>
         </div>
 
-        <div class="card row">
+        <div class="card-seller srow">
             <div>
                 <label>Category</label>
                 <input type="text" value="Shoes">
