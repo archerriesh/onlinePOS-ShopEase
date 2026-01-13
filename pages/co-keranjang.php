@@ -13,35 +13,22 @@ if (!isset($_SESSION['idPelanggan'])) {
 $idPelanggan = $_SESSION['idPelanggan'];
 
 if (isset($_POST['update_cart'])) {
-
     $idProduk = $_POST['idProduk'] ?? '';
     $qty      = (int) ($_POST['qty'] ?? 0);
 
     if ($idProduk !== '') {
+        $stmt = mysqli_prepare($conn, "CALL sp_kelola_keranjang(?, ?, ?)");
+        mysqli_stmt_bind_param($stmt, "ssi", $idPelanggan, $idProduk, $qty);
+        
+        if (!mysqli_stmt_execute($stmt)) {
+            die("Error: " . mysqli_error($conn));
+        }
 
-        $stmt = mysqli_prepare(
-            $conn,
-            "CALL sp_kelola_keranjang(?, ?, ?)"
-        );
-
-        mysqli_stmt_bind_param(
-            $stmt,
-            "ssi",
-            $idPelanggan,
-            $idProduk,
-            $qty
-        );
-
-        mysqli_stmt_execute($stmt);
-
-        // WAJIB bersihin result set SP
         while (mysqli_more_results($conn)) {
             mysqli_next_result($conn);
         }
-
         mysqli_stmt_close($stmt);
     }
-
     header("Location: co-keranjang.php");
     exit;
 }
@@ -71,109 +58,119 @@ $defaultImg = "../assets/img/default.jpg";
 ?>
 
 <main class="cart-page">
-<section class="layout">
+    <section class="layout">
+        <div class="cart-items">
+            <h3 class="section-title"><?= mysqli_num_rows($result); ?> items</h3>
 
-<div class="cart-items">
-    <h3 class="section-title"><?= mysqli_num_rows($result); ?> items</h3>
+            <?php if (mysqli_num_rows($result) === 0): ?>
+                <p class="empty">Cart is empty</p>
+            <?php else: ?>
 
-<?php if (mysqli_num_rows($result) === 0): ?>
-    <p class="empty">Cart is empty</p>
-<?php else: ?>
+            <?php while ($row = mysqli_fetch_assoc($result)): ?>
+            <?php
+                $subtotal    = $row['jumlah'] * $row['hargaSatuan'];
+                $totalItem  += $row['jumlah'];
+                $totalHarga += $subtotal;
 
-<?php while ($row = mysqli_fetch_assoc($result)): ?>
+                $gambar = $defaultImg;
+                foreach ($extensions as $ext) {
+                    $file = $basePath . $row['idProduk'] . "." . $ext;
+                    if (file_exists($file)) {
+                        $gambar = $file;
+                        break;
+                    }
+                }
+            ?>
 
-<?php
-$subtotal    = $row['jumlah'] * $row['hargaSatuan'];
-$totalItem  += $row['jumlah'];
-$totalHarga += $subtotal;
+            <div class="cart-item">
+                <div class="thumb">
+                    <img src="<?= $gambar; ?>" alt="<?= htmlspecialchars($row['namaProduk']); ?>">
+                </div>
 
-$gambar = $defaultImg;
-foreach ($extensions as $ext) {
-    $file = $basePath . $row['idProduk'] . "." . $ext;
-    if (file_exists($file)) {
-        $gambar = $file;
-        break;
-    }
-}
-?>
+                <div class="item-info">
+                    <div class="item-name">
+                        <?= htmlspecialchars($row['namaProduk']); ?>
+                    </div>
 
-<div class="cart-item">
+                    <form method="POST" class="qty-form">
+                        <input type="hidden" name="update_cart" value="1">
+                        <input type="hidden" name="idProduk" value="<?= $row['idProduk']; ?>">
+                        
+                        <div class="qty">
+                            <button type="button" class="btn-icon minus">−</button>
+                            <input type="text" name="qty" class="qty-input" value="<?= $row['jumlah']; ?>" readonly>
+                            <button type="button" class="btn-icon plus">+</button>
+                        </div>
+                    </form>
+                </div>
 
-    <div class="thumb">
-        <img src="<?= $gambar; ?>" alt="<?= htmlspecialchars($row['namaProduk']); ?>">
-    </div>
-
-    <div class="item-info">
-        <div class="item-name">
-            <?= htmlspecialchars($row['namaProduk']); ?>
-        </div>
-
-        <form method="POST" class="qty-form">
-            <input type="hidden" name="update_cart" value="1">
-            <input type="hidden" name="idProduk" value="<?= $row['idProduk']; ?>">
-
-            <div class="qty">
-                <button type="button" onclick="changeQty(this, -1)">−</button>
-
-                <input
-                    type="number"
-                    name="qty"
-                    value="<?= $row['jumlah']; ?>"
-                    readonly>
-
-                <button type="button" onclick="changeQty(this, 1)">+</button>
+                <div class="price">
+                    Rp <?= number_format($row['hargaSatuan'], 0, ',', '.'); ?>
+                </div>
             </div>
-        </form>
-    </div>
 
-    <div class="price">
-        Rp <?= number_format($subtotal, 0, ',', '.'); ?>
-    </div>
-
-</div>
-
-<?php endwhile; ?>
-<?php endif; ?>
-
-</div>
-
-<aside class="summary">
-    <div class="voucher">Voucher</div>
-    <div class="voucher-box"></div>
-
-    <div class="summary-panel">
-        <div class="row">
-            <span><?= $totalItem; ?> Item</span>
-            <span>Rp <?= number_format($totalHarga, 0, ',', '.'); ?></span>
+            <?php endwhile; ?>
+            <?php endif; ?>
         </div>
 
-        <hr>
+        <aside class="summary-panel">
+            <div class="summary-header">
+                <strong>Total <?= $totalItem; ?> Barang</strong>
+            </div>
 
-        <div class="row total">
-            <span>Subtotal</span>
-            <span>Rp <?= number_format($totalHarga, 0, ',', '.'); ?></span>
-        </div>
-    </div>
+            <div class="summary-details" style="margin: 10px 0; font-size: 13px; color: #555;">
+                <?php 
+                mysqli_data_seek($result, 0); 
+                while ($detail = mysqli_fetch_assoc($result)): 
+                ?>
+                    <div class="row" style="margin-bottom: 5px;">
+                        <span><?= $detail['jumlah']; ?> item @ Rp <?= number_format($detail['hargaSatuan'], 0, ',', '.'); ?></span>
+                        <span style="font-weight: 500;">Rp <?= number_format($detail['jumlah'] * $detail['hargaSatuan'], 0, ',', '.'); ?></span>
+                    </div>
+                <?php endwhile; ?>
+            </div>
 
-    <button class="checkout-btn">Checkout</button>
-</aside>
+            <hr>
 
-</section>
+            <div class="row total">
+                <span>Total Harga</span>
+                <span style="color: #61593d; font-size: 18px;">Rp <?= number_format($totalHarga, 0, ',', '.'); ?></span>
+            </div>
+
+            <button class="checkout-btn" style="margin-top: 15px;">Checkout</button>
+        </aside>
+
+    </section>
 </main>
 
 <script>
-function changeQty(btn, delta) {
-    const form  = btn.closest("form");
-    const input = form.querySelector('input[name="qty"]');
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.qty-form').forEach(form => {
+    const minus = form.querySelector('.minus');
+    const plus  = form.querySelector('.plus');
+    const input = form.querySelector('.qty-input');
 
-    let qty = parseInt(input.value) + delta;
+    plus.addEventListener('click', (e) => {
+      e.preventDefault(); 
+      let qty = parseInt(input.value, 10) || 0;
+      input.value = qty + 1;
+      form.submit(); 
+    });
 
-    if (qty < 0) return;
-    if (qty === 0 && !confirm("Hapus produk dari keranjang?")) return;
+    minus.addEventListener('click', (e) => {
+      e.preventDefault();
+      let qty = parseInt(input.value, 10) || 0;
 
-    input.value = qty;
-    form.submit();
-}
+      if (qty - 1 <= 0) {
+        if (!confirm('Hapus produk dari keranjang?')) return;
+        input.value = 0;
+      } else {
+        input.value = qty - 1;
+      }
+      form.submit();
+    });
+  });
+});
 </script>
 
 <?php include '../includes/footer.php'; ?>
