@@ -11,7 +11,8 @@ include __DIR__ . '/../../includes/dbOnlinePOS.php';
         <button class="btn btn-primary" onclick="window.location.href='promo-seller.php'">
             Your voucher
         </button>
-        <button class="btn btn-secondary" onclick="window.location.href='addPromo-seller.php'">
+        <button class="btn btn-secondary"
+            onclick="window.location.href='tambah-promo.php'">
             Add new voucher
         </button>
     </div>
