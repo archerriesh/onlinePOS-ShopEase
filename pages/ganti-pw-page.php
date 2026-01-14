@@ -2,17 +2,20 @@
 session_start();
 require '../includes/dbOnlinePOS.php';
 
+if (!isset($_SESSION['username'])) {
+    header("Location: sign-in.php");
+    exit;
+}
+
 $username = $_SESSION['username'];
 
 $query = "SELECT * FROM tbPelanggan WHERE usernamePelanggan = ?";
 $stmt = mysqli_prepare($conn, $query);
 mysqli_stmt_bind_param($stmt, "s", $username);
 mysqli_stmt_execute($stmt);
-
 $user = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 
 $from = $_GET['from'] ?? 'profile'; 
-
 $pageCSS = '../css/profile.css';
 include '../includes/header-main.php';
 ?>
@@ -21,26 +24,11 @@ include '../includes/header-main.php';
     <div class="row g-4 align-items-start">
         <aside class="col-md-1">
             <div class="sidebar">
-                <a href="profile.php" class="icon active" title="Profile">
-                <i class="bi bi-person"></i>
-                </a>
-
-                <a href="notifikasi.php" class="icon" title="Notifications">
-                <i class="bi bi-bell"></i>
-                </a>
-
-                <a href="history.php" class="icon" title="Orders">
-                <i class="bi bi-box-seam"></i>
-                </a>
-
-                <a href="liat-review.php" class="icon" title="Reviews">
-                <i class="bi bi-chat-left-text"></i>
-                </a>
-
-                <a href="sign-out.php" class="icon logout" id="btnLogout">
-                <i class="bi bi-box-arrow-right"></i>
-                </a>
-
+                <a href="profile.php" class="icon active" title="Profile"><i class="bi bi-person"></i></a>
+                <a href="notifikasi.php" class="icon" title="Notifications"><i class="bi bi-bell"></i></a>
+                <a href="history.php" class="icon" title="Orders"><i class="bi bi-box-seam"></i></a>
+                <a href="liat-review.php" class="icon" title="Reviews"><i class="bi bi-chat-left-text"></i></a>
+                <a href="sign-out.php" class="icon logout" id="btnLogout"><i class="bi bi-box-arrow-right"></i></a>
             </div>
         </aside>
 
@@ -52,46 +40,39 @@ include '../includes/header-main.php';
                             <?php if (isset($_GET['error'])): ?>
                                 <div class="alert alert-danger mb-3">
                                     <?php
-                                        switch ($_GET['error'] ?? '') {
-                                            case 'wrong':
-                                                echo 'Current password is incorrect.';
-                                                break;
-                                            case 'confirm':
-                                                echo 'New password and confirmation do not match.';
-                                                break;
-                                            case 'length':
-                                                echo 'Password must be at least 8 characters.';
-                                                break;
-                                            case 'updatefail':
-                                                echo 'Password gagal diupdate.';
-                                                break;
-                                            default:
-                                                break;
+                                        switch ($_GET['error']) {
+                                            case 'wrong': echo 'Current password is incorrect.'; break;
+                                            case 'confirm': echo 'New password and confirmation do not match.'; break;
+                                            case 'length': echo 'Password must be at least 8 characters.'; break;
+                                            case 'updatefail': echo 'Gagal mengupdate database.'; break;
+                                            default: echo 'Terjadi kesalahan sistem.'; break;
                                         }
                                     ?>
                                 </div>
                             <?php endif; ?>
 
-                            <?php if ($from === 'profile'): ?>
-                                <h2 class="text-center mb-4">My Profile</h2>
+                            <?php if (isset($_GET['success'])): ?>
+                                <div class="alert alert-success mb-3">
+                                    Password successfully updated!
+                                </div>
+                            <?php endif; ?>
 
+                            <h2 class="text-center mb-4"><?= ($from === 'edit') ? 'Change Password' : 'My Profile' ?></h2>
+
+                            <?php if ($from === 'profile'): ?>
                                 <div class="info-item">
                                     <span class="label">Username</span>
-                                    <span class="value"><?= $user['usernamePelanggan']; ?></span>
+                                    <span class="value"><?= htmlspecialchars($user['usernamePelanggan']); ?></span>
                                 </div>
-
                                 <div class="info-item">
                                     <span class="label">Name</span>
-                                    <span class="value"><?= $user['namaPelanggan']; ?></span>
+                                    <span class="value"><?= htmlspecialchars($user['namaPelanggan']); ?></span>
                                 </div>
-
-                            <?php elseif ($from === 'edit'): ?>
-                                <h2 class="text-center mb-4">Change Password</h2>
                             <?php endif; ?>
 
                             <form method="POST" action="ganti-pw.php" class="profile-info mt-3">
-                                <input type="hidden" name="from" value="<?= $from ?>">
-
+                                <input type="hidden" name="from" value="<?= htmlspecialchars($from) ?>">
+                                
                                 <div class="info-item">
                                     <label>Current Password</label>
                                     <input type="password" name="current_password" class="form-control" required>
@@ -107,20 +88,18 @@ include '../includes/header-main.php';
                                     <input type="password" name="confirm_password" class="form-control" required>
                                 </div>
 
-                                <button type="submit" class="btn btn-primary mt-3">
+                                <button type="submit" class="btn btn-primary mt-3 w-100">
                                     Update Password
                                 </button>
                             </form>
 
-                            <?php if ($from === 'profile'): ?>
-                                <a href="profile.php" class="btn custom-btn mt-4">Back to Profile</a>
-                            <?php else: ?>
-                                <a href="edit-profile-page.php" class="btn custom-btn mt-4">Back to Edit Profile</a>
-                            <?php endif; ?>
+                            <a href="<?= ($from === 'profile') ? 'profile.php' : 'edit-profile-page.php' ?>" class="btn btn-outline-secondary mt-4 w-100">
+                                Back
+                            </a>
                         </div>
 
                         <div class="col-md-5 image-section text-center">
-                            <img src="../foto/keano.jpg" alt="Profile">
+                            <img src="../foto/keano.jpg" alt="Profile" class="img-fluid rounded">
                         </div>
                     </div>
                 </div>
@@ -154,5 +133,4 @@ include '../includes/header-main.php';
     </div>
   </div>
 </div>
-
 <?php include '../includes/footer.php'; ?>
