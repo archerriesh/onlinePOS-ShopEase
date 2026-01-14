@@ -1,86 +1,224 @@
 <?php
-$pageCSS = '../../css/admin/produk-per-toko.css';
-include __DIR__ . '/../../includes/header-admin.php';
-include __DIR__ . '/../../includes/dbOnlinePOS.php';
+session_start();
 
-// 1. Ambil ID Penjual dari URL
-$idPenjual = $_GET['idPenjual'] ?? '';
+$pageCSS = '../css/liat-produk.css';
+include '../includes/header-main.php';
+include '../includes/dbOnlinePOS.php';
 
-if ($idPenjual === '') {
-    echo "<div class='container'><h1>Toko tidak ditemukan.</h1></div>";
-    include __DIR__ . '/../../includes/footer.php';
+/* ======================================
+   AMBIL DATA PRODUK
+====================================== */
+$idProduk = $_GET['id'] ?? '';
+$filterRating = $_GET['rating'] ?? '';
+
+if ($idProduk === '') {
+    echo "Produk tidak ditemukan";
     exit;
 }
 
-// 2. Ambil Informasi Toko
-$sqlToko = "SELECT namaPenjual FROM tbpenjual WHERE idPenjual = ?";
-$stmtToko = mysqli_prepare($conn, $sqlToko);
-mysqli_stmt_bind_param($stmtToko, "s", $idPenjual);
-mysqli_stmt_execute($stmtToko);
-$resToko = mysqli_stmt_get_result($stmtToko);
-$toko = mysqli_fetch_assoc($resToko);
+$sql = "
+SELECT 
+    p.idProduk,
+    p.namaProduk,
+    p.harga,
+    p.stok,
+    p.keterangan,
+    pen.namaPenjual,
+    IFNULL(fn_rating_Produk(p.idProduk), 0) AS rating,
+    (
+        SELECT COUNT(*) 
+        FROM tbReview r 
+        WHERE r.idProduk = p.idProduk
+    ) AS totalReview
+FROM tbProduk p
+JOIN tbPenjual pen ON p.idPenjual = pen.idPenjual
+WHERE p.idProduk = ?
+LIMIT 1
+";
 
-// 3. Ambil Semua Produk dari Toko Tersebut
-$sqlProduk = "SELECT idProduk, namaProduk, harga FROM tbproduk WHERE idPenjual = ?";
-$stmtProduk = mysqli_prepare($conn, $sqlProduk);
-mysqli_stmt_bind_param($stmtProduk, "s", $idPenjual);
-mysqli_stmt_execute($stmtProduk);
-$resultProduk = mysqli_stmt_get_result($stmtProduk);
+$stmt = mysqli_prepare($conn, $sql);
+mysqli_stmt_bind_param($stmt, "s", $idProduk);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+$produk = mysqli_fetch_assoc($result);
 
-/* =========================================================
-   LOGIKA GAMBAR (Disimpan di array agar rapi di bawah)
-   ========================================================= */
-$daftarProduk = [];
-$basePath = "../../foto/produk/"; // Mundur 2x dari pages/admin/
+if (!$produk) {
+    echo "Produk tidak ditemukan";
+    exit;
+}
+
+/* ======================================
+   AMBIL REVIEW
+====================================== */
+if ($filterRating !== '') {
+    $sqlReview = "
+        SELECT rating, isiKomentar, tglReview
+        FROM tbReview
+        WHERE idProduk = ?
+        AND rating = ?
+        ORDER BY tglReview DESC
+    ";
+    $stmtReview = mysqli_prepare($conn, $sqlReview);
+    mysqli_stmt_bind_param($stmtReview, "si", $idProduk, $filterRating);
+} else {
+    $sqlReview = "
+        SELECT rating, isiKomentar, tglReview
+        FROM tbReview
+        WHERE idProduk = ?
+        ORDER BY tglReview DESC
+    ";
+    $stmtReview = mysqli_prepare($conn, $sqlReview);
+    mysqli_stmt_bind_param($stmtReview, "s", $idProduk);
+}
+
+mysqli_stmt_execute($stmtReview);
+$resultReview = mysqli_stmt_get_result($stmtReview);
+
+$reviews = [];
+while ($row = mysqli_fetch_assoc($resultReview)) {
+    $reviews[] = $row;
+}
+
+/* ======================================
+   GAMBAR PRODUK
+====================================== */
+$basePath = "../foto/produk/";
 $extensions = ['webp', 'jpg', 'jpeg', 'png'];
+$gambarProduk = "../assets/img/default.jpg";
 
-while ($row = mysqli_fetch_assoc($resultProduk)) {
-    $gambarProduk = "../../assets/img/default.jpg"; // Path default
-
-    foreach ($extensions as $ext) {
-        $file = $basePath . $row['idProduk'] . "." . $ext;
-        if (file_exists($file)) {
-            $gambarProduk = $file;
-            break;
-        }
+foreach ($extensions as $ext) {
+    $file = $basePath . $produk['idProduk'] . "." . $ext;
+    if (file_exists($file)) {
+        $gambarProduk = $file;
+        break;
     }
-    
-    // Simpan hasil pencarian gambar ke dalam array data produk
-    $row['gambar'] = $gambarProduk;
-    $daftarProduk[] = $row;
 }
 ?>
 
-<div class="seller-products">
+<main class="container">
 
-    <div class="seller-header">
-        <span class="seller-tag">TOKO</span>
-        <h1><?= htmlspecialchars($toko['namaPenjual'] ?? 'Nama Toko Tidak Diketahui'); ?></h1>
-        <p>Kategori: Makanan & Minuman</p>
+<section class="product-card">
+
+    <div class="image-wrap">
+        <img src="<?= $gambarProduk; ?>" alt="<?= htmlspecialchars($produk['namaProduk']); ?>">
     </div>
 
-    <div class="product-grid">
+    <div class="info">
 
-        <?php if (count($daftarProduk) > 0): ?>
-            <?php foreach ($daftarProduk as $produk): ?>
-                
-                <a href="liat-produk.php?id=<?= $produk['idProduk']; ?>" class="product-card">
-                    <div class="product-image">
-                        <img src="<?= $produk['gambar']; ?>" alt="<?= htmlspecialchars($produk['namaProduk']); ?>" style="width:100%; height:100%; object-fit:cover;">
-                    </div>
-                    <div class="product-info">
-                        <h3><?= htmlspecialchars($produk['namaProduk']); ?></h3>
-                        <span class="price">Rp <?= number_format($produk['harga'], 0, ',', '.'); ?></span>
-                    </div>
-                </a>
+        <h1 class="title"><?= htmlspecialchars($produk['namaProduk']); ?></h1>
+        <p class="brand"><?= htmlspecialchars($produk['namaPenjual']); ?></p>
 
-            <?php endforeach; ?>
-        <?php else: ?>
-            <p>Toko ini belum memiliki produk.</p>
-        <?php endif; ?>
+        <div class="rating">
+            <span><?= number_format((float)$produk['rating'], 1); ?> ★</span>
+            <span><?= (int)$produk['totalReview']; ?> reviews</span>
+        </div>
+
+        <p class="price">
+            Rp <?= number_format($produk['harga'], 0, ',', '.'); ?>
+        </p>
+
+        <p class="description">
+            <?= nl2br(htmlspecialchars($produk['keterangan'])); ?>
+        </p>
+
+        <div class="purchase">
+
+            <div class="qty">
+                <button class="btn-icon minus" type="button">−</button>
+                <input type="number" id="qtyInput" value="1" min="1" max="<?= $produk['stok']; ?>" readonly>
+                <button class="btn-icon plus" type="button">+</button>
+            </div>
+
+            <div class="action-row">
+                <button class="btn add" id="addToCart">🛒 Add to cart</button>
+                <button class="btn buy" id="buyNow">Buy now</button>
+            </div>
+
+        </div>
 
     </div>
+</section>
 
-</div>
+<section class="review-wrapper" id="review">
 
-<?php include __DIR__ . '/../../includes/footer.php'; ?>
+    <div class="review-content">
+
+        <h1>Product Review</h1>
+
+        <div class="rating-summary">
+
+            <div class="left-rating">
+                <div class="score"><?= number_format((float)$produk['rating'], 1); ?></div>
+                <div class="stars">
+                    <?php
+                        $rating = round($produk['rating']);
+                        echo str_repeat('★', $rating);
+                        echo str_repeat('☆', 5 - $rating);
+                    ?>
+                </div>
+            </div>
+
+            <form class="rating-filter">
+                <?php for ($i = 1; $i <= 5; $i++): ?>
+                    <input type="radio" id="star<?= $i ?>" name="rating" value="<?= $i ?>">
+                    <label for="star<?= $i ?>">
+                        <span class="star"><?= str_repeat('★', $i) ?></span> <?= $i ?> star
+                    </label>
+                <?php endfor; ?>
+            </form>
+
+        </div>
+
+        <div class="review-list">
+            <?php if ($reviews): ?>
+                <?php foreach ($reviews as $r): ?>
+                    <div class="review-card">
+                        <div class="avatar"></div>
+                        <div>
+                            <div class="review-stars">
+                                <?= str_repeat('★', $r['rating']) . str_repeat('☆', 5 - $r['rating']); ?>
+                            </div>
+                            <p><?= htmlspecialchars($r['isiKomentar']); ?></p>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p style="opacity:0.6;">Belum ada review untuk produk ini</p>
+            <?php endif; ?>
+        </div>
+
+    </div>
+</section>
+
+</main>
+
+<script>
+const qtyInput = document.getElementById('qtyInput');
+const maxStock = <?= (int)$produk['stok']; ?>;
+const idProduk = <?= json_encode($produk['idProduk']); ?>;
+
+document.querySelector('.plus').onclick = () => {
+    if (+qtyInput.value < maxStock) qtyInput.value++;
+};
+document.querySelector('.minus').onclick = () => {
+    if (+qtyInput.value > 1) qtyInput.value--;
+};
+
+document.getElementById('addToCart').onclick = () => {
+    const f = document.createElement('form');
+    f.method = 'POST';
+    f.action = 'prosess-add-keranjang.php';
+    f.innerHTML = `
+        <input type="hidden" name="idProduk" value="${idProduk}">
+        <input type="hidden" name="qty" value="${qtyInput.value}">
+    `;
+    document.body.appendChild(f);
+    f.submit();
+};
+
+document.getElementById('buyNow').onclick = () => {
+    location.href = `co-langsung.php?id=${idProduk}&qty=${qtyInput.value}`;
+};
+</script>
+
+<?php include '../includes/footer.php'; ?>
