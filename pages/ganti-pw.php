@@ -9,8 +9,7 @@ if (!isset($_SESSION['username'])) {
 }
 
 $username = $_SESSION['username'];
-$from = $_POST['from'] ?? 'profile';
-
+$from    = $_POST['from'] ?? 'profile';
 $current = $_POST['current_password'] ?? '';
 $new     = $_POST['new_password'] ?? '';
 $confirm = $_POST['confirm_password'] ?? '';
@@ -25,10 +24,8 @@ if (strlen($new) < 8) {
     exit;
 }
 
-$query = "SELECT passwordPelanggan FROM tbPelanggan WHERE usernamePelanggan = ?";
+$query = "SELECT idPelanggan, passwordPelanggan FROM tbPelanggan WHERE usernamePelanggan = ?";
 $stmt = mysqli_prepare($conn, $query);
-if (!$stmt) die("Prepare failed: " . mysqli_error($conn));
-
 mysqli_stmt_bind_param($stmt, "s", $username);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
@@ -39,10 +36,11 @@ if (!$data) {
     exit;
 }
 
-$dbPassword = $data['passwordPelanggan'] ?? '';
+$dbPassword = $data['passwordPelanggan'];
+$idPelanggan = $data['idPelanggan'];
 
-$valid = (substr($dbPassword,0,4) === '$2y$') 
-    ? password_verify($current, $dbPassword)
+$valid = (substr($dbPassword, 0, 4) === '$2y$') 
+    ? password_verify($current, $dbPassword) 
     : ($current === $dbPassword);
 
 if (!$valid) {
@@ -51,19 +49,25 @@ if (!$valid) {
 }
 
 $newHash = password_hash($new, PASSWORD_DEFAULT);
+mysqli_stmt_close($stmt); 
 
-$stmtUpdate = mysqli_prepare($conn, "UPDATE tbPelanggan SET passwordPelanggan = ? WHERE usernamePelanggan = ?");
-if (!$stmtUpdate) die("Prepare update failed: " . mysqli_error($conn));
+try {
+    $stmtUpdate = mysqli_prepare($conn, "UPDATE tbPelanggan SET passwordPelanggan = ? WHERE idPelanggan = ?");
+    mysqli_stmt_bind_param($stmtUpdate, "ss", $newHash, $idPelanggan);
 
-mysqli_stmt_bind_param($stmtUpdate, "ss", $newHash, $username);
+    if (mysqli_stmt_execute($stmtUpdate)) {
+        session_regenerate_id(true);
+        
+        $redirect = ($from === 'edit') 
+            ? "edit-profile-page.php?success=password" 
+            : "ganti-pw-page.php?success=password";
 
-if (mysqli_stmt_execute($stmtUpdate)) {
-    session_regenerate_id(true);
-
-    $redirect = ($from === 'edit') 
-        ? "edit-profile-page.php?success=password" 
-        : "ganti-pw-page.php?success=password";
-
-    header("Location: $redirect");
+        header("Location: $redirect");
+        exit;
+    } else {
+        throw new Exception("Update failed");
+    }
+} catch (Exception $e) {
+    header("Location: ganti-pw-page.php?error=updatefail&from=$from");
     exit;
 }
