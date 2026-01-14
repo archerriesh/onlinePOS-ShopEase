@@ -1,32 +1,39 @@
 <?php
-
 $pageCSS = '../../css/admin/liat-toko.css';
 
 include __DIR__ . '/../../includes/header-admin.php';
 include __DIR__ . '/../../includes/dbOnlinePOS.php';
 
+$sql = "SELECT idPenjual, namaPenjual FROM tbpenjual";
+$result = mysqli_query($conn, $sql);
 ?>
 
 <div class="toko-container">
 
     <div class="toko-header">
         <h1 class="section-title">Toko Terdaftar</h1>
-        <button class="add-product">
-        </button>
     </div>
 
     <div class="product-grid">
 
-        <?php for ($i = 0; $i < 10; $i++) { ?>
-            <div class="product-card">
+        <?php while ($row = mysqli_fetch_assoc($result)) { 
+            $idPenjual = $row['idPenjual'];
+            $pathFotoToko = "../../assets/img/default-store.jpg";
+            
+        ?>
+            <a href="produk-per-toko.php?idPenjual=<?= $idPenjual; ?>" class="product-card">
 
-                <div class="product-image"></div>
-
-                <div class="product-info">
-                    <p class="product-name">nama toko</p>
+                <div class="product-image">
+                    <img src="<?= $pathFotoToko; ?>" alt="Logo <?= htmlspecialchars($row['namaPenjual']); ?>" style="width:100%; height:100%; object-fit:cover;">
                 </div>
 
-            </div>
+                <div class="product-info">
+                    <p class="product-name">
+                        <?= htmlspecialchars($row['namaPenjual']); ?>
+                    </p>
+                </div>
+
+            </a>
         <?php } ?>
 
     </div>

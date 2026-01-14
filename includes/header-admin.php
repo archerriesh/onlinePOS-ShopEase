@@ -37,17 +37,13 @@ $isIndex = isset($index) && $index === true;
                     <a class="nav-link <?= ($currentPage === 'home-page.php') ? 'active' : '' ?>"  href="../pages/home-page.php">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <?= ($currentPage === 'liat-toko.php') ? 'active' : '' ?>"  href="../admin/liat-toko.php">Daftar Toko</a>
+                    <a class="nav-link <?= ($currentPage === 'liat-toko.php') ? 'active' : '' ?>"  href="../admin/liat-toko.php">Kelola Seller</a>
                 </li>
+
                 <li class="nav-item">
-                    <a class="nav-link <?= ($currentPage === 'produk-per-kategori.php') ? 'active' : '' ?>" href="../pages/produk-per-kategori.php">Products</a>
+                    <a class="nav-link <?= ($currentPage === 'liat-promo.php') ? 'active' : '' ?>" href="../pages/admin/liat-promo.php">Kelola Voucher</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link <?= ($currentPage === 'liat-promo.php') ? 'active' : '' ?>" href="../pages/admin/liat-promo.php">Voucher</a>
-                </li>
-                <!-- <li class="nav-item">
-                    <a class="nav-link <?= ($currentPage === 'history.php') ? 'active' : ''?>" href="../pages/history.php">History</a> -->
-                </li>
+
                 <li class="nav-item">
                     <a class="nav-link<?=($currentPage === 'profile.php') ? 'active' : ''?> " href="../pages/profile.php">Profile</a>
                 </li>
