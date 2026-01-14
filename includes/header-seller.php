@@ -49,8 +49,8 @@ $isIndex = isset($index) && $index === true;
 
                 <!-- PRODUCTS -->
                 <li class="nav-item">
-                    <a class="nav-link <?= ($currentPage === 'kelola-produk.php') ? 'active' : '' ?>"
-                       href="../../pages/seller/kelola-produk.php">
+                    <a class="nav-link <?= ($currentPage === 'index-seller.php') ? 'active' : '' ?>"
+                       href="../../pages/seller/index-seller.php">
                         Products
                     </a>
                 </li>
@@ -60,6 +60,20 @@ $isIndex = isset($index) && $index === true;
                     <a class="nav-link <?= ($currentPage === 'promo-seller.php') ? 'active' : '' ?>"
                        href="../../pages/seller/promo-seller.php">
                         Sales
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link <?= ($currentPage === '.php') ? 'active' : '' ?>"
+                       href="../../pages/seller/.php">
+                        History
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link <?= ($currentPage === '.php') ? 'active' : '' ?>"
+                       href="../../pages/seller/.php">
+                        Profile
                     </a>
                 </li>
 

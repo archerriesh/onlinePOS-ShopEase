@@ -55,8 +55,6 @@ document.getElementById('promoForm').addEventListener('submit', function(e) {
     console.log('Form submitted:', formData);
     alert('Promo berhasil ditambahkan!');
     
-    // Redirect ke halaman voucher setelah submit
-    // window.location.href = 'promo-seller.html';
 });
 </script>
 <?php include __DIR__ . '/../../includes/footer.php'; ?>
