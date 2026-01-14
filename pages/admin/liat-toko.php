@@ -11,14 +11,14 @@ $result = mysqli_query($conn, $sql);
 <div class="toko-container">
 
     <div class="toko-header">
-        <h1 class="section-title">Toko Terdaftar</h1>
+        <h1 class="section-title">Daftar Seller</h1>
     </div>
 
     <div class="product-grid">
 
         <?php while ($row = mysqli_fetch_assoc($result)) { 
             $idPenjual = $row['idPenjual'];
-            $pathFotoToko = "../../assets/img/default-store.jpg";
+            $pathFotoToko = "../../foto/default-seller.jpg";
             
         ?>
             <a href="produk-per-toko.php?idPenjual=<?= $idPenjual; ?>" class="product-card">
