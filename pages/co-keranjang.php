@@ -18,7 +18,6 @@ if (isset($_GET['action']) && $_GET['action'] == 'cek_promo') {
     
     $idPromo = $_GET['idPromo'] ?? '';
     
-    // 1. Ambil data promo untuk melihat syarat metode pembayarannya
     $sqlCek = "SELECT jenisPembayaran FROM tbpromo WHERE idPromo = ?";
     $stmtCek = mysqli_prepare($conn, $sqlCek);
     mysqli_stmt_bind_param($stmtCek, "s", $idPromo);
@@ -26,11 +25,8 @@ if (isset($_GET['action']) && $_GET['action'] == 'cek_promo') {
     $resPromo = mysqli_stmt_get_result($stmtCek);
     $dataPromo = mysqli_fetch_assoc($resPromo);
 
-    // 2. Gunakan metode pembayaran yang ada di database agar 'v_jenisBayar <> p_metodePembayaran' bernilai FALSE
-    // Jika di DB 'Semua', kita kirim 'Semua'. Jika NULL, kita kirim 'Tunai'.
     $metodeKirim = $dataPromo['jenisPembayaran'] ?? 'transferbank';
 
-    // 3. Panggil fungsi database dengan parameter yang sudah disesuaikan
     $sql = "SELECT fn_promo_terpakai(?, ?, 'JNE', ?) AS potongan";
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, "sss", $idPromo, $idPelanggan, $metodeKirim);
@@ -163,7 +159,6 @@ $defaultImg = "../assets/img/default.jpg";
                         <div class="promo-item"><span>Tidak ada promo tersedia</span></div>
                     <?php else: ?>
                         <?php while ($promo = mysqli_fetch_assoc($resultPromo)): 
-                            // Logika menentukan tipe diskon
                             $isPercent = ($promo['persentasePotongan'] > 0);
                             $discountVal = $isPercent ? $promo['persentasePotongan'] : $promo['nominalPotongan'];
                             $type = $isPercent ? 'percent' : 'flat';
@@ -217,7 +212,6 @@ $defaultImg = "../assets/img/default.jpg";
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-    // === 1. LOGIKA UPDATE QUANTITY ===
     document.querySelectorAll('.qty-form').forEach(form => {
         const minus = form.querySelector('.minus');
         const plus  = form.querySelector('.plus');
@@ -246,7 +240,6 @@ $defaultImg = "../assets/img/default.jpg";
         }
     });
 
-    // === 2. LOGIKA VOUCHER ===
     const voucherToggle = document.getElementById('voucherToggle');
     const voucherWrapper = document.querySelector('.voucher-wrapper');
     const selectedVoucherText = document.getElementById('selectedVoucherText');
@@ -256,7 +249,6 @@ $defaultImg = "../assets/img/default.jpg";
     const totalHargaAsli = parseFloat("<?= $totalHarga ?>") || 0;
     let activeVoucherId = null;
 
-    // Toggle Dropdown
     if (voucherToggle) {
         voucherToggle.onclick = (e) => {
             e.stopPropagation();
@@ -264,7 +256,6 @@ $defaultImg = "../assets/img/default.jpg";
         };
     }
 
-    // Klik tombol Gunakan
     document.querySelectorAll('.apply-btn').forEach(btn => {
         btn.onclick = function (e) {
             e.preventDefault();
@@ -278,7 +269,6 @@ $defaultImg = "../assets/img/default.jpg";
                 return;
             }
 
-            // Memanggil file yang sama (co-keranjang.php)
             const url = `co-keranjang.php?action=cek_promo&idPromo=${promoId}`;
 
             fetch(url)
@@ -316,7 +306,6 @@ $defaultImg = "../assets/img/default.jpg";
         voucherWrapper.classList.remove('active');
     }
 
-    // Klik di luar untuk menutup dropdown
     window.onclick = (e) => {
         if (voucherWrapper && !voucherWrapper.contains(e.target)) {
             voucherWrapper.classList.remove('active');
