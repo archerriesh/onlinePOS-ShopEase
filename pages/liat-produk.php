@@ -5,9 +5,6 @@ $pageCSS = '../css/liat-produk.css';
 include '../includes/header-main.php';
 include '../includes/dbOnlinePOS.php';
 
-/* ======================================
-   AMBIL DATA PRODUK
-====================================== */
 $idProduk = $_GET['id'] ?? '';
 $filterRating = $_GET['rating'] ?? '';
 
@@ -47,9 +44,6 @@ if (!$produk) {
     exit;
 }
 
-/* ======================================
-   AMBIL REVIEW
-====================================== */
 if ($filterRating !== '') {
     $sqlReview = "
         SELECT rating, isiKomentar, tglReview
@@ -79,9 +73,6 @@ while ($row = mysqli_fetch_assoc($resultReview)) {
     $reviews[] = $row;
 }
 
-/* ======================================
-   GAMBAR PRODUK
-====================================== */
 $basePath = "../foto/produk/";
 $extensions = ['webp', 'jpg', 'jpeg', 'png'];
 $gambarProduk = "../assets/img/default.jpg";
