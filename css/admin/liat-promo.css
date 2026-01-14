@@ -1,10 +1,7 @@
-/* ===============================
-   PROMO PAGE ONLY (SAFE SCOPE */
 .promo-page {
     margin-top: 40px;
 }
 
-/* ===== BUTTON ===== */
 .promo-page .button-container {
     display: flex;
     gap: 20px;
@@ -13,46 +10,42 @@
 }
 
 .promo-page .btn {
-    padding: 15px 50px;
+    padding: 12px 40px;
     border: none;
     border-radius: 50px;
-    font-size: 18px;
-    font-weight: 500;
+    font-size: 16px;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.3s ease;
 }
 
-.promo-page .btn-primary {
-    background-color: #b8956a;
-    color: #ffffff;
-}
+.promo-page .btn-primary { background-color: #ba704a; color: #ffffff; }
+.promo-page .btn-secondary { background-color: #ba6f4a91; color: #ffffff; }
+.promo-page .btn:hover { transform: translateY(-2px); opacity: 0.9; }
 
-.promo-page .btn-secondary {
-    background-color: #d4b896;
-    color: #ffffff;
-}
 
-.promo-page .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-}
-
-/* ===== VOUCHER CONTAINER ===== */
 .promo-page .voucher-container {
     background: linear-gradient(135deg, #e6d5c9 0%, #d4c4b8 100%);
     border-radius: 30px;
-    padding: 50px;
+    padding: 60px 80px; 
     position: relative;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-/* ===== ARROW ===== */
+.promo-page .voucher-wrapper {
+    overflow-x: hidden;
+    overflow-y: hidden;
+    scroll-behavior: smooth; 
+}
+
 .promo-page .arrow {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background-color: #d4b896;
-    color: #c17a5a;
+    background-color: #fdfdfd;
+    color: #ba704a;
     border: none;
     width: 45px;
     height: 45px;
@@ -60,70 +53,68 @@
     font-size: 20px;
     cursor: pointer;
     transition: all 0.3s;
-    z-index: 10;
+    z-index: 100; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .promo-page .arrow:hover {
-    background-color: #a86849;
-    transform: translateY(-50%) scale(1.1);
+    background-color: #ba704a;
+    color: #ffffff;
 }
 
-.promo-page .arrow-left {
-    left: 20px;
-}
+.promo-page .arrow-left { left: 15px; }
+.promo-page .arrow-right { right: 15px; }
 
-.promo-page .arrow-right {
-    right: 20px;
-}
-
-/* ===== GRID ===== */
 .promo-page .voucher-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
-    max-width: 1200px;
-    margin: 0 auto;
+    grid-template-rows: repeat(2, 140px); 
+    grid-auto-flow: column; 
+    grid-auto-columns: 320px; 
+    gap: 25px;
+    width: max-content; 
 }
 
-/* ===== CARD ===== */
 .promo-page .voucher-card {
-    background: linear-gradient(135deg, #8a8466 0%, #6a6450 100%);
+    background-color: #61593d; 
     border-radius: 15px;
     padding: 20px;
     display: flex;
     align-items: center;
     gap: 15px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    transition: transform 0.3s;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease;
+    position: relative;
+    border: 1px solid rgba(255,255,255,0.1);
 }
 
 .promo-page .voucher-card:hover {
-    transform: translateY(-5px);
+    transform: scale(1.02);
 }
 
 .promo-page .voucher-icon {
-    background-color: #2a2a1f;
+    background-color: #3f3f31;
     color: #ffffff;
-    width: 60px;
-    height: 60px;
+    width: 55px;
+    height: 55px;
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 32px;
+    font-size: 24px;
     font-weight: bold;
     flex-shrink: 0;
 }
 
 .promo-page .voucher-divider {
-    width: 2px;
-    height: 80px;
+    width: 1px;
+    height: 80%;
     background: repeating-linear-gradient(
         to bottom,
-        transparent 0px,
-        transparent 8px,
-        #ffffff 8px,
-        #ffffff 12px
+        transparent 0, transparent 5px,
+        rgba(255,255,255,0.3) 5px, rgba(255,255,255,0.3) 10px
     );
 }
 
@@ -132,40 +123,21 @@
     color: #ffffff;
 }
 
-.promo-page .voucher-title {
-    font-size: 18px;
-    font-weight: 500;
+.promo-page .voucher-title { font-size: 15px; font-weight: 500; margin-bottom: 2px; }
+.promo-page .voucher-value { font-size: 26px; font-weight: 800; }
+.promo-page .voucher-terms { font-size: 10px; opacity: 0.7; margin-top: 5px; }
+
+.promo-page .voucher-actions {
+    position: absolute;
+    bottom: 12px;
+    right: 15px;
 }
 
-.promo-page .voucher-value {
-    font-size: 32px;
-    font-weight: bold;
+.promo-page .voucher-actions a {
+    margin-left: 8px;
+    transition: 0.2s;
 }
 
-.promo-page .voucher-terms {
-    font-size: 10px;
-    opacity: 0.8;
-}
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 1024px) {
-    .promo-page .voucher-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-    .promo-page .voucher-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .promo-page .button-container {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .promo-page .btn {
-        width: 100%;
-        max-width: 300px;
-    }
-}
+.promo-page .act-edit { color: #c7965c; }
+.promo-page .act-delete { color: #ba704a; }
+.promo-page .voucher-actions a:hover { opacity: 0.7; }

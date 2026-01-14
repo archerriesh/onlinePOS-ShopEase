@@ -41,7 +41,10 @@ $isIndex = isset($index) && $index === true;
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link <?= ($currentPage === 'liat-promo.php') ? 'active' : '' ?>" href="../pages/admin/liat-promo.php">Kelola Voucher</a>
+                    <a class="nav-link <?= ($currentPage === 'liat-promo.php') ? 'active' : '' ?>"
+                        href="/OnlinePOS/pages/admin/liat-promo.php">
+                        Kelola Voucher
+                    </a>
                 </li>
 
                 <li class="nav-item">
