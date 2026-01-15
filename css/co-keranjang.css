@@ -28,10 +28,10 @@
 
 .cart-page .cart-item {
   display: grid;
-  grid-template-columns: 60px 1fr auto;
-  gap: 12px;
+  grid-template-columns:30px 60px 1fr auto;
+  gap: 15px;
   align-items: center;
-  padding: 12px 0;
+  padding: 15px 0;
   border-bottom: 1px solid #e3d6cc;
 }
 
@@ -46,10 +46,17 @@
   border-radius: 6px;
 }
 
+.cart-page .item-selector {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .cart-page .item-info {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
+  justify-content: center;
 }
 
 .cart-page .item-name {
@@ -135,7 +142,6 @@
   background: #c7965c;
 }
 
-/* Voucher Section Styles */
 .cart-page .voucher-wrapper {
     margin-bottom: 15px;
 }
@@ -148,7 +154,7 @@
 }
 
 .cart-page .voucher-box {
-    background-color: #dfd5cc; /* Warna krem sesuai gambar */
+    background-color: #dfd5cc; 
     border-radius: 15px;
     padding: 20px;
     cursor: pointer;
@@ -162,7 +168,6 @@
     font-size: 14px;
 }
 
-/* Promo Dropdown List */
 .cart-page .promo-dropdown {
     max-height: 0;
     overflow: hidden;
@@ -202,7 +207,6 @@
     cursor: pointer;
 }
 
-/* Warna Summary Panel agar matching dengan gambar */
 .cart-page .summary-panel {
     background-color: #e8e0d9 !important;
     border: none !important;

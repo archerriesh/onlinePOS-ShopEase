@@ -114,13 +114,20 @@ $defaultImg = "../assets/img/default.jpg";
                 }
             ?>
 
-            <div class="cart-item">
+            <div class="cart-item" data-id="<?= $row['idProduk']; ?>">
+                <div class="item-selector">
+                    <input type="checkbox" class="item-checkbox" 
+                        value="<?= $row['idProduk']; ?>" 
+                        data-price="<?= $row['hargaSatuan']; ?>" 
+                        data-qty="<?= $row['jumlah']; ?>" checked>
+                </div>               
+
                 <div class="thumb">
                     <img src="<?= $gambar; ?>" alt="<?= htmlspecialchars($row['namaProduk']); ?>">
                 </div>
 
                 <div class="item-info">
-                    <div class="item-name">
+                    <div class="item-name" style="font-weight: 600;">
                         <?= htmlspecialchars($row['namaProduk']); ?>
                     </div>
 
@@ -204,7 +211,7 @@ $defaultImg = "../assets/img/default.jpg";
                 <span style="color: #61593d; font-size: 18px;">Rp <?= number_format($totalHarga, 0, ',', '.'); ?></span>
             </div>
 
-            <button type="button" onclick="window.location.href='co-langsung.php'" class="checkout-btn">Checkout</button>
+            <button type="button" id="btnCheckout" class="checkout-btn">Checkout</button>
         </aside>
 
     </section>
@@ -212,6 +219,17 @@ $defaultImg = "../assets/img/default.jpg";
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('btnCheckout').onclick = function() {
+        const selectedIds = Array.from(document.querySelectorAll('.item-checkbox:checked'))
+                                 .map(cb => cb.value);
+        
+        if (selectedIds.length === 0) {
+            alert("Pilih barang yang ingin dibeli dulu!");
+            return;
+        }
+
+        window.location.href = `co-langsung.php?items=${selectedIds.join(',')}`;
+    };
     document.querySelectorAll('.qty-form').forEach(form => {
         const minus = form.querySelector('.minus');
         const plus  = form.querySelector('.plus');
@@ -239,12 +257,15 @@ $defaultImg = "../assets/img/default.jpg";
             };
         }
     });
-
+    
     const voucherToggle = document.getElementById('voucherToggle');
     const voucherWrapper = document.querySelector('.voucher-wrapper');
     const selectedVoucherText = document.getElementById('selectedVoucherText');
     const txtPotongan = document.getElementById('txtPotongan');
     const txtTotalHarga = document.querySelector('.row.total span:last-child');
+    const checkboxes = document.querySelectorAll('.item-checkbox');
+    const summaryHeader = document.querySelector('.summary-header strong');
+    const summaryDetails = document.querySelector('.summary-details');
     
     const totalHargaAsli = parseFloat("<?= $totalHarga ?>") || 0;
     let activeVoucherId = null;
@@ -311,6 +332,50 @@ $defaultImg = "../assets/img/default.jpg";
             voucherWrapper.classList.remove('active');
         }
     };
+
+
+    function updateSummary() {
+        let totalBelanja = 0;
+        let totalQty = 0;
+        let detailHtml = '';
+
+        checkboxes.forEach(cb => {
+            if (cb.checked) {
+                const hargaSatuan = parseFloat(cb.getAttribute('data-price')) || 0;
+                const qty = parseInt(cb.getAttribute('data-qty')) || 0;
+                const subtotal = hargaSatuan * qty;
+                
+                totalBelanja += subtotal;
+                totalQty += qty;
+
+                detailHtml += `
+                    <div class="row" style="margin-bottom: 5px;">
+                        <span>${qty} item @ Rp ${new Intl.NumberFormat('id-ID').format(hargaSatuan)}</span>
+                        <span style="font-weight: 500;">Rp ${new Intl.NumberFormat('id-ID').format(subtotal)}</span>
+                    </div>`;
+            }
+        });
+
+        detailHtml += `
+            <div id="rowPotongan">
+                <span id="labelPromoUsed">Potongan Promo</span>
+                <span id="txtPotongan">${txtPotongan.textContent}</span>
+            </div>`;
+
+        summaryHeader.textContent = `Total ${totalQty} Barang`;
+        summaryDetails.innerHTML = detailHtml;
+
+        const nominalPotongan = parseFloat(txtPotongan.textContent.replace(/[^0-9]/g, '')) || 0;
+        const grandTotal = totalBelanja - nominalPotongan;
+
+        txtTotalHarga.textContent = `Rp ${new Intl.NumberFormat('id-ID').format(Math.max(0, grandTotal))}`;
+        
+        window.currentTotalBelanja = totalBelanja; 
+    }
+
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', updateSummary);
+    });
 });
 </script>
 
