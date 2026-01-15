@@ -1,0 +1,136 @@
+.kelola-promo-page {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+    color: #61593d;
+}
+
+.kelola-header {
+    margin-bottom: 30px;
+}
+
+.kelola-header h1 {
+    font-size: 28px;
+    font-weight: 600;
+    color: #121212;
+}
+
+.kelola-header .subtitle {
+    font-size: 14px;
+    color: #a6996b;
+}
+
+.promo-card {
+    background: #fdfdfd;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    position: relative;
+}
+
+.promo-badge {
+    position: absolute;
+    top: -18px;
+    left: -18px;
+    width: 56px;
+    height: 56px;
+    background: #c7965c;
+    color: #fff;
+    font-size: 22px;
+    font-weight: 600;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.promo-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-size: 13px;
+    margin-bottom: 6px;
+    color: #61593d;
+}
+
+.form-group input,
+.form-group select {
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #e3d6cc;
+    font-size: 14px;
+    background: #faf7f5;
+    outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #c7965c;
+}
+
+.form-row {
+    display: flex;
+    gap: 16px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+.promo-actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 32px;
+}
+
+.btn-save {
+    background: #c7965c;
+    color: #fff;
+    border: none;
+    padding: 10px 26px;
+    border-radius: 12px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.btn-save:hover {
+    background: #ba704a;
+}
+
+.btn-delete {
+    background: transparent;
+    color: #ba704a;
+    border: 1px solid #ba704a;
+    padding: 10px 24px;
+    border-radius: 12px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.btn-delete:hover {
+    background: #ba704a;
+    color: #fff;
+}
+
+.back-wrapper {
+    margin-top: 28px;
+}
+
+.btn-back {
+    text-decoration: none;
+    font-size: 14px;
+    color: #a6996b;
+}
+
+.btn-back:hover {
+    color: #61593d;
+}
