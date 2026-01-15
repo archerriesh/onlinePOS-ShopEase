@@ -221,15 +221,16 @@ $defaultImg = "../assets/img/default.jpg";
     document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btnCheckout').onclick = function() {
         const selectedIds = Array.from(document.querySelectorAll('.item-checkbox:checked'))
-                                 .map(cb => cb.value);
+                                .map(cb => cb.value);
         
         if (selectedIds.length === 0) {
             alert("Pilih barang yang ingin dibeli dulu!");
             return;
         }
 
-        window.location.href = `co-langsung.php?items=${selectedIds.join(',')}`;
+        window.location.href = `co-langsung.php?mode=cart&items=${selectedIds.join(',')}`;
     };
+
     document.querySelectorAll('.qty-form').forEach(form => {
         const minus = form.querySelector('.minus');
         const plus  = form.querySelector('.plus');
