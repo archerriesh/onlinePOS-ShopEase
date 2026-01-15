@@ -92,6 +92,25 @@ if (!$data) {
     exit;
 }
 
+$isSellerPromo = !empty($data['idPenjual']);
+
+if ($isSellerPromo) {
+    echo "<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                title: 'Akses Ditolak!',
+                text: 'Admin tidak diperbolehkan mengelola promo milik Seller.',
+                icon: 'error',
+                confirmButtonColor: '#ba704a',
+                background: '#faf7f5',
+                allowOutsideClick: false
+            }).then(() => {
+                window.location.href='liat-promo.php';
+            });
+        });
+    </script>";
+}
+
 $startDateFormatted = date('Y-m-d', strtotime($data['startDate']));
 $endDateFormatted   = date('Y-m-d', strtotime($data['endDate']));
 $badgeIcon = ($data['persentasePotongan'] > 0) ? '%' : 'Rp';
@@ -164,8 +183,12 @@ $badgeIcon = ($data['persentasePotongan'] > 0) ? '%' : 'Rp';
             </div>
 
             <div class="promo-actions">
-                <a href="#" class="btn-delete" style="text-decoration: none;" onclick="confirmDelete(event, 'kelola-promo.php?id=<?= $data['idPromo'] ?>&action=delete')">Delete</a>
-                <button type="submit" name="update" class="btn-save">Save Changes</button>
+                <?php if (!$isSellerPromo): ?>
+                    <a href="#" class="btn-delete" style="text-decoration: none;" onclick="confirmDelete(event, 'kelola-promo.php?id=<?= $data['idPromo'] ?>&action=delete')">Delete</a>
+                    <button type="submit" name="update" class="btn-save">Save Changes</button>
+                <?php else: ?>
+                    <button type="button" class="btn-save" style="background-color: #ccc; cursor: not-allowed;" disabled>Disabled for Seller Promo</button>
+                <?php endif; ?>
             </div>
         </form>
     </div>
