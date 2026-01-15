@@ -35,17 +35,22 @@ if (isset($_POST['update'])) {
     $start = $_POST['startDate'];
     $end = $_POST['endDate'];
 
-    $queryUpd = "CALL sp_update_promo(?, ?, ?, ?, ?, ?, ?)";
+    $persen = !empty($_POST['persentasePotongan']) ? $_POST['persentasePotongan'] : 0;
+    $nominal = !empty($_POST['nominalPotongan']) ? $_POST['nominalPotongan'] : 0;
+
+    $queryUpd = "CALL sp_update_promo(?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $stmtUpd = mysqli_prepare($conn, $queryUpd);
 
     mysqli_stmt_bind_param(
         $stmtUpd,
-        "sssssss", 
+        "sssssssss", 
         $idPromo,
         $namaPromo,
         $tipePromo,
         $minimal,
         $pembayaran,
+        $persen,
+        $nominal,
         $start,
         $end
     );
@@ -83,19 +88,8 @@ $result = mysqli_stmt_get_result($stmt);
 $data = mysqli_fetch_assoc($result);
 
 if (!$data) {
-    echo "<script>
-        document.addEventListener('DOMContentLoaded', function() {
-            Swal.fire({
-                title: 'Error!',
-                text: 'Data tidak ditemukan!',
-                icon: 'error',
-                confirmButtonColor: '#ba704a',
-                background: '#faf7f5'
-            }).then(() => {
-                window.location.href='liat-promo.php';
-            });
-        });
-    </script>";
+    header("Location: liat-promo.php");
+    exit;
 }
 
 $startDateFormatted = date('Y-m-d', strtotime($data['startDate']));
@@ -124,7 +118,7 @@ $badgeIcon = ($data['persentasePotongan'] > 0) ? '%' : 'Rp';
 
             <div class="form-group">
                 <label>Promo Type</label>
-                <select name="tipePromo" required>
+                <select name="tipePromo" id="tipePromo" required>
                     <option value="">-- Select Type --</option>
                     <option value="diskon" <?= ($data['tipePromo'] == 'diskon') ? 'selected' : '' ?>>Diskon</option>
                     <option value="cashback" <?= ($data['tipePromo'] == 'cashback') ? 'selected' : '' ?>>Cashback</option>
@@ -150,11 +144,11 @@ $badgeIcon = ($data['persentasePotongan'] > 0) ? '%' : 'Rp';
             <div class="form-row">
                 <div class="form-group">
                     <label>Discount (%)</label>
-                    <input type="number" name="persentasePotongan" value="<?= $data['persentasePotongan'] ?>">
+                    <input type="number" name="persentasePotongan" id="persentasePotongan" value="<?= $data['persentasePotongan'] ?>">
                 </div>
                 <div class="form-group">
                     <label>Nominal Potongan (Rp)</label>
-                    <input type="number" name="nominalPotongan" value="<?= $data['nominalPotongan'] ?>">
+                    <input type="number" name="nominalPotongan" id="nominalPotongan" value="<?= $data['nominalPotongan'] ?>">
                 </div>
             </div>
 
@@ -170,12 +164,7 @@ $badgeIcon = ($data['persentasePotongan'] > 0) ? '%' : 'Rp';
             </div>
 
             <div class="promo-actions">
-                <a href="#" 
-                   class="btn-delete" 
-                   style="text-decoration: none;" 
-                   onclick="confirmDelete(event, 'kelola-promo.php?id=<?= $data['idPromo'] ?>&action=delete')">
-                   Delete
-                </a>
+                <a href="#" class="btn-delete" style="text-decoration: none;" onclick="confirmDelete(event, 'kelola-promo.php?id=<?= $data['idPromo'] ?>&action=delete')">Delete</a>
                 <button type="submit" name="update" class="btn-save">Save Changes</button>
             </div>
         </form>
@@ -187,11 +176,32 @@ $badgeIcon = ($data['persentasePotongan'] > 0) ? '%' : 'Rp';
 </div>
 
 <script>
+const tipePromo = document.getElementById('tipePromo');
+const inputPersen = document.getElementById('persentasePotongan');
+const inputNominal = document.getElementById('nominalPotongan');
+
+function toggleInputs() {
+    if (tipePromo.value === 'diskon') {
+        inputNominal.readOnly = true;
+        inputPersen.readOnly = false;
+        inputNominal.style.backgroundColor = '#eee';
+        inputPersen.style.backgroundColor = '#fff';
+    } else if (tipePromo.value === 'cashback' || tipePromo.value === 'ongkir') {
+        inputPersen.readOnly = true;
+        inputNominal.readOnly = false;
+        inputPersen.style.backgroundColor = '#eee';
+        inputNominal.style.backgroundColor = '#fff';
+    }
+}
+
+tipePromo.addEventListener('change', toggleInputs);
+window.addEventListener('load', toggleInputs);
+
 function confirmDelete(event, url) {
     event.preventDefault();
     Swal.fire({
         title: 'Hapus Promo?',
-        text: "Data yang dihapus tidak dapat dikembalikan!",
+        text: "Data tidak dapat dikembalikan!",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#ba704a', 
