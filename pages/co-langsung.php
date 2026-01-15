@@ -7,8 +7,18 @@ if (!isset($_SESSION['idPelanggan'])) {
     exit;
 }
 
+if (isset($_GET['mode'])) {
+    $_SESSION['mode_checkout'] = $_GET['mode'];
+}
+
+if (isset($_GET['id']) && isset($_GET['qty'])) {
+    $_SESSION['mode_checkout'] = 'buy_now';
+    $_SESSION['bn_idProduk'] = $_GET['id'];
+    $_SESSION['bn_qty'] = $_GET['qty'];
+}
+
+$modeCheckout = $_SESSION['mode_checkout'] ?? 'cart'; 
 $idPelanggan = $_SESSION['idPelanggan'];
-$modeCheckout = $_SESSION['mode_checkout'] ?? '';
 $payment = $_SESSION['payment'] ?? 'Belum Dipilih';
 $subPayment = $_SESSION['sub_payment'] ?? '';
 $metodeLengkap = trim($payment . ' ' . $subPayment);
@@ -26,10 +36,11 @@ if (isset($_GET['action']) && $_GET['action'] == 'hitung_total') {
     mysqli_stmt_execute($stmtO);
     $resO = mysqli_fetch_assoc(mysqli_stmt_get_result($stmtO));
     $ongkir = (float)($resO['ongkir'] ?? 0);
+    $subtotalInput = $_GET['subtotal'] ?? 0;
 
     $sqlA = "SELECT fn_biaya_admin(?, ?) AS admin";
     $stmtA = mysqli_prepare($conn, $sqlA);
-    mysqli_stmt_bind_param($stmtA, "ss", $metodeLengkap, $idPelanggan);
+    mysqli_stmt_bind_param($stmtA, "sd", $metodeLengkap, $subtotalInput);
     mysqli_stmt_execute($stmtA);
     $resA = mysqli_fetch_assoc(mysqli_stmt_get_result($stmtA));
     $admin = (float)($resA['admin'] ?? 0);
@@ -63,6 +74,12 @@ if (isset($_POST['btn_checkout'])) {
         $sqlBN = "INSERT INTO tbKeranjang (idPelanggan, idProduk, jumlah, hargaSatuan) 
                   SELECT '$idPelanggan', idProduk, $bn_qty, harga FROM tbProduk WHERE idProduk = '$bn_id'";
         mysqli_query($conn, $sqlBN);
+    } else {
+        $selectedItems = isset($_GET['items']) ? explode(',', $_GET['items']) : [];
+        if (!empty($selectedItems)) {
+            $ids = "'" . implode("','", $selectedItems) . "'";
+            mysqli_query($conn, "DELETE FROM tbKeranjang WHERE idPelanggan = '$idPelanggan' AND idProduk NOT IN ($ids)");
+        }
     }
 
     $sql = "CALL sp_checkout_keranjang(?, ?, ?, ?, @status)";
@@ -85,6 +102,7 @@ if (isset($_POST['btn_checkout'])) {
 
 $items = [];
 $totalHarga = 0;
+
 if ($modeCheckout === 'buy_now') {
     $stmt = mysqli_prepare($conn, "SELECT idProduk, namaProduk, harga as hargaSatuan FROM tbProduk WHERE idProduk = ?");
     mysqli_stmt_bind_param($stmt, "s", $_SESSION['bn_idProduk']);
@@ -96,13 +114,27 @@ if ($modeCheckout === 'buy_now') {
         $totalHarga = $row['hargaSatuan'] * $row['jumlah'];
     }
 } else {
-    $stmt = mysqli_prepare($conn, "SELECT k.*, p.namaProduk, p.harga as hargaSatuan FROM tbKeranjang k JOIN tbProduk p ON k.idProduk = p.idProduk WHERE k.idPelanggan = ?");
-    mysqli_stmt_bind_param($stmt, "s", $idPelanggan);
-    mysqli_stmt_execute($stmt);
-    $res = mysqli_stmt_get_result($stmt);
-    while ($row = mysqli_fetch_assoc($res)) {
-        $items[] = $row;
-        $totalHarga += ($row['jumlah'] * $row['hargaSatuan']);
+    $itemParam = $_GET['items'] ?? ''; 
+    $selectedItems = !empty($itemParam) ? explode(',', $itemParam) : [];
+    
+    if (!empty($selectedItems)) {
+        $placeholders = implode(',', array_fill(0, count($selectedItems), '?'));
+        $sql = "SELECT k.idProduk, k.jumlah, p.namaProduk, p.harga as hargaSatuan 
+                FROM tbKeranjang k 
+                JOIN tbProduk p ON k.idProduk = p.idProduk 
+                WHERE k.idPelanggan = ? AND k.idProduk IN ($placeholders)";
+        
+        $stmt = mysqli_prepare($conn, $sql);
+        $types = "s" . str_repeat("s", count($selectedItems));
+        mysqli_stmt_bind_param($stmt, $types, $idPelanggan, ...$selectedItems);
+        
+        mysqli_stmt_execute($stmt);
+        $res = mysqli_stmt_get_result($stmt);
+        
+        while ($row = mysqli_fetch_assoc($res)) {
+            $items[] = $row;
+            $totalHarga += ($row['jumlah'] * $row['hargaSatuan']);
+        }
     }
 }
 
@@ -193,15 +225,23 @@ include '../includes/header-main.php';
             </div>
         </div>
         <hr>
-        <form method="POST" id="formCheckout">
+        <form action="proses-co.php" method="POST" id="formCheckout">
             <input type="hidden" name="idPromo" id="inputPromo">
-            <input type="hidden" name="metodePembayaran" value="<?= $metodeLengkap ?>">
+            <input type="hidden" name="modeCheckout" value="<?= $modeCheckout ?>">
             
+            <?php if($modeCheckout === 'buy_now'): ?>
+                <input type="hidden" name="bn_idProduk" value="<?= $_SESSION['bn_idProduk'] ?>">
+                <input type="hidden" name="bn_qty" value="<?= $_SESSION['bn_qty'] ?>">
+            <?php else: ?>
+                <input type="hidden" name="selected_items" value="<?= $_GET['items'] ?? '' ?>">
+            <?php endif; ?>
+
             <div class="mb-3">
-                <label style="font-size:13px; font-weight:bold;">Ekspedisi:</label>
+                <label>Ekspedisi:</label>
                 <select name="ekspedisi" class="form-select">
                     <option value="J&T Express">J&T Express</option>
                     <option value="JNE Reguler">JNE Reguler</option>
+                    <option value="SiCepat">SiCepat</option>
                     <option value="Kurir Toko">Kurir Toko</option>
                 </select>
             </div>
@@ -227,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function hitungUlangSemua() {
         const kurir = selectKurir.value;
-        const url = `co-langsung.php?action=hitung_total&idPromo=${currentPromoId}&kurir=${kurir}`;
+        const url = `co-langsung.php?action=hitung_total&idPromo=${currentPromoId}&kurir=${kurir}&subtotal=${subtotalProduk}`;
 
         fetch(url)
             .then(res => res.json())
