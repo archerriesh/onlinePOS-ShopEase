@@ -13,15 +13,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $startDate         = $_POST['startDate'] ?? null;
     $endDate           = $_POST['endDate'] ?? null;
 
-    $persentasePotongan = null;
-    $nominalPotongan    = null;
+    $persentasePotongan = ($_POST['persentasePotongan'] ?? '') !== '' ? $_POST['persentasePotongan'] : null;
+    $nominalPotongan    = ($_POST['nominalPotongan'] ?? '') !== '' ? $_POST['nominalPotongan'] : null;
 
     if ($tipePromo === 'diskon') {
-        $persentasePotongan = $_POST['persentasePotongan'] ?: null;
-    }
-
-    if ($tipePromo === 'cashback') {
-        $nominalPotongan = $_POST['nominalPotongan'] ?: null;
+        $nominalPotongan = null; 
+    } else if ($tipePromo === 'cashback') {
+        $persentasePotongan = null; 
+    } else if ($tipePromo === 'ongkir') {
+        $persentasePotongan = null;
     }
 
     $stmt = mysqli_prepare(
@@ -46,29 +46,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         mysqli_stmt_close($stmt);
         mysqli_close($conn);
 
-        header("Location: liat-promo.php?success=1");
-        exit;
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Berhasil!',
+                    text: 'Promo berhasil ditambahkan!',
+                    icon: 'success',
+                    confirmButtonColor: '#61593d',
+                    background: '#faf7f5'
+                }).then(() => {
+                    window.location.href='liat-promo.php';
+                });
+            });
+        </script>";
     } else {
-        echo "<script>alert('Gagal menambahkan promo');</script>";
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Gagal!',
+                    text: 'Gagal menambahkan promo: " . mysqli_error($conn) . "',
+                    icon: 'error',
+                    confirmButtonColor: '#ba704a',
+                    background: '#faf7f5'
+                });
+            });
+        </script>";
     }
 }
 ?>
 
-<div class="voucher-page">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<div class="voucher-page">
     <div class="voucher-tab-container">
-        <button class="btn-tab"
-            onclick="window.location.href='liat-promo.php'">
-            Voucher
-        </button>
-        <button class="btn-tab active">
-            Add new voucher
-        </button>
+        <button class="btn-tab" onclick="window.location.href='liat-promo.php'">Voucher</button>
+        <button class="btn-tab active">Add new voucher</button>
     </div>
 
     <div class="voucher-card">
         <form method="post">
-
             <div class="form-group">
                 <label>Promo Name</label>
                 <input type="text" name="namaPromo" required>
@@ -76,10 +92,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <div class="form-group">
                 <label>Promo Type</label>
-                <select name="tipePromo" required>
+                <select name="tipePromo" id="tipePromo" required>
                     <option value="">-- Select Type --</option>
                     <option value="diskon">Diskon</option>
                     <option value="cashback">Cashback</option>
+                    <option value="ongkir">Gratis Ongkir</option>
                 </select>
             </div>
 
@@ -102,12 +119,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="form-row">
                 <div class="form-group">
                     <label>Discount (%)</label>
-                    <input type="number" name="persentasePotongan">
+                    <input type="number" name="persentasePotongan" id="inputPersen" step="0.01">
                 </div>
 
                 <div class="form-group">
-                    <label>Cashback (Rp)</label>
-                    <input type="number" name="nominalPotongan">
+                    <label>Nominal Potongan (Rp)</label>
+                    <input type="number" name="nominalPotongan" id="inputNominal">
                 </div>
             </div>
 
@@ -123,13 +140,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
 
-            <button type="submit" class="btn-add">
-                Add Promo
-            </button>
-
+            <button type="submit" class="btn-add">Add Promo</button>
         </form>
     </div>
-
 </div>
+
+<script>
+document.getElementById('tipePromo').addEventListener('change', function() {
+    const inputPersen = document.getElementById('inputPersen');
+    const inputNominal = document.getElementById('inputNominal');
+    const tipe = this.value;
+
+    inputPersen.readOnly = false;
+    inputNominal.readOnly = false;
+    inputPersen.style.opacity = "1";
+    inputNominal.style.opacity = "1";
+    inputPersen.style.backgroundColor = "";
+    inputNominal.style.backgroundColor = "";
+
+    if (tipe === 'diskon') {
+        inputNominal.readOnly = true;
+        inputNominal.value = "";
+        inputNominal.style.opacity = "0.5"; 
+        inputNominal.style.backgroundColor = "#e3d6cc"; 
+    } else if (tipe === 'cashback' || tipe === 'ongkir') {
+        inputPersen.readOnly = true;
+        inputPersen.value = "";
+        inputPersen.style.opacity = "0.5"; 
+        inputPersen.style.backgroundColor = "#e3d6cc"; 
+    }
+});
+</script>
 
 <?php include __DIR__ . '/../../includes/footer.php'; ?>
