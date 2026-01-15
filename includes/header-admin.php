@@ -1,6 +1,8 @@
 <?php
 $currentPage = basename($_SERVER['PHP_SELF']);
 $isIndex = isset($index) && $index === true;
+
+$base_url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/OnlinePOS';
 ?>
 
 <!DOCTYPE html>
@@ -34,7 +36,7 @@ $isIndex = isset($index) && $index === true;
         <div class="collapse navbar-collapse" id="mainNavbar">
             <ul class="navbar-nav ms-auto gap-3">
                 <li class="nav-item">
-                    <a class="nav-link <?= ($currentPage === 'home-page.php') ? 'active' : '' ?>"  href="../pages/home-page.php">Home</a>
+                    <a class="nav-link <?= ($currentPage === 'home-page.php') ? 'active' : '' ?>"  href="../admin/home-page.php">Home</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link <?= ($currentPage === 'liat-toko.php') ? 'active' : '' ?>"  href="../admin/liat-toko.php">Kelola Seller</a>
@@ -48,7 +50,10 @@ $isIndex = isset($index) && $index === true;
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link<?=($currentPage === 'profile.php') ? 'active' : ''?> " href="../pages/profile.php">Profile</a>
+                    <a class="nav-link <?= ($currentPage === 'profile.php') ? 'active' : '' ?>"
+                        href="/OnlinePOS/pages/profile.php">
+                        Profile
+                    </a>
                 </li>
             </ul>
         </div>
