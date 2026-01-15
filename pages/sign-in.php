@@ -49,6 +49,26 @@ if ($penjual && ($password === $penjual['passwordPenjual'] || password_verify($p
     exit;
 }
 
+$queryAdmin = "SELECT * FROM tbadmin WHERE username = ?";
+$stmtAdmin = mysqli_prepare($conn, $queryAdmin);
+mysqli_stmt_bind_param($stmtAdmin, "s", $username);
+mysqli_stmt_execute($stmtAdmin);
+$resultAdmin = mysqli_stmt_get_result($stmtAdmin);
+$admin = mysqli_fetch_assoc($resultAdmin);
+
+if ($admin) {
+    $dbPasswordAdmin = $admin['password'];
+    if ($password === $dbPasswordAdmin || password_verify($password, $dbPasswordAdmin)) {
+        $_SESSION['login'] = true;
+        $_SESSION['role'] = 'admin';
+        $_SESSION['username'] = $admin['username'];
+        $_SESSION['idAdmin'] = $admin['idAdmin'];
+        $_SESSION['namaAdmin'] = $admin['namaAdmin']; 
+
+        header("Location: /onlinePOS/pages/admin/home-page.php");
+        exit;
+    }
+}
 
 header("Location: sign-in-page.php?error=1");
 exit;
