@@ -1,88 +1,210 @@
 <?php
 $pageCSS = '../../css/admin/kelola-promo.css';
 include __DIR__ . '/../../includes/header-admin.php';
+require __DIR__ . '/../../includes/dbOnlinePOS.php';
+
+if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
+    $idHapus = $_GET['id'];
+    $queryDel = "CALL sp_delete_promo(?)";
+    $stmtDel = mysqli_prepare($conn, $queryDel);
+    mysqli_stmt_bind_param($stmtDel, "s", $idHapus);
+    
+    if (mysqli_stmt_execute($stmtDel)) {
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Berhasil!',
+                    text: 'Promo berhasil dihapus!',
+                    icon: 'success',
+                    confirmButtonColor: '#61593d',
+                    background: '#faf7f5'
+                }).then(() => {
+                    window.location.href='liat-promo.php';
+                });
+            });
+        </script>";
+    }
+}
+
+if (isset($_POST['update'])) {
+    $idPromo = $_POST['idPromo'];
+    $namaPromo = $_POST['namaPromo'];
+    $tipePromo = $_POST['tipePromo']; 
+    $minimal = $_POST['minimalTransaksi'];
+    $pembayaran = $_POST['jenisPembayaran'];
+    $start = $_POST['startDate'];
+    $end = $_POST['endDate'];
+
+    $queryUpd = "CALL sp_update_promo(?, ?, ?, ?, ?, ?, ?)";
+    $stmtUpd = mysqli_prepare($conn, $queryUpd);
+
+    mysqli_stmt_bind_param(
+        $stmtUpd,
+        "sssssss", 
+        $idPromo,
+        $namaPromo,
+        $tipePromo,
+        $minimal,
+        $pembayaran,
+        $start,
+        $end
+    );
+
+    if (mysqli_stmt_execute($stmtUpd)) {
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'Berhasil!',
+                    text: 'Perubahan berhasil disimpan!',
+                    icon: 'success',
+                    confirmButtonColor: '#61593d',
+                    background: '#faf7f5'
+                }).then(() => {
+                    window.location.href='liat-promo.php';
+                });
+            });
+        </script>";
+    } else {
+        die("Gagal update: " . mysqli_error($conn));
+    }
+}
+
+if (!isset($_GET['id'])) {
+    header("Location: liat-promo.php");
+    exit;
+}
+
+$idPromo = $_GET['id'];
+$query = "SELECT * FROM tbpromo WHERE idPromo = ?";
+$stmt = mysqli_prepare($conn, $query);
+mysqli_stmt_bind_param($stmt, "s", $idPromo);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+$data = mysqli_fetch_assoc($result);
+
+if (!$data) {
+    echo "<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                title: 'Error!',
+                text: 'Data tidak ditemukan!',
+                icon: 'error',
+                confirmButtonColor: '#ba704a',
+                background: '#faf7f5'
+            }).then(() => {
+                window.location.href='liat-promo.php';
+            });
+        });
+    </script>";
+}
+
+$startDateFormatted = date('Y-m-d', strtotime($data['startDate']));
+$endDateFormatted   = date('Y-m-d', strtotime($data['endDate']));
+$badgeIcon = ($data['persentasePotongan'] > 0) ? '%' : 'Rp';
 ?>
 
-<div class="kelola-promo-page">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<div class="kelola-promo-page">
     <div class="kelola-header">
         <h1>Manage Voucher</h1>
         <span class="subtitle">Edit, update, or delete your promo</span>
     </div>
 
     <div class="promo-card">
+        <div class="promo-badge"><?= $badgeIcon ?></div>
 
-        <div class="promo-badge">%</div>
-
-        <form class="promo-form" method="post">
+        <form class="promo-form" method="POST" action="">
+            <input type="hidden" name="idPromo" value="<?= $data['idPromo'] ?>">
 
             <div class="form-group">
                 <label>Promo Name</label>
-                <input type="text" name="namaPromo" required>
+                <input type="text" name="namaPromo" value="<?= htmlspecialchars($data['namaPromo']) ?>" required>
             </div>
 
             <div class="form-group">
                 <label>Promo Type</label>
                 <select name="tipePromo" required>
                     <option value="">-- Select Type --</option>
-                    <option value="diskon">Diskon</option>
-                    <option value="cashback">Cashback</option>
+                    <option value="diskon" <?= ($data['tipePromo'] == 'diskon') ? 'selected' : '' ?>>Diskon</option>
+                    <option value="cashback" <?= ($data['tipePromo'] == 'cashback') ? 'selected' : '' ?>>Cashback</option>
+                    <option value="ongkir" <?= ($data['tipePromo'] == 'ongkir') ? 'selected' : '' ?>>Gratis Ongkir</option>
                 </select>
             </div>
 
             <div class="form-group">
                 <label>Minimal Transaction (Rp)</label>
-                <input type="number" name="minimalTransaksi" required>
+                <input type="number" name="minimalTransaksi" value="<?= $data['minimalTransaksi'] ?>" required>
             </div>
 
             <div class="form-group">
                 <label>Payment Method</label>
                 <select name="jenisPembayaran" required>
-                    <option value="">-- Select Payment --</option>
-                    <option value="qris">QRIS</option>
-                    <option value="cod">COD</option>
-                    <option value="transferbank">Transfer Bank</option>
-                    <option value="emoney">E-Money</option>
+                    <option value="qris" <?= ($data['jenisPembayaran'] == 'qris') ? 'selected' : '' ?>>QRIS</option>
+                    <option value="cod" <?= ($data['jenisPembayaran'] == 'cod') ? 'selected' : '' ?>>COD</option>
+                    <option value="transferbank" <?= ($data['jenisPembayaran'] == 'transferbank') ? 'selected' : '' ?>>Transfer Bank</option>
+                    <option value="emoney" <?= ($data['jenisPembayaran'] == 'emoney') ? 'selected' : '' ?>>E-Money</option>
                 </select>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
                     <label>Discount (%)</label>
-                    <input type="number" name="persentasePotongan">
+                    <input type="number" name="persentasePotongan" value="<?= $data['persentasePotongan'] ?>">
                 </div>
-
                 <div class="form-group">
-                    <label>Cashback (Rp)</label>
-                    <input type="number" name="nominalPotongan">
+                    <label>Nominal Potongan (Rp)</label>
+                    <input type="number" name="nominalPotongan" value="<?= $data['nominalPotongan'] ?>">
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
                     <label>Start Date</label>
-                    <input type="date" name="startDate" required>
+                    <input type="date" name="startDate" value="<?= $startDateFormatted ?>" required>
                 </div>
-
                 <div class="form-group">
                     <label>End Date</label>
-                    <input type="date" name="endDate" required>
+                    <input type="date" name="endDate" value="<?= $endDateFormatted ?>" required>
                 </div>
             </div>
 
             <div class="promo-actions">
-                <button type="button" class="btn-delete">Delete</button>
-                <button type="submit" class="btn-save">Save Changes</button>
+                <a href="#" 
+                   class="btn-delete" 
+                   style="text-decoration: none;" 
+                   onclick="confirmDelete(event, 'kelola-promo.php?id=<?= $data['idPromo'] ?>&action=delete')">
+                   Delete
+                </a>
+                <button type="submit" name="update" class="btn-save">Save Changes</button>
             </div>
-
         </form>
-
     </div>
 
     <div class="back-wrapper">
-        <a href="promo-seller.php" class="btn-back">← Back to Voucher List</a>
+        <a href="liat-promo.php" class="btn-back">← Back to Voucher List</a>
     </div>
-
 </div>
+
+<script>
+function confirmDelete(event, url) {
+    event.preventDefault();
+    Swal.fire({
+        title: 'Hapus Promo?',
+        text: "Data yang dihapus tidak dapat dikembalikan!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ba704a', 
+        cancelButtonColor: '#a6996b',  
+        confirmButtonText: 'Ya, Hapus!',
+        cancelButtonText: 'Batal',
+        background: '#faf7f5'          
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = url;
+        }
+    });
+}
+</script>
 
 <?php include __DIR__ . '/../../includes/footer.php'; ?>
