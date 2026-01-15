@@ -1,4 +1,7 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 session_start();
 include '../includes/dbOnlinePOS.php';
 
@@ -68,35 +71,34 @@ if (isset($_POST['btn_checkout'])) {
     $ekspedisi = $_POST['ekspedisi'] ?? 'J&T Express';
 
     if ($modeCheckout === 'buy_now') {
-        $bn_id = $_SESSION['bn_idProduk'];
-        $bn_qty = $_SESSION['bn_qty'];
-        mysqli_query($conn, "DELETE FROM tbKeranjang WHERE idPelanggan = '$idPelanggan'");
-        $sqlBN = "INSERT INTO tbKeranjang (idPelanggan, idProduk, jumlah, hargaSatuan) 
-                  SELECT '$idPelanggan', idProduk, $bn_qty, harga FROM tbProduk WHERE idProduk = '$bn_id'";
-        mysqli_query($conn, $sqlBN);
+        $bn_id = $_SESSION['bn_idProduk'] ?? '';
+        $bn_qty = $_SESSION['bn_qty'] ?? 0;
+        
+        $sql = "CALL sp_checkout_transaksi(?, ?, ?, ?, ?, ?, @status)";
+        $stmt = mysqli_prepare($conn, $sql);
+        mysqli_stmt_bind_param($stmt, "ssisss", 
+            $idPelanggan, $bn_id, $bn_qty, $idPromo, $metodeLengkap, $ekspedisi
+        );
     } else {
-        $selectedItems = isset($_GET['items']) ? explode(',', $_GET['items']) : [];
-        if (!empty($selectedItems)) {
-            $ids = "'" . implode("','", $selectedItems) . "'";
-            mysqli_query($conn, "DELETE FROM tbKeranjang WHERE idPelanggan = '$idPelanggan' AND idProduk NOT IN ($ids)");
-        }
+        $sql = "CALL sp_checkout_keranjang(?, ?, ?, ?, @status)";
+        $stmt = mysqli_prepare($conn, $sql);
+        mysqli_stmt_bind_param($stmt, "ssss", $idPelanggan, $idPromo, $metodeLengkap, $ekspedisi);
+    }
+    
+    if (!mysqli_stmt_execute($stmt)) {
+        die("<h1>Gagal Eksekusi SQL!</h1>" . mysqli_error($conn));
     }
 
-    $sql = "CALL sp_checkout_keranjang(?, ?, ?, ?, @status)";
-    $stmt = mysqli_prepare($conn, $sql);
-    mysqli_stmt_bind_param($stmt, "ssss", $idPelanggan, $idPromo, $metodeLengkap, $ekspedisi);
-    
-    if (mysqli_stmt_execute($stmt)) {
-        $res = mysqli_query($conn, "SELECT @status AS pesan");
-        $row = mysqli_fetch_assoc($res);
-        $pesan = $row['pesan'] ?? 'Proses Gagal';
-        if (strpos($pesan, 'berhasil') !== false) {
-            unset($_SESSION['mode_checkout'], $_SESSION['bn_idProduk'], $_SESSION['bn_qty']);
-            echo "<script>alert('$pesan'); window.location.href='history.php';</script>";
-            exit;
-        } else {
-            echo "<script>alert('$pesan');</script>";
-        }
+    $res = mysqli_query($conn, "SELECT @status AS pesan");
+    $row = mysqli_fetch_assoc($res);
+    $pesan = $row['pesan'] ?? 'Gagal: Prosedur tidak mengembalikan status.';
+
+    echo "<script>alert('$pesan');</script>";
+
+    if (strpos($pesan, 'berhasil') !== false) {
+        unset($_SESSION['mode_checkout'], $_SESSION['bn_idProduk'], $_SESSION['bn_qty']);
+        echo "<script>window.location.href='history.php';</script>";
+        exit;
     }
 }
 
@@ -104,7 +106,7 @@ $items = [];
 $totalHarga = 0;
 
 if ($modeCheckout === 'buy_now') {
-    $stmt = mysqli_prepare($conn, "SELECT idProduk, namaProduk, harga as hargaSatuan FROM tbProduk WHERE idProduk = ?");
+    $stmt = mysqli_prepare($conn, "SELECT idProduk, namaProduk, harga as hargaSatuan, idPenjual FROM tbProduk WHERE idProduk = ?");
     mysqli_stmt_bind_param($stmt, "s", $_SESSION['bn_idProduk']);
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
@@ -119,10 +121,10 @@ if ($modeCheckout === 'buy_now') {
     
     if (!empty($selectedItems)) {
         $placeholders = implode(',', array_fill(0, count($selectedItems), '?'));
-        $sql = "SELECT k.idProduk, k.jumlah, p.namaProduk, p.harga as hargaSatuan 
-                FROM tbKeranjang k 
-                JOIN tbProduk p ON k.idProduk = p.idProduk 
-                WHERE k.idPelanggan = ? AND k.idProduk IN ($placeholders)";
+        $sql = "SELECT k.idProduk, k.jumlah, p.namaProduk, p.harga as hargaSatuan, p.idPenjual 
+        FROM tbKeranjang k 
+        JOIN tbProduk p ON k.idProduk = p.idProduk 
+        WHERE k.idPelanggan = ? AND k.idProduk IN ($placeholders)";
         
         $stmt = mysqli_prepare($conn, $sql);
         $types = "s" . str_repeat("s", count($selectedItems));
@@ -138,7 +140,17 @@ if ($modeCheckout === 'buy_now') {
     }
 }
 
-$resultPromo = mysqli_query($conn, "SELECT * FROM tbPromo WHERE endDate >= NOW() AND statusAktif = 'Y'");
+$arrayIdProduk = array_column($items, 'idProduk');
+$listIdProduk = "'" . implode("','", $arrayIdProduk) . "'";
+
+$sqlPromo = "SELECT * FROM tbPromo 
+             WHERE statusAktif = 'Y' 
+             AND endDate >= NOW()
+             AND (
+                idAdmin IS NOT NULL 
+                OR idPenjual IN (SELECT idPenjual FROM tbProduk WHERE idProduk IN ($listIdProduk))
+             )";
+$resultPromo = mysqli_query($conn, $sqlPromo);
 $stmtU = mysqli_prepare($conn, "SELECT namaPelanggan, kontakPelanggan, alamatPelanggan FROM tbpelanggan WHERE idPelanggan = ?");
 mysqli_stmt_bind_param($stmtU, "s", $idPelanggan);
 mysqli_stmt_execute($stmtU);
@@ -225,7 +237,7 @@ include '../includes/header-main.php';
             </div>
         </div>
         <hr>
-        <form action="proses-co.php" method="POST" id="formCheckout">
+        <form action="" method="POST" id="formCheckout">
             <input type="hidden" name="idPromo" id="inputPromo">
             <input type="hidden" name="modeCheckout" value="<?= $modeCheckout ?>">
             
