@@ -21,7 +21,7 @@
 
 .buyer-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 22px;
 }
 
@@ -29,9 +29,10 @@
     position: relative;
     background-color: #e3d6cc;
     border-radius: 18px;
-    padding: 18px 14px;
+    padding: 25px 14px;
     text-align: center;
     transition: transform 0.2s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
 }
 
 .buyer-card:hover {
@@ -39,12 +40,13 @@
 }
 
 .buyer-avatar {
-    width: 70px;
-    height: 70px;
+    width: 75px;
+    height: 75px;
     border-radius: 50%;
     overflow: hidden;
-    border: 1px solid #a6996b;
-    margin: 0 auto 10px;
+    border: 2px solid #a6996b;
+    margin: 0 auto 12px;
+    background-color: #fff;
 }
 
 .buyer-avatar img {
@@ -54,47 +56,62 @@
 }
 
 .buyer-name {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: bold;
     color: #121212;
-    margin-bottom: 6px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    margin-bottom: 8px;
 }
 
-.buyer-stats {
-    display: flex;
-    justify-content: center;
+.buyer-badge {
+    display: inline-flex;
     align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    color: #61593d;
+    gap: 5px;
+    padding: 5px 15px;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
 }
 
-.stat-divider {
-    color: #a6996b;
+.badge-gold {
+    background: linear-gradient(145deg, #ffe066, #cf9f00);
+    color: #5c4300;
+    border: 1px solid #b8860b;
+    box-shadow: 0 2px 8px rgba(218, 165, 32, 0.3);
+}
+
+.badge-silver {
+    background: linear-gradient(145deg, #e0e0e0, #8a8a8a);
+    color: #2c2c2c;
+    border: 1px solid #777;
+    box-shadow: 0 2px 8px rgba(128, 128, 128, 0.3);
+}
+
+.badge-bronze {
+    background: linear-gradient(145deg, #d3915c, #8b4513);
+    color: #fff;
+    border: 1px solid #5d2e0a;
+    box-shadow: 0 2px 8px rgba(139, 69, 19, 0.3);
 }
 
 .menu-container {
     position: absolute;
     top: 12px;
     right: 12px;
-    z-index: 10;
 }
 
 .menu-dots {
-    background: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.5);
     border: none;
-    width: 26px;
-    height: 26px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     cursor: pointer;
     font-size: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #121212;
     transition: 0.3s;
 }
 
@@ -113,23 +130,15 @@
     box-shadow: 0px 8px 16px rgba(0,0,0,0.1);
     border-radius: 10px;
     z-index: 20;
-    border: 1px solid #eee;
 }
 
-.dropdown-content.show {
-    display: block;
-}
+.dropdown-content.show { display: block; }
 
 .dropdown-content a {
     color: #e74c3c;
-    padding: 12px;
+    padding: 10px;
     text-decoration: none;
     display: block;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: bold;
-    text-align: center;
-}
-
-.dropdown-content a:hover {
-    background-color: #f9f9f9;
 }
