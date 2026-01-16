@@ -36,9 +36,8 @@ while ($row = $result->fetch_assoc()) {
     $products[] = $row;
 }
 
-// PATH YANG BENAR
-$basePathServer = "../../foto/produk/";   // untuk cek file_exists
-$basePathURL    = "../../foto/produk/";   // untuk browser (src)
+$basePathServer = "../../foto/produk/";   
+$basePathURL    = "../../foto/produk/";   
 
 $pageCSS = '../../css/home-seller.css';
 include("../../includes/header-seller.php");
@@ -49,7 +48,7 @@ include("../../includes/header-seller.php");
     <div class="left">
       <h1>Welcome to ShopEase <?= htmlspecialchars($namaPenjual) ?>!</h1>
       <p>
-        ShopEase adalah sistem informasi Online Point of Sale (POS) berbasis web yang dikembangkan untuk mendukung digitalisasi proses bisnis pada sektor perdagangan. Sistem ini memungkinkan penjual untuk mengelola data produk, mengontrol stok barang, serta mencatat transaksi penjualan. ShopEase dirancang dengan pendekatan user-centered design sehingga mudah digunakan oleh berbagai jenis pengguna, baik UMKM maupun toko modern.
+        ShopEase is a web-based Online Point of Sale (POS) information system developed to support the digitization of business processes in the trade sector. This system allows sellers to manage product data, control stock, and record sales transactions. ShopEase is designed with a user-centered design approach so that it is easy to use by various types of users, both MSMEs and modern stores.
       </p>
     </div>
     <div class="right">
@@ -97,7 +96,7 @@ const products = [
 
 const basePath = "<?= $basePathURL ?>";
 
-// --- DETEKSI GAMBAR OTOMATIS ---
+
 const imagePaths = {};
 <?php foreach ($products as $p): ?>
 <?php
@@ -121,9 +120,8 @@ function updateCarousel(index){
   const img = document.getElementById("carouselImg");
   const name = document.getElementById("productName");
 
-  // --- TRIK ANIMASI SLIDE KE KANAN ---
   img.classList.remove("slide-right");
-  void img.offsetWidth;   // reset animasi
+  void img.offsetWidth;   
   img.src = imagePaths[p.id] || basePath + "default.jpg";
   img.classList.add("slide-right");
 
