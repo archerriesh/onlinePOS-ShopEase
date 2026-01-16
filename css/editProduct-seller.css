@@ -4,19 +4,12 @@
 }
 
 .seller-edit-container {
-    display: flex;
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* kiri lebih besar dari kanan */
     gap: 30px;
     padding: 30px 40px;
     max-width: 1200px;
     margin: 0 auto;
-}
-
-.seller-edit-container .left {
-    flex: 2;
-}
-
-.seller-edit-container .right {
-    flex: 1;
 }
 
 .card-seller {
@@ -24,6 +17,17 @@
     padding: 20px;
     border-radius: 20px;
     margin-bottom: 20px;
+}
+
+.baris {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.baris > div {
+    flex: 1;
+    min-width: 150px;
 }
 
 label {
@@ -38,11 +42,6 @@ textarea {
     border-radius: 10px;
     border: none;
     background: #cfc6b4;
-}
-
-.row {
-    display: flex;
-    gap: 20px;
 }
 
 .image-box {
