@@ -134,7 +134,6 @@
 }
 
 .dropdown-content a {
-    color: #e74c3c;
     padding: 12px;
     text-decoration: none;
     display: block;
@@ -145,4 +144,23 @@
 
 .dropdown-content a:hover {
     background-color: #f9f9f9;
+}
+
+.btn-nonaktif {
+    color: #e74c3c !important;
+}
+
+.btn-aktifkan {
+    color: #28a745 !important;
+}
+
+.product-card-wrapper.is-nonaktif .product-card {
+    filter: grayscale(1) !important; 
+    opacity: 0.6; 
+    pointer-events: none; 
+}
+
+.product-card-wrapper.is-nonaktif .menu-container {
+    filter: none !important;
+    opacity: 1 !important;
 }

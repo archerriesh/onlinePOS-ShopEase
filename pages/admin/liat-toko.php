@@ -4,7 +4,7 @@ $pageCSS = '../../css/admin/liat-toko.css';
 include __DIR__ . '/../../includes/header-admin.php';
 include __DIR__ . '/../../includes/dbOnlinePOS.php';
 
-$sql = "SELECT idPenjual, namaPenjual, 
+$sql = "SELECT idPenjual, namaPenjual, statusAktif,
         (SELECT AVG(fn_rating_produk(idProduk)) 
          FROM tbproduk 
          WHERE tbproduk.idPenjual = tbpenjual.idPenjual) as ratingToko,
@@ -14,6 +14,8 @@ $sql = "SELECT idPenjual, namaPenjual,
         FROM tbpenjual";
 $result = mysqli_query($conn, $sql);
 ?>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <div class="toko-container">
 
@@ -25,14 +27,25 @@ $result = mysqli_query($conn, $sql);
 
         <?php while ($row = mysqli_fetch_assoc($result)) { 
             $idPenjual = $row['idPenjual'];
+            $status = $row['statusAktif']; 
             $pathFotoToko = "../../foto/default-seller.jpg";
+            $isNonaktif = ($status === 'N');
+            $wrapperClass = $isNonaktif ? 'product-card-wrapper is-nonaktif' : 'product-card-wrapper';
         ?>
-            <div class="product-card-wrapper">
+            <div class="<?= $wrapperClass ?>">
                 
                 <div class="menu-container">
                     <button class="menu-dots" onclick="toggleDropdown(event, 'menu-<?= $idPenjual ?>')">⋮</button>
                     <div id="menu-<?= $idPenjual ?>" class="dropdown-content">
-                        <a href="proses-nonaktifkan.php?id=<?= $idPenjual ?>" class="btn-nonaktif" onclick="return confirm('Yakin ingin menonaktifkan toko ini?')">Nonaktifkan</a>
+                        <?php if ($isNonaktif): ?>
+                            <a href="javascript:void(0)" class="btn-aktifkan" onclick="confirmAction('<?= $idPenjual ?>', 'aktifkan')">
+                                Aktifkan Kembali
+                            </a>
+                        <?php else: ?>
+                            <a href="javascript:void(0)" class="btn-nonaktif" onclick="confirmAction('<?= $idPenjual ?>', 'nonaktifkan')">
+                                Nonaktifkan
+                            </a>
+                        <?php endif; ?>
                     </div>
                 </div>
 
@@ -63,6 +76,25 @@ $result = mysqli_query($conn, $sql);
 </div>
 
 <script>
+function confirmAction(id, type) {
+    const isAktifkan = (type === 'aktifkan');
+    
+    Swal.fire({
+        title: isAktifkan ? 'Aktifkan Kembali?' : 'Nonaktifkan Toko?',
+        text: isAktifkan ? "Toko akan terlihat kembali oleh pelanggan." : "Toko akan disembunyikan dan menjadi tidak aktif.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: isAktifkan ? '#28a745' : '#d33', 
+        cancelButtonColor: '#6e7881',
+        confirmButtonText: isAktifkan ? 'Ya, Aktifkan!' : 'Ya, Nonaktifkan!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = (isAktifkan ? 'proses-aktifkan.php?id=' : 'proses-nonaktifkan.php?id=') + id;
+        }
+    });
+}
+
 function toggleDropdown(event, menuId) {
     event.preventDefault(); 
     event.stopPropagation(); 
