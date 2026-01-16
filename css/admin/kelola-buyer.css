@@ -1,0 +1,135 @@
+.toko-container {
+    padding: 30px 40px;
+    background-color: #faf7f5;
+    min-height: 100vh;
+}
+
+.toko-header {
+    background: linear-gradient(90deg, #e3d6cc, #c7965c);
+    border-radius: 16px;
+    padding: 25px 30px;
+    margin-bottom: 40px;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 28px;
+    color: #121212;
+    margin: 5px 0;
+    font-family: sans-serif;
+}
+
+.buyer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 22px;
+}
+
+.buyer-card {
+    position: relative;
+    background-color: #e3d6cc;
+    border-radius: 18px;
+    padding: 18px 14px;
+    text-align: center;
+    transition: transform 0.2s;
+}
+
+.buyer-card:hover {
+    transform: translateY(-5px);
+}
+
+.buyer-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 1px solid #a6996b;
+    margin: 0 auto 10px;
+}
+
+.buyer-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.buyer-name {
+    font-size: 14px;
+    font-weight: bold;
+    color: #121212;
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.buyer-stats {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #61593d;
+}
+
+.stat-divider {
+    color: #a6996b;
+}
+
+.menu-container {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 10;
+}
+
+.menu-dots {
+    background: rgba(255, 255, 255, 0.6);
+    border: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #121212;
+    transition: 0.3s;
+}
+
+.menu-dots:hover {
+    background: #c7965c;
+    color: white;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 32px;
+    background-color: #ffffff;
+    min-width: 120px;
+    box-shadow: 0px 8px 16px rgba(0,0,0,0.1);
+    border-radius: 10px;
+    z-index: 20;
+    border: 1px solid #eee;
+}
+
+.dropdown-content.show {
+    display: block;
+}
+
+.dropdown-content a {
+    color: #e74c3c;
+    padding: 12px;
+    text-decoration: none;
+    display: block;
+    font-size: 13px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.dropdown-content a:hover {
+    background-color: #f9f9f9;
+}
