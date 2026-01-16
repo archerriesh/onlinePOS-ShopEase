@@ -1,10 +1,9 @@
-/* Container utama */
 .toko-container {
     padding: 30px 40px;
     background-color: #faf7f5;
+    min-height: 100vh;
 }
 
-/* Header section */
 .toko-header {
     background: linear-gradient(90deg, #e3d6cc, #c7965c);
     border-radius: 16px;
@@ -13,69 +12,137 @@
     margin-bottom: 40px;
 }
 
-.section-label {
-    font-size: 14px;
-    color: #61593d;
-}
-
 .section-title {
     text-align: center;
     font-size: 28px;
     color: #121212;
     margin: 5px 0;
+    font-family: sans-serif;
 }
 
-.add-product {
-    position: absolute;
-    right: 30px;
-    top: 30px;
-    background: transparent;
-    border: none;
-    color: #121212;
-    font-size: 14px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.add-product span {
-    font-weight: bold;
-    font-size: 18px;
-}
-
-/* Grid produk */
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 25px;
 }
 
-/* Card produk */
+.product-card-wrapper {
+    position: relative;
+    transition: transform 0.2s;
+}
+
+.product-card-wrapper:hover {
+    transform: translateY(-5px);
+}
+
 .product-card {
     background-color: #e3d6cc;
     border-radius: 18px;
     padding: 12px;
-    position: relative;
+    display: block;
+    text-decoration: none;
+    height: 100%;
 }
 
-/* Gambar produk */
 .product-image {
     border: 1px solid #a6996b;
     border-radius: 12px;
     height: 160px;
     margin-bottom: 10px;
+    overflow: hidden;
 }
 
-/* Info produk */
 .product-info {
     text-align: center;
 }
 
 .product-name {
-    font-size: 14px;
+    font-size: 15px;
     font-weight: bold;
     color: #121212;
     margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
+.product-stats {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.stat-rating {
+    font-size: 12px;
+    color: #121212;
+    font-weight: bold;
+}
+
+.stat-divider {
+    color: #a6996b;
+}
+
+.stat-sold {
+    font-size: 11px;
+    color: #61593d;
+}
+
+.menu-container {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 10;
+}
+
+.menu-dots {
+    background: rgba(255, 255, 255, 0.6);
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #121212;
+    transition: 0.3s;
+}
+
+.menu-dots:hover {
+    background: #c7965c;
+    color: white;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 35px;
+    background-color: #ffffff;
+    min-width: 120px;
+    box-shadow: 0px 8px 16px rgba(0,0,0,0.1);
+    border-radius: 10px;
+    z-index: 20;
+    border: 1px solid #eee;
+}
+
+.dropdown-content.show {
+    display: block;
+}
+
+.dropdown-content a {
+    color: #e74c3c;
+    padding: 12px;
+    text-decoration: none;
+    display: block;
+    font-size: 13px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.dropdown-content a:hover {
+    background-color: #f9f9f9;
+}

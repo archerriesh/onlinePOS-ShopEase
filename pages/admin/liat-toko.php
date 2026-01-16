@@ -19,25 +19,58 @@ $result = mysqli_query($conn, $sql);
         <?php while ($row = mysqli_fetch_assoc($result)) { 
             $idPenjual = $row['idPenjual'];
             $pathFotoToko = "../../foto/default-seller.jpg";
-            
         ?>
-            <a href="produk-per-toko.php?idPenjual=<?= $idPenjual; ?>" class="product-card">
-
-                <div class="product-image">
-                    <img src="<?= $pathFotoToko; ?>" alt="Logo <?= htmlspecialchars($row['namaPenjual']); ?>" style="width:100%; height:100%; object-fit:cover;">
+            <div class="product-card-wrapper">
+                
+                <div class="menu-container">
+                    <button class="menu-dots" onclick="toggleDropdown(event, 'menu-<?= $idPenjual ?>')">⋮</button>
+                    <div id="menu-<?= $idPenjual ?>" class="dropdown-content">
+                        <a href="proses-nonaktifkan.php?id=<?= $idPenjual ?>" class="btn-nonaktif" onclick="return confirm('Yakin ingin menonaktifkan toko ini?')">Nonaktifkan</a>
+                    </div>
                 </div>
 
-                <div class="product-info">
-                    <p class="product-name">
-                        <?= htmlspecialchars($row['namaPenjual']); ?>
-                    </p>
-                </div>
+                <a href="produk-per-toko.php?idPenjual=<?= $idPenjual; ?>" class="product-card">
 
-            </a>
+                    <div class="product-image">
+                        <img src="<?= $pathFotoToko; ?>" alt="Logo <?= htmlspecialchars($row['namaPenjual']); ?>" style="width:100%; height:100%; object-fit:cover;">
+                    </div>
+
+                    <div class="product-info">
+                        <p class="product-name">
+                            <?= htmlspecialchars($row['namaPenjual']); ?>
+                        </p>
+                        
+                        <div class="product-stats">
+                            <span class="stat-rating">⭐ 4.8</span>
+                            <span class="stat-divider">|</span>
+                            <span class="stat-sold">120 Terjual</span>
+                        </div>
+                    </div>
+
+                </a>
+            </div>
         <?php } ?>
 
     </div>
 
 </div>
+
+<script>
+function toggleDropdown(event, menuId) {
+    event.preventDefault(); 
+    event.stopPropagation(); 
+    document.querySelectorAll('.dropdown-content').forEach(d => {
+        if (d.id !== menuId) d.classList.remove('show');
+    });
+
+    document.getElementById(menuId).classList.toggle('show');
+}
+
+window.onclick = function(event) {
+    if (!event.target.matches('.menu-dots')) {
+        document.querySelectorAll('.dropdown-content').forEach(d => d.classList.remove('show'));
+    }
+}
+</script>
 
 <?php include __DIR__ . '/../../includes/footer.php'; ?>
