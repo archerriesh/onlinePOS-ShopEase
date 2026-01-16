@@ -148,6 +148,13 @@
     color: #4a4431;
 }
 
+.history-page .badge {
+    font-size: 12px;
+    padding: 8px 15px !important;
+    border-radius: 20px !important;
+    letter-spacing: 0.5px;
+}
+
 .history-page .badge.bg-info {
     background-color: #f1ede8 !important;
     color: #ba704a !important;

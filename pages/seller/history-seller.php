@@ -22,7 +22,11 @@ if ($tab === 'topay') {
 }
 
 $sqlTrx = "
-    SELECT tp.*, t.tglTransaksi, pl.namaPelanggan
+    SELECT tp.*, t.tglTransaksi, pl.namaPelanggan,
+           (SELECT SUM(d.hargaSatuan * d.jumlah) 
+            FROM tbDetTransaksi d 
+            JOIN tbProduk p ON d.idProduk = p.idProduk 
+            WHERE d.idTransaksi = tp.idTransaksi AND p.idPenjual = tp.idPenjual) as hitungTotal
     FROM tbTransaksiPenjual tp
     JOIN tbTransaksi t ON tp.idTransaksi = t.idTransaksi
     JOIN tbPelanggan pl ON t.idPelanggan = pl.idPelanggan
@@ -80,10 +84,31 @@ include '../../includes/header-seller.php';
             </div>
             <div class="card-body">
                 <?php while ($item = mysqli_fetch_assoc($details)): ?>
-                    <div class="d-flex align-items-center mb-2">
+                    <div class="product-item d-flex align-items-center mb-3">
+                        <?php 
+                            $basePath = "../../foto/produk/"; 
+                            $extensions = ['webp', 'jpg', 'jpeg', 'png'];
+                            $gambarTampil = "../../assets/img/default.jpg"; // Fallback jika tidak ada foto
+
+                            foreach ($extensions as $ext) {
+                                $fileCek = $basePath . $item['idProduk'] . "." . $ext;
+                                if (file_exists($fileCek)) {
+                                    $gambarTampil = $fileCek;
+                                    break;
+                                }
+                            }
+                        ?>
+
+                        <div class="product-img-wrapper me-3">
+                            <img src="<?= $gambarTampil; ?>" 
+                                alt="<?= htmlspecialchars($item['namaProduk']); ?>" 
+                                class="img-thumbnail rounded-3" 
+                                style="width: 70px; height: 70px; object-fit: cover; border: 1px solid #f1ece8;">
+                        </div>
+
                         <div class="flex-grow-1">
-                            <h6 class="mb-0"><?= htmlspecialchars($item['namaProduk']) ?></h6>
-                            <small class="text-muted"><?= $item['jumlah'] ?> x Rp<?= number_format($item['hargaSatuan'],0,',','.') ?></small>
+                            <h6 class="mb-0 fw-bold" style="color: #4a4431;"><?= htmlspecialchars($item['namaProduk']) ?></h6>
+                            <small class="text-muted"><?= $item['jumlah'] ?> x Rp <?= number_format($item['hargaSatuan'], 0, ',', '.') ?></small>
                         </div>
                     </div>
                 <?php endwhile; ?>
@@ -92,7 +117,7 @@ include '../../includes/header-seller.php';
                 
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <p class="mb-0">Total income: <strong>Rp<?= number_format($trx['totalPenjual'],0,',','.') ?></strong></p>
+                        <p class="mb-0">Total income: <strong>Rp<?= number_format($trx['hitungTotal'], 0, ',', '.') ?></strong></p>
                     </div>
                     
                     <form action="update-status-pesanan.php" method="POST" class="d-flex gap-2">
