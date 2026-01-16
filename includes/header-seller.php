@@ -24,7 +24,6 @@ $isIndex = isset($index) && $index === true;
 <body>
 
 <nav class="navbar navbar-expand-lg px-5 pt-4">
-    <!-- LOGO -->
     <a class="navbar-brand fw-bold" href="../../pages/seller/home-seller.php">
         ShopEase
     </a>
@@ -39,7 +38,6 @@ $isIndex = isset($index) && $index === true;
         <div class="collapse navbar-collapse" id="mainNavbar">
             <ul class="navbar-nav ms-auto gap-3">
 
-                <!-- HOME -->
                 <li class="nav-item">
                     <a class="nav-link <?= ($currentPage === 'home-seller.php') ? 'active' : '' ?>"
                        href="../../pages/seller/home-seller.php">
@@ -47,7 +45,6 @@ $isIndex = isset($index) && $index === true;
                     </a>
                 </li>
 
-                <!-- PRODUCTS -->
                 <li class="nav-item">
                     <a class="nav-link <?= ($currentPage === 'index-seller.php') ? 'active' : '' ?>"
                        href="../../pages/seller/index-seller.php">
@@ -55,7 +52,6 @@ $isIndex = isset($index) && $index === true;
                     </a>
                 </li>
 
-                <!-- SALES -->
                 <li class="nav-item">
                     <a class="nav-link <?= ($currentPage === 'promo-seller.php') ? 'active' : '' ?>"
                        href="../../pages/seller/promo-seller.php">
@@ -72,7 +68,7 @@ $isIndex = isset($index) && $index === true;
 
                 <li class="nav-item">
                     <a class="nav-link <?= ($currentPage === '.php') ? 'active' : '' ?>"
-                       href="../../pages/seller/.php">
+                       href="../../pages/profile.php">
                         Profile
                     </a>
                 </li>

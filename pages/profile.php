@@ -2,34 +2,34 @@
 session_start();
 require '../includes/dbOnlinePOS.php';
 
-if (!isset($_SESSION['login']) || 
-    ($_SESSION['role'] !== 'pelanggan' && $_SESSION['role'] !== 'penjual')) {
+if (!isset($_SESSION['login'])) {
     header("Location: sign-in-page.php");
     exit;
 }
 
 $username = $_SESSION['username'];
 
-if ($_SESSION['role'] === 'pelanggan'){
-    $query = "SELECT 
-            usernamePelanggan,
-            namaPelanggan,
-            kontakPelanggan,
-            alamatPelanggan
-          FROM tbPelanggan
-          WHERE usernamePelanggan = ?";
+$role = $_SESSION['role'];
 
-} elseif ($_SESSION['role'] === 'penjual'){
-    $query = "SELECT 
-            usernamePenjual,
-            namaPenjual,
-            kontakPenjual,
-            alamatPenjual
-          FROM tbPenjual
-          WHERE usernamePenjual = ?";
-} else {
-    header("Location: sign-in-page.php");
-    exit;
+switch ($role) {
+    case 'pelanggan':
+        $query = "SELECT usernamePelanggan AS username, namaPelanggan AS nama, 
+                  kontakPelanggan AS kontak, alamatPelanggan AS alamat 
+                  FROM tbPelanggan WHERE usernamePelanggan = ?";
+        break;
+    case 'penjual':
+        $query = "SELECT usernamePenjual AS username, namaPenjual AS nama, 
+                  kontakPenjual AS kontak, alamatPenjual AS alamat, kategoriToko 
+                  FROM tbPenjual WHERE usernamePenjual = ?";
+        break;
+    case 'admin':
+        $query = "SELECT username AS username, namaAdmin AS nama, 
+                  email AS kontak, alamat AS alamat, shiftStart, shiftEnd, specification 
+                  FROM tbAdmin WHERE username = ?";
+        break;
+    default:
+        header("Location: sign-in-page.php");
+        exit;
 }
 
 $stmt = mysqli_prepare($conn, $query);
@@ -39,8 +39,15 @@ mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $user = mysqli_fetch_assoc($result);
 
+$headerFile = '../includes/header-main.php'; 
+if ($role === 'admin') {
+    $headerFile = '../includes/header-admin.php';
+} elseif ($role === 'penjual') {
+    $headerFile = '../includes/header-seller.php';
+}
+
 $pageCSS = '../css/profile.css';
-include '../includes/header-main.php';
+include $headerFile; 
 ?>
 
 <main class="profile-page container-fluid px-5 py-4">
@@ -64,26 +71,42 @@ include '../includes/header-main.php';
         <div class="profile-card row">
           <h2 class="text-center mb-4">My Profile</h2>
           <div class="col-md-7 profile-info">
-
-            <div class="info-item">
-              <span class="label">Username</span>
-              <span class="value"><?= $user['usernamePelanggan']; ?></span>
-            </div>
-
+            
             <div class="info-item">
               <span class="label">Name</span>
-              <span class="value"><?= $user['namaPelanggan']; ?></span>
+              <span class="value"><?= $user['nama']; ?></span>
             </div>
-
+            
             <div class="info-item">
-              <span class="label">Phone number</span>
-              <span class="value"><?= $user['kontakPelanggan']; ?></span>
+              <span class="label">Username</span>
+              <span class="value"><?= $user['username']; ?></span>
+            </div>
+            
+            <div class="info-item">
+              <span class="label">Contact Info</span>
+              <span class="value"><?= $user['kontak']; ?></span>
             </div>
 
             <div class="info-item">
               <span class="label">Address</span>
-              <p class="value"><?= $user['alamatPelanggan']; ?></p>
+              <p class="value"><?= $user['alamat']; ?></p>
             </div>
+
+            <?php if ($role === 'admin') : ?>
+                <div class="info-item">
+                    <span class="label">Working Hours</span>
+                    <span class="value"><?= substr($user['shiftStart'], 0, 5); ?> - <?= substr($user['shiftEnd'], 0, 5); ?></span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Specification</span>
+                    <span class="value"><?= $user['specification']; ?></span>
+                </div>
+            <?php elseif ($role === 'penjual') : ?>
+                <div class="info-item">
+                    <span class="label">Store Category</span>
+                    <span class="value"><?= $user['kategoriToko']; ?></span>
+                </div>
+            <?php endif; ?>
 
             <div class="info-item">
               <span class="label">Password</span>
