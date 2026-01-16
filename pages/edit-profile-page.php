@@ -2,17 +2,44 @@
 session_start();
 require '../includes/dbOnlinePOS.php';
 
-$username = $_SESSION['username'];
+if (!isset($_SESSION['login'])) {
+    header("Location: sign-in-page.php");
+    exit;
+}
 
-$query = "SELECT * FROM tbPelanggan WHERE usernamePelanggan = ?";
+$username = $_SESSION['username'];
+$role = $_SESSION['role'];
+
+switch ($role) {
+    case 'pelanggan':
+        $query = "SELECT usernamePelanggan AS username, namaPelanggan AS nama, 
+                  kontakPelanggan AS kontak, alamatPelanggan AS alamat 
+                  FROM tbPelanggan WHERE usernamePelanggan = ?";
+        break;
+    case 'penjual':
+        $query = "SELECT usernamePenjual AS username, namaPenjual AS nama, 
+                  kontakPenjual AS kontak, alamatPenjual AS alamat, kategoriToko 
+                  FROM tbPenjual WHERE usernamePenjual = ?";
+        break;
+    case 'admin':
+        $query = "SELECT username AS username, namaAdmin AS nama, 
+                  email AS kontak, alamat AS alamat, specification 
+                  FROM tbAdmin WHERE username = ?";
+        break;
+}
+
 $stmt = mysqli_prepare($conn, $query);
 mysqli_stmt_bind_param($stmt, "s", $username);
 mysqli_stmt_execute($stmt);
 
 $user = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 
+$headerFile = '../includes/header-main.php'; 
+if ($role === 'admin') $headerFile = '../includes/header-admin.php';
+elseif ($role === 'penjual') $headerFile = '../includes/header-seller.php';
+
 $pageCSS = '../css/profile.css';
-include '../includes/header-main.php';
+include $headerFile;
 ?>
 
 <main class="profile-page container-fluid px-5 py-4">
@@ -39,30 +66,40 @@ include '../includes/header-main.php';
                             <h2 class="text-center mb-4">Change Profile</h2>
                             <form method="POST" action="update-profile.php" class="profile-info">
                                 <div class="info-item">
-                                <label>Username</label>
-                                <input type="text" name="usernamePelanggan"
-                                    value="<?= $user['usernamePelanggan']; ?>"
-                                    class="form-control">
-                                </div>
-
-                                <div class="info-item">
                                     <label>Name</label>
-                                    <input type="text" name="namaPelanggan"
-                                    value="<?= $user['namaPelanggan']; ?>"
+                                    <input type="text" name="nama"
+                                    value="<?= $user['nama']; ?>"
                                     class="form-control">
                                 </div>
 
                                 <div class="info-item">
-                                <label>Phone number</label>
-                                <input type="text" name="kontakPelanggan"
-                                value="<?= $user['kontakPelanggan']; ?>"
-                                class="form-control">
+                                <label>Username</label>
+                                <input type="text" name="username"
+                                    value="<?= $user['username']; ?>"
+                                    class="form-control">
                                 </div>
                                 
                                 <div class="info-item">
+                                    <label><?= ($role === 'admin') ? 'Email' : 'Phone Number'; ?></label>
+                                    <input type="text" name="kontak" value="<?= $user['kontak']; ?>" class="form-control" required>
+                                </div>
+                                
+                                <?php if ($role === 'penjual') : ?>
+                                    <div class="info-item">
+                                        <label>Store Category</label>
+                                        <input type="text" name="kategoriToko" value="<?= $user['kategoriToko']; ?>" class="form-control">
+                                    </div>
+                                <?php elseif ($role === 'admin') : ?>
+                                    <div class="info-item">
+                                        <label>Specification</label>
+                                        <input type="text" name="specification" value="<?= $user['specification']; ?>" class="form-control">
+                                    </div>
+                                <?php endif; ?>
+                                
+                                <div class="info-item">
                                     <label>Address</label>
-                                <textarea name="alamatPelanggan"
-                                class="form-control"><?= $user['alamatPelanggan']; ?></textarea>
+                                <textarea name="alamat"
+                                class="form-control"><?= $user['alamat']; ?></textarea>
                             </div>
                             
                             <div class="info-item">
