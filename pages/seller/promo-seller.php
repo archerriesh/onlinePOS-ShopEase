@@ -32,7 +32,7 @@ include __DIR__ . '/../../includes/dbOnlinePOS.php';
                         $icon = $isPersen ? "%" : "Rp";
                         $formattedDate = date('d M Y', strtotime($row['endDate']));
                 ?>
-                <div class="voucher-card">
+                <div class="voucher-card" onclick="window.location.href='kelola-voucher.php?id=<?php echo $row['idPromo']; ?>'">
                     <div class="voucher-icon"><?php echo $icon; ?></div>
                     <div class="voucher-divider"></div>
                     <div class="voucher-content">
