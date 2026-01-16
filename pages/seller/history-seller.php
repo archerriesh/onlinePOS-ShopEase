@@ -48,11 +48,11 @@ include '../../includes/header-seller.php';
 ?>
 
 <div class="history-page">
-    <div class="container py-4">
-        <h2 class="text-center mb-5 fw-bold" style="color: #4a4431;">Incoming Orders</h2>
+    <div class="container py-5">
+        <h2 class="text-center mb-5 fw-bold" style="color: #4a4431; letter-spacing: 1px;">Incoming Orders</h2>
         
-        <div class="d-flex justify-content-center mb-4">
-            <ul class="nav nav-pills gap-2">
+        <div class="d-flex justify-content-center mb-5">
+            <ul class="nav nav-pills border-0">
                 <li class="nav-item"><a href="?tab=all" class="nav-link <?= $tab=='all'?'active':'' ?>">All</a></li>
                 <li class="nav-item"><a href="?tab=topay" class="nav-link <?= $tab=='topay'?'active':'' ?>">To Pay</a></li>
                 <li class="nav-item"><a href="?tab=toship" class="nav-link <?= $tab=='toship'?'active':'' ?>">To Ship</a></li>
@@ -60,11 +60,13 @@ include '../../includes/header-seller.php';
                 <li class="nav-item"><a href="?tab=completed" class="nav-link <?= $tab=='completed'?'active':'' ?>">Completed</a></li>
             </ul>
         </div>
-    </div>
-
-    <?php if (mysqli_num_rows($transaksi) === 0): ?>
-        <p class="text-center mt-5">No orders found.</p>
-    <?php endif; ?>
+        
+        <?php if (mysqli_num_rows($transaksi) === 0): ?>
+            <div class="text-center py-5">
+                <i class="bi bi-box-seam display-1 text-muted opacity-25"></i>
+                <p class="mt-3 text-muted">No orders found in this category.</p>
+            </div>
+        <?php endif; ?>
 
     <?php while ($trx = mysqli_fetch_assoc($transaksi)): 
         mysqli_stmt_bind_param($stmtDetail, "ss", $trx['idTransaksi'], $idPenjual);

@@ -1,6 +1,7 @@
 .history-page {
     background: #faf7f5;
     padding: 40px 0;
+    min-height: 100vh;
 }
 
 .history-page .shop-header {
@@ -179,6 +180,11 @@
     transform: translateY(-2px);
 }
 
+.history-page .nav-pills {
+    border-bottom: 2px solid #eee5de; 
+    padding-bottom: 0;
+}
+
 .history-page .nav-pills .nav-link {
     background: transparent !important; 
     color: #61593d !important;
@@ -191,22 +197,20 @@
 }
 
 .history-page .nav-pills .nav-link.active {
-    background: transparent !important; 
-    color: #61593d !important;
-    font-size: 14px;
-    font-weight: 500;
-    border-radius: 0;
-    padding: 10px 20px;
-    position: relative;
-    transition: 0.3s;
+    color: #ba704a !important;
+    font-weight: 700;
 }
 
 .history-page .nav-pills .nav-link.active::after {
     content: "";
     position: absolute;
-    bottom: -12px;
+    bottom: 0; 
     left: 0;
     width: 100%;
     height: 3px;
     background-color: #ba704a;
+}
+
+.history-page .nav-pills .nav-link:hover {
+    color: #ba704a !important;
 }
