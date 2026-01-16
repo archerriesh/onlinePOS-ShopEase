@@ -21,9 +21,7 @@ $idPenjualLogin = isset($_SESSION['idPenjual']) ? $_SESSION['idPenjual'] : '';
         <div class="voucher-wrapper" id="voucherWrapper">
             <div class="voucher-grid">
                 <?php
-                // QUERY: Mencari yang idPenjual-nya mirip dengan ID login ATAU yang nama promo-nya ada nama "Andi Jaya"
-                // Kita gunakan LIKE % agar kalau ada spasi di DB tetap ketemu
-                $query = "SELECT * FROM tbpromo WHERE idPenjual LIKE '%$idPenjualLogin%' OR namaPromo LIKE '%Andi Jaya%' ORDER BY idPromo DESC";
+                $query = "SELECT * FROM tbpromo WHERE idPenjual = '$idPenjualLogin' ORDER BY idPromo DESC";
                 $result = mysqli_query($conn, $query);
 
                 if ($result && mysqli_num_rows($result) > 0) {
@@ -33,7 +31,7 @@ $idPenjualLogin = isset($_SESSION['idPenjual']) ? $_SESSION['idPenjual'] : '';
                         $icon = $isPersen ? "%" : "Rp";
                         $formattedDate = date('d M Y', strtotime($row['endDate']));
                 ?>
-                <div class="voucher-card">
+                <div class="voucher-card" style="cursor: pointer;" onclick="window.location.href='kelola-voucher.php?id=<?php echo $row['idPromo']; ?>'">
                     <div class="voucher-icon"><?php echo $icon; ?></div>
                     <div class="voucher-divider"></div>
                     <div class="voucher-content">
