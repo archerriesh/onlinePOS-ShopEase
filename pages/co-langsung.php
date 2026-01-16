@@ -1,7 +1,4 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 session_start();
 include '../includes/dbOnlinePOS.php';
 
@@ -21,6 +18,11 @@ if (isset($_GET['id']) && isset($_GET['qty'])) {
 }
 
 $modeCheckout = $_SESSION['mode_checkout'] ?? 'cart'; 
+
+if (isset($_GET['items'])) {
+    $_SESSION['selected_items_checkout'] = $_GET['items'];
+}
+
 $idPelanggan = $_SESSION['idPelanggan'];
 $payment = $_SESSION['payment'] ?? 'Belum Dipilih';
 $subPayment = $_SESSION['sub_payment'] ?? '';
@@ -80,9 +82,16 @@ if (isset($_POST['btn_checkout'])) {
             $idPelanggan, $bn_id, $bn_qty, $idPromo, $metodeLengkap, $ekspedisi
         );
     } else {
-        $sql = "CALL sp_checkout_keranjang(?, ?, ?, ?, @status)";
+        $selectedItems = $_POST['selected_items'] ?? '';
+        $sql = "CALL sp_checkout_keranjang_pilihan(?, ?, ?, ?, ?, @status)";
         $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "ssss", $idPelanggan, $idPromo, $metodeLengkap, $ekspedisi);
+        mysqli_stmt_bind_param($stmt, "sssss", 
+            $idPelanggan, 
+            $selectedItems, 
+            $idPromo, 
+            $metodeLengkap, 
+            $ekspedisi
+        );
     }
     
     if (!mysqli_stmt_execute($stmt)) {
@@ -96,7 +105,7 @@ if (isset($_POST['btn_checkout'])) {
     echo "<script>alert('$pesan');</script>";
 
     if (strpos($pesan, 'berhasil') !== false) {
-        unset($_SESSION['mode_checkout'], $_SESSION['bn_idProduk'], $_SESSION['bn_qty']);
+        unset($_SESSION['mode_checkout'], $_SESSION['bn_idProduk'], $_SESSION['bn_qty'], $_SESSION['selected_items_checkout']);
         echo "<script>window.location.href='history.php';</script>";
         exit;
     }
@@ -116,7 +125,7 @@ if ($modeCheckout === 'buy_now') {
         $totalHarga = $row['hargaSatuan'] * $row['jumlah'];
     }
 } else {
-    $itemParam = $_GET['items'] ?? ''; 
+    $itemParam = $_SESSION['selected_items_checkout'] ?? ($_GET['items'] ?? ''); 
     $selectedItems = !empty($itemParam) ? explode(',', $itemParam) : [];
     
     if (!empty($selectedItems)) {
@@ -245,7 +254,7 @@ include '../includes/header-main.php';
                 <input type="hidden" name="bn_idProduk" value="<?= $_SESSION['bn_idProduk'] ?>">
                 <input type="hidden" name="bn_qty" value="<?= $_SESSION['bn_qty'] ?>">
             <?php else: ?>
-                <input type="hidden" name="selected_items" value="<?= $_GET['items'] ?? '' ?>">
+                <input type="hidden" name="selected_items" value="<?= $itemParam ?>">
             <?php endif; ?>
 
             <div class="mb-3">
