@@ -24,55 +24,41 @@ $isIndex = isset($index) && $index === true;
 <body>
 
 <nav class="navbar navbar-expand-lg px-5 pt-4">
-    <a class="navbar-brand fw-bold" href="../../pages/seller/home-seller.php">
+    <a class="navbar-brand fw-bold" href="/onlinePOS/pages/seller/home-seller.php">
         ShopEase
     </a>
 
     <?php if (!$isIndex) : ?>
-        <button class="navbar-toggler" type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#mainNavbar">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="mainNavbar">
             <ul class="navbar-nav ms-auto gap-3">
-
                 <li class="nav-item">
                     <a class="nav-link <?= ($currentPage === 'home-seller.php') ? 'active' : '' ?>"
-                       href="../../pages/seller/home-seller.php">
-                        Home
-                    </a>
+                       href="/onlinePOS/pages/seller/home-seller.php">Home</a>
                 </li>
 
                 <li class="nav-item">
                     <a class="nav-link <?= ($currentPage === 'index-seller.php') ? 'active' : '' ?>"
-                       href="../../pages/seller/index-seller.php">
-                        Products
-                    </a>
+                       href="/onlinePOS/pages/seller/index-seller.php">Products</a>
                 </li>
 
                 <li class="nav-item">
                     <a class="nav-link <?= ($currentPage === 'promo-seller.php') ? 'active' : '' ?>"
-                       href="../../pages/seller/promo-seller.php">
-                        Voucher
-                    </a>
+                       href="/onlinePOS/pages/seller/promo-seller.php">Voucher</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link <?= ($currentPage === '.php') ? 'active' : '' ?>"
-                       href="../../pages/seller/.php">
-                        History
-                    </a>
+                    <a class="nav-link <?= ($currentPage === 'history-seller.php') ? 'active' : '' ?>"
+                       href="/onlinePOS/pages/seller/history-seller.php">History</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link <?= ($currentPage === '.php') ? 'active' : '' ?>"
-                       href="../../pages/profile.php">
-                        Profile
-                    </a>
+                    <a class="nav-link <?= ($currentPage === 'profile.php') ? 'active' : '' ?>"
+                       href="/onlinePOS/pages/profile.php">Profile</a>
                 </li>
-
             </ul>
         </div>
     <?php endif; ?>
