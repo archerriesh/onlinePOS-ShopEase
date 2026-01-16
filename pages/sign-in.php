@@ -45,7 +45,7 @@ if ($penjual && ($password === $penjual['passwordPenjual'] || password_verify($p
     $_SESSION['username'] = $penjual['usernamePenjual'];
     $_SESSION['idPenjual'] = $penjual['idPenjual']; 
 
-    header("Location: /onlinePOS/pages/seller/index-seller.php");
+    header("Location: /onlinePOS/pages/seller/home-seller.php");
     exit;
 }
 
