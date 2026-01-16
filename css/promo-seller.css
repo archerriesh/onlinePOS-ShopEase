@@ -1,78 +1,51 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+.promo-page {
+    margin-top: 40px;
 }
 
-
-.logo {
-    font-size: 28px;
-    font-weight: bold;
-    color: #c17a5a;
-}
-
-nav {
-    display: flex;
-    gap: 30px;
-}
-
-nav a {
-    text-decoration: none;
-    color: #c17a5a;
-    font-size: 18px;
-    transition: opacity 0.3s;
-}
-
-nav a:hover {
-    opacity: 0.7;
-}
-
-.button-container {
+.promo-page .button-container {
     display: flex;
     gap: 20px;
     justify-content: center;
     margin-bottom: 30px;
 }
 
-.btn {
-    padding: 15px 50px;
+.promo-page .btn {
+    padding: 12px 40px;
     border: none;
     border-radius: 50px;
-    font-size: 18px;
-    font-weight: 500;
+    font-size: 16px;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.3s ease;
 }
 
-.btn-primary {
-    background-color: #b8956a;
-    color: white;
-}
+.promo-page .btn-primary { background-color: #ba704a; color: #ffffff; }
+.promo-page .btn-secondary { background-color: #ba6f4a91; color: #ffffff; }
+.promo-page .btn:hover { transform: translateY(-2px); opacity: 0.9; }
 
-.btn-secondary {
-    background-color: #d4b896;
-    color: white;
-}
 
-.btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-}
-
-.voucher-container {
+.promo-page .voucher-container {
     background: linear-gradient(135deg, #e6d5c9 0%, #d4c4b8 100%);
     border-radius: 30px;
-    padding: 50px;
+    padding: 60px 80px; 
     position: relative;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-.arrow {
+.promo-page .voucher-wrapper {
+    overflow-x: hidden;
+    overflow-y: hidden;
+    scroll-behavior: smooth; 
+}
+
+.promo-page .arrow {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background-color: #d4b896;
-    color: #c17a5a;
+    background-color: #fdfdfd;
+    color: #ba704a;
     border: none;
     width: 45px;
     height: 45px;
@@ -80,140 +53,91 @@ nav a:hover {
     font-size: 20px;
     cursor: pointer;
     transition: all 0.3s;
-    z-index: 10;
+    z-index: 100; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.arrow:hover {
-    background-color: #a86849;
-    transform: translateY(-50%) scale(1.1);
+.promo-page .arrow:hover {
+    background-color: #ba704a;
+    color: #ffffff;
 }
 
-.arrow-left {
-    left: 20px;
-    color: #c17a5a;
-}
+.promo-page .arrow-left { left: 15px; }
+.promo-page .arrow-right { right: 15px; }
 
-.arrow-right {
-    right: 20px;
-    color: #c17a5a;
-}
-
-.voucher-grid {
+.promo-page .voucher-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
-    max-width: 1200px;
-    margin: 0 auto;
+    grid-template-rows: repeat(2, 140px); 
+    grid-auto-flow: column; 
+    grid-auto-columns: 320px; 
+    gap: 25px;
+    width: max-content; 
 }
 
-.voucher-card {
-    background: linear-gradient(135deg, #8a8466 0%, #6a6450 100%);
+.promo-page .voucher-card {
+    background-color: #61593d; 
     border-radius: 15px;
     padding: 20px;
     display: flex;
     align-items: center;
     gap: 15px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    transition: transform 0.3s;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease;
+    position: relative;
+    border: 1px solid rgba(255,255,255,0.1);
 }
 
-.voucher-card:hover {
-    transform: translateY(-5px);
+.promo-page .voucher-card:hover {
+    transform: scale(1.02);
 }
 
-.voucher-icon {
-    background-color: #2a2a1f;
-    color: white;
-    width: 60px;
-    height: 60px;
+.promo-page .voucher-icon {
+    background-color: #3f3f31;
+    color: #ffffff;
+    width: 55px;
+    height: 55px;
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 32px;
+    font-size: 24px;
     font-weight: bold;
     flex-shrink: 0;
 }
 
-.voucher-divider {
-    width: 2px;
-    height: 80px;
-    background: linear-gradient(to bottom, 
-        transparent 0%, 
-        transparent 10%, 
-        white 10%, 
-        white 15%, 
-        transparent 15%, 
-        transparent 25%, 
-        white 25%, 
-        white 30%, 
-        transparent 30%, 
-        transparent 40%, 
-        white 40%, 
-        white 45%, 
-        transparent 45%, 
-        transparent 55%, 
-        white 55%, 
-        white 60%, 
-        transparent 60%, 
-        transparent 70%, 
-        white 70%, 
-        white 75%, 
-        transparent 75%, 
-        transparent 85%, 
-        white 85%, 
-        white 90%, 
-        transparent 90%, 
-        transparent 100%
+.promo-page .voucher-divider {
+    width: 1px;
+    height: 80%;
+    background: repeating-linear-gradient(
+        to bottom,
+        transparent 0, transparent 5px,
+        rgba(255,255,255,0.3) 5px, rgba(255,255,255,0.3) 10px
     );
-    flex-shrink: 0;
 }
 
-.voucher-content {
+.promo-page .voucher-content {
     flex-grow: 1;
-    color: white;
+    color: #ffffff;
 }
 
-.voucher-title {
-    font-size: 18px;
-    font-weight: 500;
-    margin-bottom: 5px;
+.promo-page .voucher-title { font-size: 15px; font-weight: 500; margin-bottom: 2px; }
+.promo-page .voucher-value { font-size: 26px; font-weight: 800; }
+.promo-page .voucher-terms { font-size: 10px; opacity: 0.7; margin-top: 5px; }
+
+.promo-page .voucher-actions {
+    position: absolute;
+    bottom: 12px;
+    right: 15px;
 }
 
-.voucher-value {
-    font-size: 32px;
-    font-weight: bold;
-    margin-bottom: 5px;
+.promo-page .voucher-actions a {
+    margin-left: 8px;
+    transition: 0.2s;
 }
 
-.voucher-terms {
-    font-size: 10px;
-    opacity: 0.8;
-}
-
-@media (max-width: 1024px) {
-    .voucher-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-    .voucher-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    header {
-        flex-direction: column;
-        gap: 20px;
-    }
-    
-    .button-container {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .btn {
-        width: 100%;
-        max-width: 300px;
-    }
-}
+.promo-page .act-edit { color: #c7965c; }
+.promo-page .act-delete { color: #ba704a; }
+.promo-page .voucher-actions a:hover { opacity: 0.7; }
