@@ -3,16 +3,17 @@ session_start();
 require '../includes/dbOnlinePOS.php';
 mysqli_set_charset($conn, 'utf8mb4'); 
 
-if (!isset($_SESSION['username'])) {
-    header("Location: sign-in.php");
+if (!isset($_SESSION['login'])) {
+    header("Location: sign-in-page.php");
     exit;
 }
 
 $username = $_SESSION['username'];
-$from    = $_POST['from'] ?? 'profile';
-$current = $_POST['current_password'] ?? '';
-$new     = $_POST['new_password'] ?? '';
-$confirm = $_POST['confirm_password'] ?? '';
+$role     = $_SESSION['role'];
+$from     = $_POST['from'] ?? 'profile';
+$current  = $_POST['current_password'] ?? '';
+$new      = $_POST['new_password'] ?? '';
+$confirm  = $_POST['confirm_password'] ?? '';
 
 if ($new !== $confirm) {
     header("Location: ganti-pw-page.php?error=confirm&from=$from");
@@ -24,7 +25,28 @@ if (strlen($new) < 8) {
     exit;
 }
 
-$query = "SELECT idPelanggan, passwordPelanggan FROM tbPelanggan WHERE usernamePelanggan = ?";
+switch ($role) {
+    case 'pelanggan':
+        $table = "tbPelanggan";
+        $colID = "idPelanggan";
+        $colUser = "usernamePelanggan";
+        $colPass = "passwordPelanggan";
+        break;
+    case 'penjual':
+        $table = "tbPenjual"; 
+        $colID = "idPenjual"; 
+        $colUser = "usernamePenjual"; 
+        $colPass = "passwordPenjual"; 
+        break;
+    case 'admin':
+        $table = "tbAdmin"; 
+        $colID = "idAdmin"; 
+        $colUser = "username"; 
+        $colPass = "password"; 
+        break;
+}
+
+$query = "SELECT $colID, $colPass FROM $table WHERE $colUser = ?";
 $stmt = mysqli_prepare($conn, $query);
 mysqli_stmt_bind_param($stmt, "s", $username);
 mysqli_stmt_execute($stmt);
@@ -36,12 +58,14 @@ if (!$data) {
     exit;
 }
 
-$dbPassword = $data['passwordPelanggan'];
-$idPelanggan = $data['idPelanggan'];
+$dbPassword = trim($data[$colPass]);
+$idUser     = $data[$colID];
 
-$valid = (substr($dbPassword, 0, 4) === '$2y$') 
-    ? password_verify($current, $dbPassword) 
-    : ($current === $dbPassword);
+if (substr($dbPassword, 0, 4) === '$2y$') {
+    $valid = password_verify($current, $dbPassword);
+} else {
+    $valid = (trim($current) === $dbPassword);
+}
 
 if (!$valid) {
     header("Location: ganti-pw-page.php?error=wrong&from=$from");
@@ -52,11 +76,11 @@ $newHash = password_hash($new, PASSWORD_DEFAULT);
 mysqli_stmt_close($stmt); 
 
 try {
-    $stmtUpdate = mysqli_prepare($conn, "UPDATE tbPelanggan SET passwordPelanggan = ? WHERE idPelanggan = ?");
-    mysqli_stmt_bind_param($stmtUpdate, "ss", $newHash, $idPelanggan);
+    $stmtUpdate = mysqli_prepare($conn, "UPDATE $table SET $colPass = ? WHERE $colID = ?");
+    mysqli_stmt_bind_param($stmtUpdate, "ss", $newHash, $idUser);
 
     if (mysqli_stmt_execute($stmtUpdate)) {
-        session_regenerate_id(true);
+        session_regenerate_id(true); 
         
         $redirect = ($from === 'edit') 
             ? "edit-profile-page.php?success=password" 

@@ -2,22 +2,39 @@
 session_start();
 require '../includes/dbOnlinePOS.php';
 
-if (!isset($_SESSION['username'])) {
-    header("Location: sign-in.php");
+if (!isset($_SESSION['login'])) {
+    header("Location: sign-in-page.php");
     exit;
 }
 
 $username = $_SESSION['username'];
+$role = $_SESSION['role'];
 
-$query = "SELECT * FROM tbPelanggan WHERE usernamePelanggan = ?";
+switch ($role) {
+case 'pelanggan':
+        $query = "SELECT usernamePelanggan AS username, namaPelanggan AS nama FROM tbPelanggan WHERE usernamePelanggan = ?";
+        break;
+    case 'penjual':
+        $query = "SELECT usernamePenjual AS username, namaPenjual AS nama FROM tbPenjual WHERE usernamePenjual = ?";
+        break;
+    case 'admin':
+        $query = "SELECT username AS username, namaAdmin AS nama FROM tbAdmin WHERE username = ?";
+        break;
+}
+
 $stmt = mysqli_prepare($conn, $query);
 mysqli_stmt_bind_param($stmt, "s", $username);
 mysqli_stmt_execute($stmt);
+
 $user = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+
+$headerFile = '../includes/header-main.php'; 
+if ($role === 'admin') $headerFile = '../includes/header-admin.php';
+elseif ($role === 'penjual') $headerFile = '../includes/header-seller.php';
 
 $from = $_GET['from'] ?? 'profile'; 
 $pageCSS = '../css/profile.css';
-include '../includes/header-main.php';
+include $headerFile;
 ?>
 
 <main class="profile-page container-fluid px-5 py-4">
@@ -26,8 +43,6 @@ include '../includes/header-main.php';
             <div class="sidebar">
                 <a href="profile.php" class="icon active" title="Profile"><i class="bi bi-person"></i></a>
                 <a href="notifikasi.php" class="icon" title="Notifications"><i class="bi bi-bell"></i></a>
-                <a href="history.php" class="icon" title="Orders"><i class="bi bi-box-seam"></i></a>
-                <a href="liat-review.php" class="icon" title="Reviews"><i class="bi bi-chat-left-text"></i></a>
                 <a href="sign-out.php" class="icon logout" id="btnLogout"><i class="bi bi-box-arrow-right"></i></a>
             </div>
         </aside>
@@ -61,12 +76,12 @@ include '../includes/header-main.php';
 
                             <?php if ($from === 'profile'): ?>
                                 <div class="info-item">
-                                    <span class="label">Username</span>
-                                    <span class="value"><?= htmlspecialchars($user['usernamePelanggan']); ?></span>
+                                    <span class="label">Name</span>
+                                    <span class="value"><?= htmlspecialchars($user['nama']); ?></span>
                                 </div>
                                 <div class="info-item">
-                                    <span class="label">Name</span>
-                                    <span class="value"><?= htmlspecialchars($user['namaPelanggan']); ?></span>
+                                    <span class="label">Username</span>
+                                    <span class="value"><?= htmlspecialchars($user['username']); ?></span>
                                 </div>
                             <?php endif; ?>
 

@@ -1,6 +1,7 @@
 .history-page {
     background: #faf7f5;
     padding: 40px 0;
+    min-height: 100vh;
 }
 
 .history-page .shop-header {
@@ -130,4 +131,86 @@
 .total-text{
     font-weight: bold;
     color: #ba704a
+}
+
+.history-page .card {
+    border: none !important;
+    border-radius: 16px !important;
+    background: #ffffff;
+    box-shadow: 0 8px 24px rgba(139, 94, 60, 0.08) !important;
+    overflow: hidden;
+}
+
+.history-page .card-header {
+    background: #fdfaf8 !important;
+    border-bottom: 1px solid #f1ece8 !important;
+    font-size: 14px;
+    color: #4a4431;
+}
+
+.history-page .badge.bg-info {
+    background-color: #f1ede8 !important;
+    color: #ba704a !important;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 8px;
+}
+
+.history-page .form-select {
+    border: 1px solid #e3d6cc !important;
+    color: #61593d;
+}
+
+.history-page .form-select-sm {
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.history-page .btn-primary {
+    background-color: #ba704a !important;
+    color: #ffffff !important;
+    border: none;
+    font-weight: 600;
+}
+
+.history-page .btn-primary:hover {
+    background-color: #6f4a30;
+    transform: translateY(-2px);
+}
+
+.history-page .nav-pills {
+    border-bottom: 2px solid #eee5de; 
+    padding-bottom: 0;
+}
+
+.history-page .nav-pills .nav-link {
+    background: transparent !important; 
+    color: #61593d !important;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 0;
+    padding: 10px 20px;
+    position: relative;
+    transition: 0.3s;
+}
+
+.history-page .nav-pills .nav-link.active {
+    color: #ba704a !important;
+    font-weight: 700;
+}
+
+.history-page .nav-pills .nav-link.active::after {
+    content: "";
+    position: absolute;
+    bottom: 0; 
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #ba704a;
+}
+
+.history-page .nav-pills .nav-link:hover {
+    color: #ba704a !important;
 }
