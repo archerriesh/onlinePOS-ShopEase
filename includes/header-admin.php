@@ -41,7 +41,9 @@ $base_url = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/Onlin
                 <li class="nav-item">
                     <a class="nav-link <?= ($currentPage === 'liat-toko.php') ? 'active' : '' ?>"  href="../admin/liat-toko.php">Kelola Seller</a>
                 </li>
-
+                <li class="nav-item">
+                    <a class="nav-link <?= ($currentPage === 'kelola-buyer.php') ? 'active' : '' ?>"  href="../admin/kelola-buyer.php">Kelola Buyer</a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link <?= ($currentPage === 'liat-promo.php') ? 'active' : '' ?>"
                         href="/OnlinePOS/pages/admin/liat-promo.php">
