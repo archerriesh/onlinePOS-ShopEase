@@ -7,6 +7,8 @@ $sql = "SELECT idPelanggan, namaPelanggan, kategoriAkun, statusAktif FROM tbpela
 $result = mysqli_query($conn, $sql);
 ?>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <div class="toko-container">
     <div class="toko-header">
         <h1 class="section-title">Daftar Buyer</h1>
@@ -19,21 +21,32 @@ $result = mysqli_query($conn, $sql);
             $nama = $row['namaPelanggan'];
             $kategori = $row['kategoriAkun']; 
             $status = $row['statusAktif']; 
+            
+            $isNonaktif = ($status === 'N');
+            
             $icon = "";
             if (strtolower($kategori) == 'gold') $icon = "✨";
             elseif (strtolower($kategori) == 'silver') $icon = "🛡️";
             else $icon = "🥉";
         ?>
 
-        <div class="buyer-card">
+        <div class="buyer-card <?= $isNonaktif ? 'is-nonaktif' : '' ?>">
             <div class="menu-container">
                 <button class="menu-dots" onclick="toggleDropdown(event, 'b-<?= $id ?>')">⋮</button>
                 <div id="b-<?= $id ?>" class="dropdown-content">
-                    <a href="#">Nonaktifkan</a>
+                    <?php if ($isNonaktif) : ?>
+                        <a href="javascript:void(0)" class="btn-aktifkan" onclick="confirmAction('<?= $id ?>', 'aktifkan')">
+                            Aktifkan Kembali
+                        </a>
+                    <?php else : ?>
+                        <a href="javascript:void(0)" class="btn-nonaktif" onclick="confirmAction('<?= $id ?>', 'nonaktifkan')">
+                            Nonaktifkan
+                        </a>
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="buyer-avatar">
-                <img src="../../foto/default-user.jpg" alt="Buyer">
+                <img src="../../foto/keano.jpg" alt="Buyer">
             </div>
             <p class="buyer-name"><?= htmlspecialchars($nama) ?></p>
             <div class="buyer-badge badge-<?= strtolower($kategori) ?>">
@@ -47,6 +60,25 @@ $result = mysqli_query($conn, $sql);
 </div>
 
 <script>
+function confirmAction(id, type) {
+    const isAktifkan = (type === 'aktifkan');
+    
+    Swal.fire({
+        title: isAktifkan ? 'Aktifkan Kembali?' : 'Nonaktifkan Pengguna?',
+        text: isAktifkan ? "Akun pengguna akan dapat digunakan kembali." : "Pengguna ini tidak akan bisa melakukan transaksi.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: isAktifkan ? '#28a745' : '#d33',
+        cancelButtonColor: '#6e7881',
+        confirmButtonText: isAktifkan ? 'Ya, Aktifkan!' : 'Ya, Nonaktifkan!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = (isAktifkan ? 'proses-aktifkan-buyer.php?id=' : 'proses-nonaktifkan-buyer.php?id=') + id;
+        }
+    });
+}
+
 function toggleDropdown(event, menuId) {
     event.preventDefault();
     event.stopPropagation();
@@ -55,6 +87,7 @@ function toggleDropdown(event, menuId) {
     });
     document.getElementById(menuId).classList.toggle('show');
 }
+
 window.onclick = function(event) {
     if (!event.target.matches('.menu-dots')) {
         document.querySelectorAll('.dropdown-content').forEach(d => d.classList.remove('show'));
