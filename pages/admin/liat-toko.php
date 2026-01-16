@@ -4,7 +4,14 @@ $pageCSS = '../../css/admin/liat-toko.css';
 include __DIR__ . '/../../includes/header-admin.php';
 include __DIR__ . '/../../includes/dbOnlinePOS.php';
 
-$sql = "SELECT idPenjual, namaPenjual FROM tbpenjual";
+$sql = "SELECT idPenjual, namaPenjual, 
+        (SELECT AVG(fn_rating_produk(idProduk)) 
+         FROM tbproduk 
+         WHERE tbproduk.idPenjual = tbpenjual.idPenjual) as ratingToko,
+        (SELECT SUM(fn_Total_terjual(idProduk)) 
+         FROM tbproduk 
+         WHERE tbproduk.idPenjual = tbpenjual.idPenjual) as totalTerjual
+        FROM tbpenjual";
 $result = mysqli_query($conn, $sql);
 ?>
 
@@ -41,9 +48,9 @@ $result = mysqli_query($conn, $sql);
                         </p>
                         
                         <div class="product-stats">
-                            <span class="stat-rating">⭐ 4.8</span>
+                            <span class="stat-rating">⭐ <?= number_format($row['ratingToko'] ?? 0, 1); ?></span>
                             <span class="stat-divider">|</span>
-                            <span class="stat-sold">120 Terjual</span>
+                            <span class="stat-sold"><?= number_format($row['totalTerjual'] ?? 0, 0, ',', '.'); ?> Terjual</span>
                         </div>
                     </div>
 
