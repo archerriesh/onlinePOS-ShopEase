@@ -6,6 +6,7 @@ if (!isset($_POST['username'], $_POST['password'])) {
     exit;
 }
 
+$role     = $_POST['role'];
 $nama     = $_POST['nama'];
 $username = $_POST['username'];
 $kontak   = $_POST['kontak'];
@@ -18,36 +19,31 @@ if ($password !== $confirm) {
     exit;
 }
 
-$cek = "SELECT usernamePelanggan FROM tbPelanggan WHERE usernamePelanggan = ?";
-$stmtCek = mysqli_prepare($conn, $cek);
-mysqli_stmt_bind_param($stmtCek, "s", $username);
-mysqli_stmt_execute($stmtCek);
-mysqli_stmt_store_result($stmtCek);
-
-if (mysqli_stmt_num_rows($stmtCek) > 0) {
-    header("Location: sign-up-page.php?error=username");
-    exit;
-}
-mysqli_stmt_close($stmtCek);
-
 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-$query = "CALL sp_signup_pelanggan(?, ?, ?, ?, ?)";
-$stmt = mysqli_prepare($conn, $query);
+switch ($role) {
+    case 'admin':
+        $spec = $_POST['specification'];
+        $email = $_POST['kontak'];
+        $query = "CALL sp_signup_admin(?, ?, ?, ?, ?, ?)";
+        $stmt = mysqli_prepare($conn, $query);
+        mysqli_stmt_bind_param($stmt, "ssssss", $nama, $hashedPassword, $username, $spec, $email, $alamat);
+        break;
 
-if (!$stmt) {
-    die("Gagal menyiapkan SP: " . mysqli_error($conn));
+    case 'penjual':
+        $kategori = $_POST['kategoriToko'] ?? 'Umum';
+        $query = "CALL sp_signup_penjual(?, ?, ?, ?, ?, ?)";
+        $stmt = mysqli_prepare($conn, $query);
+        mysqli_stmt_bind_param($stmt, "ssssss", $nama, $username, $hashedPassword, $alamat, $kategori, $kontak);
+        break;
+
+    case 'pelanggan':
+        default:
+        $query = "CALL sp_signup_pelanggan(?, ?, ?, ?, ?)";
+        $stmt = mysqli_prepare($conn, $query);
+        mysqli_stmt_bind_param($stmt, "ssssss", $nama, $username, $hashedPassword, $alamat, $kontak);
+        break;
 }
-
-mysqli_stmt_bind_param(
-    $stmt, 
-    "sssss", 
-    $nama, 
-    $username, 
-    $hashedPassword, 
-    $alamat, 
-    $kontak
-);
 
 if (mysqli_stmt_execute($stmt)) {
     mysqli_stmt_close($stmt);
@@ -56,3 +52,4 @@ if (mysqli_stmt_execute($stmt)) {
 } else {
     die("Gagal Registrasi: " . mysqli_stmt_error($stmt));
 }
+?>
