@@ -59,7 +59,7 @@ $isIndex = isset($index) && $index === true;
                 <li class="nav-item">
                     <a class="nav-link <?= ($currentPage === 'promo-seller.php') ? 'active' : '' ?>"
                        href="../../pages/seller/promo-seller.php">
-                        Sales
+                        Voucher
                     </a>
                 </li>
 
