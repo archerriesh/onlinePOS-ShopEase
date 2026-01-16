@@ -35,7 +35,7 @@ if (!$stmt) {
 
 mysqli_stmt_bind_param(
     $stmt,
-    "ssiisi",
+    "ssiiss",
     $namaProduk,
     $kategoriProduk,
     $stok,
