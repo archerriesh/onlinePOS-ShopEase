@@ -18,7 +18,7 @@ mysqli_stmt_execute($stmtToko);
 $resToko = mysqli_stmt_get_result($stmtToko);
 $toko = mysqli_fetch_assoc($resToko);
 
-$sqlProduk = "SELECT idProduk, namaProduk, harga FROM tbproduk WHERE idPenjual = ?";
+$sqlProduk = "SELECT idProduk, namaProduk, harga, statusAktif FROM tbproduk WHERE idPenjual = ?";
 $stmtProduk = mysqli_prepare($conn, $sqlProduk);
 mysqli_stmt_bind_param($stmtProduk, "s", $idPenjual);
 mysqli_stmt_execute($stmtProduk);
@@ -30,7 +30,6 @@ $extensions = ['webp', 'jpg', 'jpeg', 'png'];
 
 while ($row = mysqli_fetch_assoc($resultProduk)) {
     $gambarFinal = "../../assets/img/default.jpg"; 
-
     foreach ($extensions as $ext) {
         $fileCek = $basePath . $row['idProduk'] . "." . $ext;
         if (file_exists($fileCek)) {
@@ -38,14 +37,14 @@ while ($row = mysqli_fetch_assoc($resultProduk)) {
             break; 
         }
     }
-    
     $row['gambarPath'] = $gambarFinal;
     $daftarProduk[] = $row;
 }
 ?>
 
-<div class="seller-products">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<div class="seller-products">
     <div class="seller-header">
         <span class="seller-tag">TOKO</span>
         <h1><?= htmlspecialchars($toko['namaPenjual'] ?? 'Nama Toko Tidak Ditemukan'); ?></h1>
@@ -53,14 +52,26 @@ while ($row = mysqli_fetch_assoc($resultProduk)) {
 
     <main class="content">
         <div class="product-grid">
-
             <?php if (count($daftarProduk) > 0): ?>
                 <?php foreach ($daftarProduk as $produk): ?>
                     
-                    <div class="product-card">
+                    <div class="product-card <?= (trim($produk['statusAktif']) === 'N') ? 'is-nonaktif' : '' ?>">
+                        
+                        <div class="options-menu">
+                            <button class="dots-btn" onclick="toggleMenu(event, 'menu-<?= $produk['idProduk'] ?>')">⋮</button>
+                            <div class="menu-dropdown" id="menu-<?= $produk['idProduk'] ?>">
+                                <?php if ($produk['statusAktif'] === 'Y'): ?>
+                                    <button class="menu-item btn-nonaktif" onclick="prosesStatus('<?= $produk['idProduk'] ?>', 'nonaktif')">Nonaktifkan</button>
+                                <?php else: ?>
+                                    <button class="menu-item btn-aktifkan" onclick="prosesStatus('<?= $produk['idProduk'] ?>', 'aktifkan')">Aktifkan Kembali</button>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+
                         <a href="liat-produk.php?id=<?= $produk['idProduk']; ?>">
                             <img src="<?= $produk['gambarPath']; ?>" alt="<?= htmlspecialchars($produk['namaProduk']); ?>">
                             <h3><?= htmlspecialchars($produk['namaProduk']); ?></h3>
+                            <p>Rp <?= number_format($produk['harga'], 0, ',', '.'); ?></p>
                         </a>
                     </div>
 
@@ -68,10 +79,60 @@ while ($row = mysqli_fetch_assoc($resultProduk)) {
             <?php else: ?>
                 <p class="empty">Toko ini belum memiliki produk.</p>
             <?php endif; ?>
-
         </div>
     </main>
-
 </div>
+
+<script>
+function toggleMenu(e, menuId) {
+    e.preventDefault();
+    e.stopPropagation();
+    document.querySelectorAll('.menu-dropdown').forEach(m => {
+        if(m.id !== menuId) m.classList.remove('show');
+    });
+    document.getElementById(menuId).classList.toggle('show');
+}
+
+document.addEventListener('click', () => {
+    document.querySelectorAll('.menu-dropdown').forEach(m => m.classList.remove('show'));
+});
+
+function prosesStatus(id, tipe) {
+    const isAktifkan = (tipe === 'aktifkan');
+    
+    Swal.fire({
+        title: isAktifkan ? 'Aktifkan Produk?' : 'Nonaktifkan Produk?',
+        text: isAktifkan ? "Produk akan muncul kembali di toko." : "Produk tidak akan terlihat oleh pelanggan.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: isAktifkan ? '#28a745' : '#d33',
+        cancelButtonColor: '#ba704a',
+        confirmButtonText: isAktifkan ? 'Ya, Aktifkan!' : 'Ya, Nonaktifkan!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('update_produk_status.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `id=${id}&action=${tipe}`
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    Swal.fire({
+                        title: 'Berhasil!',
+                        text: data.message,
+                        icon: 'success',
+                        confirmButtonColor: '#ba704a'
+                    }).then(() => location.reload());
+                } else {
+                    Swal.fire('Error', 'Gagal update: ' + data.message, 'error');
+                }
+            })
+            .catch(err => Swal.fire('Error', 'Koneksi bermasalah', 'error'));
+        }
+    });
+}
+</script>
 
 <?php include __DIR__ . '/../../includes/footer.php'; ?>
