@@ -3,7 +3,7 @@ $pageCSS = '../../css/admin/kelola-buyer.css';
 include __DIR__ . '/../../includes/header-admin.php';
 require __DIR__ . '/../../includes/dbOnlinePOS.php';
 
-$sql = "SELECT idPelanggan, namaPelanggan, kategoriAkun, statusAktif FROM tbpelanggan";
+$sql = "SELECT idPelanggan, namaPelanggan, kategoriAkun, statusAktif, fotoPelanggan AS foto_profil FROM tbpelanggan";
 $result = mysqli_query($conn, $sql);
 ?>
 
@@ -21,6 +21,14 @@ $result = mysqli_query($conn, $sql);
             $nama = $row['namaPelanggan'];
             $kategori = $row['kategoriAkun']; 
             $status = $row['statusAktif']; 
+            $namaFile = $row['foto_profil']; 
+            $fotoDefault = "../../foto/default.png"; 
+
+            if (empty($namaFile) || !file_exists("../../foto/" . $namaFile)) {
+                $pathFoto = $fotoDefault;
+            } else {
+                $pathFoto = "../../foto/" . $namaFile;
+            }
             
             $isNonaktif = ($status === 'N');
             
@@ -46,7 +54,7 @@ $result = mysqli_query($conn, $sql);
                 </div>
             </div>
             <div class="buyer-avatar">
-                <img src="../../foto/keano.jpg" alt="Buyer">
+                <img src="<?= $pathFoto; ?>" alt="Profile">
             </div>
             <p class="buyer-name"><?= htmlspecialchars($nama) ?></p>
             <div class="buyer-badge badge-<?= strtolower($kategori) ?>">

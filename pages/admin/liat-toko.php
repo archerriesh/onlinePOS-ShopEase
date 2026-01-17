@@ -4,7 +4,7 @@ $pageCSS = '../../css/admin/liat-toko.css';
 include __DIR__ . '/../../includes/header-admin.php';
 include __DIR__ . '/../../includes/dbOnlinePOS.php';
 
-$sql = "SELECT idPenjual, namaPenjual, statusAktif,
+$sql = "SELECT idPenjual, namaPenjual, statusAktif, fotoPenjual AS foto_profil,
         (SELECT AVG(fn_rating_produk(idProduk)) 
          FROM tbproduk 
          WHERE tbproduk.idPenjual = tbpenjual.idPenjual) as ratingToko,
@@ -28,7 +28,15 @@ $result = mysqli_query($conn, $sql);
         <?php while ($row = mysqli_fetch_assoc($result)) { 
             $idPenjual = $row['idPenjual'];
             $status = $row['statusAktif']; 
-            $pathFotoToko = "../../foto/default-seller.jpg";
+            $namaFile = $row['foto_profil']; 
+            $fotoDefault = "../../foto/default-seller.jpg"; 
+
+            if (empty($namaFile) || !file_exists("../../foto/" . $namaFile)) {
+                $pathFoto = $fotoDefault;
+            } else {
+                $pathFoto = "../../foto/" . $namaFile;
+            }
+
             $isNonaktif = ($status === 'N');
             $wrapperClass = $isNonaktif ? 'product-card-wrapper is-nonaktif' : 'product-card-wrapper';
         ?>
@@ -52,7 +60,7 @@ $result = mysqli_query($conn, $sql);
                 <a href="produk-per-toko.php?idPenjual=<?= $idPenjual; ?>" class="product-card">
 
                     <div class="product-image">
-                        <img src="<?= $pathFotoToko; ?>" alt="Logo <?= htmlspecialchars($row['namaPenjual']); ?>" style="width:100%; height:100%; object-fit:cover;">
+                        <img src="<?= $pathFoto; ?>" alt="Logo <?= htmlspecialchars($row['namaPenjual']); ?>" style="width:100%; height:100%; object-fit:cover;">
                     </div>
 
                     <div class="product-info">
