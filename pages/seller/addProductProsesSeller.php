@@ -10,59 +10,53 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// ambil id penjual 
+// ambil id penjual
 $idPenjual = $_SESSION['idPenjual'] ?? null;
 if (!$idPenjual) {
     die("Session idPenjual tidak ditemukan");
 }
 
-// ambil data dari form
 $namaProduk     = $_POST['namaProduk'];
 $kategoriProduk = $_POST['kategoriProduk'];
 $stok           = (int) $_POST['stok'];
-$harga          = (int) $_POST['harga'];
+$harga          = (float) $_POST['harga'];
 $keterangan     = $_POST['keterangan'];
 
+$query = "CALL sp_insert_produk(?, ?, ?, ?, ?, ?)";
+$stmt  = mysqli_prepare($conn, $query);
 
-// generate idProduk baru
-$cek = mysqli_query($conn, "SELECT MAX(idProduk) AS last_id FROM tbproduk");
-$row = mysqli_fetch_assoc($cek);
-
-if ($row['last_id']) {
-    $angka = (int) substr($row['last_id'], 2); 
-    $angka++;
-    $idProduk = "PR" . str_pad($angka, 3, "0", STR_PAD_LEFT);
-} else {
-    $idProduk = "PR001"; 
-}
-
-// insert ke database
-$query = "INSERT INTO tbproduk 
-          (idProduk, namaProduk, kategoriProduk, stok, harga, keterangan, idPenjual)
-          VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-$stmt = mysqli_prepare($conn, $query);
 if (!$stmt) {
     die("Prepare gagal: " . mysqli_error($conn));
 }
 
 mysqli_stmt_bind_param(
     $stmt,
-    "sssiiss",
-    $idProduk,
+    "sssids",
+    $idPenjual,
     $namaProduk,
     $kategoriProduk,
     $stok,
     $harga,
-    $keterangan,
-    $idPenjual
+    $keterangan
 );
 
-if (!mysqli_stmt_execute($stmt)) {
-    die("Execute gagal: " . mysqli_stmt_error($stmt));
+mysqli_stmt_execute($stmt);
+
+
+$result   = mysqli_stmt_get_result($stmt);
+$row      = mysqli_fetch_assoc($result);
+$idProduk = $row['idProduk'] ?? null;
+
+
+mysqli_stmt_free_result($stmt);
+mysqli_next_result($conn);
+mysqli_stmt_close($stmt);
+
+if (!$idProduk) {
+    die("Gagal mendapatkan idProduk");
 }
 
-// upload gambar produk
+// upload gambar
 if (!empty($_FILES['gambar']['name'])) {
     $ext = strtolower(pathinfo($_FILES['gambar']['name'], PATHINFO_EXTENSION));
     $allowed = ['jpg', 'jpeg', 'png', 'webp'];
@@ -75,12 +69,12 @@ if (!empty($_FILES['gambar']['name'])) {
 
         move_uploaded_file(
             $_FILES['gambar']['tmp_name'],
-            $folder . $idProduk . "." . $ext 
+            $folder . $idProduk . "." . $ext
         );
     }
 }
 
-// tampilin notif sukses
+// notif sukses
 $_SESSION['success'] = "Produk berhasil ditambahkan!";
 header("Location: index-seller.php");
 exit;
