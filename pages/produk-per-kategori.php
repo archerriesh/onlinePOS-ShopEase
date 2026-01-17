@@ -16,10 +16,13 @@ if ($kategori == '') {
     $sql = "
         SELECT idProduk, namaProduk, harga
         FROM tbproduk
-        WHERE kategoriProduk = ?
+        WHERE kategoriProduk LIKE ?
     ";
     $stmt = mysqli_prepare($conn, $sql);
-    mysqli_stmt_bind_param($stmt, "s", $kategori);
+    
+    $searchKategori = "%" . $kategori . "%"; 
+    
+    mysqli_stmt_bind_param($stmt, "s", $searchKategori);
 }
 
 mysqli_stmt_execute($stmt);
@@ -75,15 +78,31 @@ function closePopup() {
     </form>
 
     <ul class="category-list">
-      <li><a href="?kategori=Elektronik">Electronics</a></li>
-      <li><a href="?kategori=Fashion Pria">Man clothes</a></li>
-      <li><a href="?kategori=Fashion Wanita">Woman clothes</a></li>
-      <li><a href="?kategori=Fashion Muslim">Muslim Fashion</a></li>
-      <li><a href="?kategori=Alat Musik">Music</a></li>
-      <li><a href="?kategori=Alat Tulis">Stationery</a></li>
-      <li><a href="?kategori=Kecantikan">Skincare & Makeup</a></li>
-      <li><a href="?kategori=Hobi & Koleksi">Hobbies</a></li>
-      <li><a href="?kategori=Olahraga">Sport</a></li>
+        <li><a href="?kategori=Fashion Pria">Man Clothes</a></li>
+        <li><a href="?kategori=Fashion Wanita">Woman Clothes</a></li>
+        <li><a href="?kategori=Fashion Muslim">Muslim Fashion</a></li>
+        <li><a href="?kategori=Fashion Anak">Kids Fashion</a></li>
+        <li><a href="?kategori=Kecantikan">Skincare & Makeup</a></li>
+        <li><a href="?kategori=Parfum">Perfume</a></li>
+
+        <li><a href="?kategori=Elektronik">Electronics</a></li>
+        <li><a href="?kategori=Aksesoris Gadget">Gadget Accessories</a></li>
+        <li><a href="?kategori=Handphone">Smartphone</a></li>
+        <li><a href="?kategori=Komputer & Laptop">Computer & Laptop</a></li>
+
+        <li><a href="?kategori=Makanan & Minuman">Food & Drinks</a></li>
+        <li><a href="?kategori=Minuman">Beverages</a></li>
+        <li><a href="?kategori=Bakery">Bakery</a></li>
+        <li><a href="?kategori=Frozen Food">Frozen Food</a></li>
+        <li><a href="?kategori=Kesehatan">Health Care</a></li>
+
+        <li><a href="?kategori=Olahraga">Sports</a></li>
+        <li><a href="?kategori=Hobi & Koleksi">Hobbies & Collections</a></li>
+        <li><a href="?kategori=Alat Musik">Music</a></li>
+        <li><a href="?kategori=Alat Tulis">Stationery</a></li>
+        <li><a href="?kategori=Home & Living">Home & Living</a></li>
+        <li><a href="?kategori=Kebutuhan Harian">Daily Needs</a></li>
+        <li><a href="?kategori=Mainan Anak">Toys</a></li>
     </ul>
   </aside>
 

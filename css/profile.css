@@ -2,6 +2,50 @@
   min-height: 100vh;
 }
 
+.profile-header h2 {
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.buyer-badge {
+    display: inline-flex; 
+    align-items: center;
+    gap: 8px;
+    padding: 6px 18px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.badge-gold {
+    background: linear-gradient(145deg, #ffe066, #cf9f00);
+    color: #5c4300;
+    border: 1px solid #b8860b;
+    box-shadow: 0 2px 8px rgba(218, 165, 32, 0.3);
+}
+
+.badge-silver {
+    background: linear-gradient(145deg, #e0e0e0, #8a8a8a);
+    color: #2c2c2c;
+    border: 1px solid #777;
+    box-shadow: 0 2px 8px rgba(128, 128, 128, 0.3);
+}
+
+.badge-bronze {
+    background: linear-gradient(145deg, #d3915c, #8b4513);
+    color: #fff;
+    border: 1px solid #5d2e0a;
+    box-shadow: 0 2px 8px rgba(139, 69, 19, 0.3);
+}
+
+.mx-auto {
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
 .profile-page aside {
   align-self: flex-start;
 }
@@ -72,10 +116,18 @@
   align-items: stretch;
 }
 
+.profile-card .row {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    margin: 0;
+}
+
 .profile-info {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  padding-right: 30px;
 }
 
 .info-item {
@@ -121,6 +173,18 @@
   color: #ba704a;
   margin-top: 4px;
   width: fit-content;
+}
+
+.image-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 20px; 
+}
+
+.image-section .position-relative {
+    margin-top: 10px;
 }
 
 .image-section img {
