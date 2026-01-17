@@ -47,12 +47,12 @@ $isIndex = isset($index) && $index === true;
 
                 <li class="nav-item">
                     <a class="nav-link <?= ($currentPage === 'promo-seller.php') ? 'active' : '' ?>"
-                       href="/onlinePOS/pages/seller/promo-seller.php">Voucher</a>
+                       href="/onlinePOS/pages/seller/promo-seller.php">Vouchers</a>
                 </li>
 
                 <li class="nav-item">
                     <a class="nav-link <?= ($currentPage === 'history-seller.php') ? 'active' : '' ?>"
-                       href="/onlinePOS/pages/seller/history-seller.php">History</a>
+                       href="/onlinePOS/pages/seller/orders.php">Orders</a>
                 </li>
 
                 <li class="nav-item">
