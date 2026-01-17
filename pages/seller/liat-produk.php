@@ -45,11 +45,18 @@ if (!$produk) {
 } 
 
 if ($filterRating !== '') {
-    $sqlReview = "SELECT r.rating, r.isiKomentar, r.tglReview FROM tbReview r WHERE r.idProduk = ? AND r.rating = ? ORDER BY r.tglReview DESC";
+    $sqlReview = "SELECT r.idReview, r.rating, r.isiKomentar, r.tglReview, r.balasanPenjual
+    FROM tbReview r 
+    WHERE r.idProduk = ? AND r.rating = ? 
+    ORDER BY r.tglReview DESC
+    ";
     $stmtReview = mysqli_prepare($conn, $sqlReview);
     mysqli_stmt_bind_param($stmtReview, "si", $idProduk, $filterRating);
 } else {
-    $sqlReview = "SELECT r.rating, r.isiKomentar, r.tglReview FROM tbReview r WHERE r.idProduk = ? ORDER BY r.tglReview DESC";
+    $sqlReview = "SELECT r.idReview, r.rating, r.isiKomentar, r.tglReview, r.balasanPenjual
+    FROM tbReview r 
+    WHERE r.idProduk = ? 
+    ORDER BY r.tglReview DESC";
     $stmtReview = mysqli_prepare($conn, $sqlReview);
     mysqli_stmt_bind_param($stmtReview, "s", $idProduk);
 }
@@ -149,16 +156,51 @@ foreach ($extensions as $ext) {
                                 ?>
                             </div>
                             <p><?= htmlspecialchars($r['isiKomentar']); ?></p>
+                            <?php if (!empty($r['balasanPenjual'])): ?>
+                                <div class="seller-reply" style="margin-top: 10px; padding: 10px; background: #f9f9f9; border-left: 3px solid #8d9b7a;">
+                                    <strong>Your Reply:</strong>
+                                    <p><?= htmlspecialchars($r['balasanPenjual']); ?></p>
+                                </div>
+                            <?php else: ?>
+                                <button class="btn-reply" 
+                                        onclick="openReplyModal('<?= $idProduk ?>', '<?= $r['idReview'] ?>')"
+                                        style="margin-top: 10px; background: none; border: 1px solid #8d9b7a; color: #8d9b7a; cursor: pointer; padding: 5px 15px; border-radius: 5px;">
+                                    Reply
+                                </button>
+                            <?php endif; ?>
                         </div>
                     </div>
                 <?php endforeach; ?>
             <?php else: ?>
-                <p style="opacity:0.6;">Belum ada review untuk produk ini</p>
+                <p style="opacity:0.6;">No reviews yet.</p>
             <?php endif; ?>
         </div>
     </div>
 </section>
 </main>
+
+<div id="replyModal" class="modal-overlay" style="display:none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
+    <div class="reply-box" style="background: #E5D9CD; padding: 30px; border-radius: 15px; width: 450px; text-align: center; position: relative;">
+        <span onclick="closeReplyModal()" style="position:absolute; right:15px; top:10px; cursor:pointer;">&times;</span>
+        
+        <h2 style="font-size: 24px; margin-bottom: 10px;">Write your reply</h2>
+        <p style="font-size: 14px; color: #555; margin-bottom: 20px;">
+            Take a moment to respond and let your customer know you care. Show your appreciation by replying to this review.
+        </p>
+
+        <form action="process-reply.php" method="POST">
+            <input type="hidden" name="idReview" id="modalIdReview">
+            <input type="hidden" name="idProduk" id="modalIdProduk">
+            
+            <textarea name="isiBalasan" placeholder="Write your reply here..." required
+                      style="width: 100%; height: 120px; border-radius: 10px; border: 1px solid #C4B5A5; padding: 10px; margin-bottom: 20px;"></textarea>
+            
+            <button type="submit" style="background: #5D5A43; color: white; border: none; padding: 12px 50px; border-radius: 10px; cursor: pointer; font-weight: bold;">
+                Send
+            </button>
+        </form>
+    </div>
+</div>
 
 <script>
 const idProduk = <?= json_encode($produk['idProduk']); ?>;
@@ -185,6 +227,22 @@ ratingRadios.forEach(radio => {
 if (window.location.hash === '#review') {
     const reviewSection = document.getElementById('review');
     if (reviewSection) reviewSection.scrollIntoView({ behavior: 'smooth' });
+}
+
+function openReplyModal(idProduk, idReview) {
+    document.getElementById('modalIdProduk').value = idProduk;
+    document.getElementById('modalIdReview').value = idReview;
+    document.getElementById('replyModal').style.display = 'flex';
+}
+
+function closeReplyModal() {
+    document.getElementById('replyModal').style.display = 'none';
+}
+
+window.onclick = function(event) {
+    if (event.target == document.getElementById('replyModal')) {
+        closeReplyModal();
+    }
 }
 </script>
 
