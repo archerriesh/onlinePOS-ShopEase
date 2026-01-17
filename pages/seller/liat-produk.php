@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-$pageCSS = '../../css/admin/liat-produk.css';
+$pageCSS = '../../css/liat-produks.css';
 
 include __DIR__ . '/../../includes/header-seller.php';
 include __DIR__ . '/../../includes/dbOnlinePOS.php';
@@ -95,6 +95,18 @@ foreach ($extensions as $ext) {
         <p class="description">
             <?= nl2br(htmlspecialchars($produk['keterangan'])); ?>
         </p>
+
+        <div class="seller-actions" style="margin-top: 30px; display: flex; gap: 10px;">
+            <a href="editProduct-seller.php?id=<?= $produk['idProduk']; ?>" 
+               style="background-color: #f0ad4e; color: white; padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: bold;">
+               ✎ Edit Product Info
+            </a>
+            
+            <button onclick="confirmDelete('<?= $produk['idProduk']; ?>')" 
+                    style="background-color: #d9534f; color: white; padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+               🗑 Non-activate Product
+            </button>
+        </div>
 
         </div>
 </section> 
