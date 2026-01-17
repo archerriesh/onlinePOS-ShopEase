@@ -23,31 +23,14 @@ if (isset($_GET['action']) && $_GET['action'] == 'cek_promo') {
         exit;
     }
 
-    $sqlTotal = "SELECT SUM(jumlah * hargaSatuan) as total_belanja FROM tbKeranjang WHERE idPelanggan = ?";
-    $stmtT = mysqli_prepare($conn, $sqlTotal);
-    mysqli_stmt_bind_param($stmtT, "s", $idPelanggan);
-    mysqli_stmt_execute($stmtT);
-    $resT = mysqli_stmt_get_result($stmtT);
-    $rowT = mysqli_fetch_assoc($resT);
-    $totalBelanja = (float)($rowT['total_belanja'] ?? 0);
+    $sqlFunc = "SELECT fn_promo_terpakai(?, ?, NULL) AS potongan";
+    $stmtF = mysqli_prepare($conn, $sqlFunc);
+    mysqli_stmt_bind_param($stmtF, "ss", $idPelanggan, $idPromo);
+    mysqli_stmt_execute($stmtF);
+    $resF = mysqli_stmt_get_result($stmtF);
+    $rowF = mysqli_fetch_assoc($resF);
 
-    $sqlCek = "SELECT minimalTransaksi, nominalPotongan, persentasePotongan FROM tbpromo WHERE idPromo = ?";
-    $stmtC = mysqli_prepare($conn, $sqlCek);
-    mysqli_stmt_bind_param($stmtC, "s", $idPromo);
-    mysqli_stmt_execute($stmtC);
-    $resC = mysqli_stmt_get_result($stmtC);
-    $promo = mysqli_fetch_assoc($resC);
-
-    $potongan = 0;
-    if ($promo) {
-        if ($totalBelanja >= (float)$promo['minimalTransaksi']) {
-            if ($promo['persentasePotongan'] > 0) {
-                $potongan = $totalBelanja * ($promo['persentasePotongan'] / 100);
-            } else {
-                $potongan = (float)$promo['nominalPotongan'];
-            }
-        }
-    }
+    $potongan = (float)($rowF['potongan'] ?? 0);
 
     echo json_encode(['potongan' => $potongan]);
     exit; 
@@ -154,7 +137,7 @@ $defaultImg = "../assets/img/default.jpg";
                     <?php else: ?>
                         <?php mysqli_data_seek($resultPromo, 0); 
                         while ($promo = mysqli_fetch_assoc($resultPromo)): 
-                            $isPercent = ($promo['persentasePotongan'] > 0);
+                            $isPercent = (strpos(strtolower($promo['tipePromo']), 'diskon') !== false);
                             $label = $isPercent ? $promo['persentasePotongan']."%" : "Rp ".number_format($promo['nominalPotongan'],0,',','.');
                         ?>
                             <div class="promo-item">
@@ -215,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 .then(res => res.json())
                 .then(data => {
                     if (parseFloat(data.potongan) <= 0) {
-                        alert("Voucher tidak memenuhi syarat.");
+                        alert("Voucher tidak memenuhi syarat atau keranjang kosong.");
                         resetVoucher();
                     } else {
                         activeVoucherId = promoId;
@@ -224,7 +207,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         updateSummary();
                         voucherWrapper.classList.remove('active');
                     }
-                });
+                })
+                .catch(err => console.error("Error fetching promo:", err));
         };
     });
 
@@ -251,7 +235,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        html += `<div id="rowPotongan" style="color:red"><span>Potongan Promo</span><span>- Rp ${currentPotongan.toLocaleString('id-ID')}</span></div>`;
+        if (currentPotongan > 0) {
+            html += `<div id="rowPotongan" style="color:red"><span>Potongan Promo</span><span>- Rp ${currentPotongan.toLocaleString('id-ID')}</span></div>`;
+        }
         
         summaryHeader.textContent = `Total ${totalQty} Barang`;
         summaryDetails.innerHTML = html;
@@ -268,7 +254,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (this.classList.contains('plus')) val++;
             else val--;
             
-            if (val < 1) { if(!confirm('Hapus item?')) return; val = 0; }
+            if (val < 1) { 
+                if(!confirm('Hapus item dari keranjang?')) return; 
+                val = 0; 
+            }
             input.value = val;
             form.submit();
         };
@@ -276,10 +265,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('btnCheckout').onclick = () => {
         const ids = Array.from(checkboxes).filter(c => c.checked).map(c => c.value);
-        if(!ids.length) return alert("Pilih barang!");
-        window.location.href = `co-langsung.php?mode=cart&items=${ids.join(',')}`;
+        if(!ids.length) return alert("Pilih minimal satu barang!");
+        
+        let checkoutUrl = `co-langsung.php?mode=cart&items=${ids.join(',')}`;
+        if (activeVoucherId) {
+            checkoutUrl += `&promo=${activeVoucherId}`;
+        }
+        window.location.href = checkoutUrl;
     };
-
     updateSummary();
 });
 </script>
