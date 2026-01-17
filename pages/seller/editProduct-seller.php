@@ -28,12 +28,16 @@ if (!$product) {
     die("Produk tidak ditemukan atau Anda tidak memiliki akses.");
 }
 
+// Cari foto produk
+$files = glob("../../foto/produk/" . $product['idProduk'] . ".*");
+$imgPath = $files[0] ?? "../../assets/img/default.jpg";
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $namaProduk = trim($_POST['namaProduk']);
     $kategoriProduk = trim($_POST['kategoriProduk']);
     $stok = (int) $_POST['stok'];
-    $harga = (int) $_POST['harga_raw']; // <-- FIX: ambil angka asli
+    $harga = (int) $_POST['harga_raw']; 
     $keterangan = trim($_POST['keterangan']);
 
     $updateSql = "
@@ -59,6 +63,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     );
 
     if ($updateStmt->execute()) {
+        // Handle upload gambar (opsional)
+        if (!empty($_FILES['gambar']['name'])) {
+            $ext = strtolower(pathinfo($_FILES['gambar']['name'], PATHINFO_EXTENSION));
+            $allowed = ['jpg', 'jpeg', 'png', 'webp'];
+
+            if (in_array($ext, $allowed)) {
+                $folder = "../../foto/produk/";
+                if (!is_dir($folder)) {
+                    mkdir($folder, 0777, true);
+                }
+
+                // Hapus file gambar lama jika ada
+                $oldFiles = glob($folder . $product['idProduk'] . ".*");
+                foreach ($oldFiles as $oldFile) {
+                    @unlink($oldFile);
+                }
+
+                // Upload gambar baru
+                move_uploaded_file(
+                    $_FILES['gambar']['tmp_name'],
+                    $folder . $product['idProduk'] . "." . $ext
+                );
+            }
+        }
+
         header("Location: index-seller.php?msg=updated");
         exit;
     } else {
@@ -71,7 +100,7 @@ include __DIR__ . '/../../includes/header-seller.php';
 
 <main class="seller-edit-container">
 
-<form method="POST">
+<form method="POST" enctype="multipart/form-data">
 
 <?php if (isset($error)): ?>
 <div style="color:red; margin-bottom:15px;">
@@ -117,14 +146,12 @@ include __DIR__ . '/../../includes/header-seller.php';
 <div class="right">
 
 <div class="card-seller baris">
-    <h2>Upload Image</h2>
-
-    <div class="image-box"></div>
-
-    <div class="thumbs">
-        <div class="thumb"></div>
-        <div class="thumb"></div>
-        <div class="thumb add">+</div>
+    <h2>Change Image</h2>
+    <input type="file" id="gambarInput" name="gambar" accept="image/*">
+    <div class="image-box">
+        <div class="main-image" id="mainImagePreview"
+             style="background-image: url('<?= htmlspecialchars($imgPath) ?>');">
+        </div>  
     </div>
 </div>
 
@@ -145,11 +172,31 @@ include __DIR__ . '/../../includes/header-seller.php';
 </div>
 
 <button type="submit" class="btn">Save Changes</button>
+<a href="index-seller.php" class="btn btn-cancel">Cancel</a>
 
 </div>
 
 </form>
 </main>
+
+<script>
+const gambarInput = document.getElementById('gambarInput');
+const mainImagePreview = document.getElementById('mainImagePreview');
+
+gambarInput.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    
+    if (file) {
+        const reader = new FileReader();
+        
+        reader.onload = function(event) {
+            mainImagePreview.style.backgroundImage = 'url(' + event.target.result + ')';
+        };
+        
+        reader.readAsDataURL(file);
+    }
+});
+</script>
 
 <?php include __DIR__ . '/../../includes/footer.php'; ?>
 
