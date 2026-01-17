@@ -58,7 +58,7 @@ include '../../includes/header-seller.php';
         <div class="d-flex justify-content-center mb-5">
             <ul class="nav nav-pills border-0">
                 <li class="nav-item"><a href="?tab=all" class="nav-link <?= $tab=='all'?'active':'' ?>">All</a></li>
-                <li class="nav-item"><a href="?tab=topay" class="nav-link <?= $tab=='topay'?'active':'' ?>">To Pay</a></li>
+                <li class="nav-item"><a href="?tab=topay" class="nav-link <?= $tab=='topay'?'active':'' ?>">Waiting for payment</a></li>
                 <li class="nav-item"><a href="?tab=toship" class="nav-link <?= $tab=='toship'?'active':'' ?>">To Ship</a></li>
                 <li class="nav-item"><a href="?tab=toreceive" class="nav-link <?= $tab=='toreceive'?'active':'' ?>">Shipped</a></li>
                 <li class="nav-item"><a href="?tab=completed" class="nav-link <?= $tab=='completed'?'active':'' ?>">Completed</a></li>
@@ -88,7 +88,7 @@ include '../../includes/header-seller.php';
                         <?php 
                             $basePath = "../../foto/produk/"; 
                             $extensions = ['webp', 'jpg', 'jpeg', 'png'];
-                            $gambarTampil = "../../assets/img/default.jpg"; // Fallback jika tidak ada foto
+                            $gambarTampil = "../../assets/img/default.jpg";
 
                             foreach ($extensions as $ext) {
                                 $fileCek = $basePath . $item['idProduk'] . "." . $ext;

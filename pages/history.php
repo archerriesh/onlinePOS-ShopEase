@@ -13,9 +13,9 @@ $tab = $_GET['tab'] ?? 'all';
 
 $whereStatus = "";
 if ($tab === 'topay') {
-    $whereStatus = "AND tp.statusPesanan = 'Menunggu Pembayaran'";
+    $whereStatus = "AND tp.statusPesanan = 'Pesanan Baru' AND tp.statusPengiriman IS NULL";
 } elseif ($tab === 'toship') {
-    $whereStatus = "AND tp.statusPengiriman = 'Menunggu Pengiriman'";
+    $whereStatus = "AND tp.statusPengiriman = 'Dikemas'";
 } elseif ($tab === 'toreceive') {
     $whereStatus = "AND tp.statusPengiriman = 'Dikirim'";
 } elseif ($tab === 'completed') {
@@ -26,7 +26,7 @@ $sqlTrx = "
     SELECT DISTINCT t.idTransaksi, t.tglTransaksi
     FROM tbTransaksi t
     JOIN tbTransaksiPenjual tp ON t.idTransaksi = tp.idTransaksi
-    WHERE t.idPelanggan = ?
+    WHERE t.idPelanggan = ? 
     $whereStatus
     ORDER BY t.tglTransaksi DESC
 ";
@@ -36,21 +36,16 @@ mysqli_stmt_bind_param($stmtTrx, "s", $idPelanggan);
 mysqli_stmt_execute($stmtTrx);
 $transaksi = mysqli_stmt_get_result($stmtTrx);
 
-$stmtToko = mysqli_prepare($conn, "
+$sqlToko = "
     SELECT 
-        tp.idTrxPenjual, 
-        tp.idPenjual, 
-        pj.namaPenjual, 
-        tp.totalPenjual, 
-        tp.statusPesanan, 
-        tp.subTotal,
-        tp.biayaAdmin,
-        tp.ongkir,
-        tp.potonganPromo
+        tp.idTrxPenjual, tp.idPenjual, pj.namaPenjual, 
+        tp.totalPenjual, tp.statusPesanan, tp.statusPengiriman,
+        tp.subTotal, tp.biayaAdmin, tp.ongkir, tp.potonganPromo
     FROM tbTransaksiPenjual tp
     JOIN tbPenjual pj ON tp.idPenjual = pj.idPenjual
-    WHERE tp.idTransaksi = ?
-");
+    WHERE tp.idTransaksi = ? $whereStatus
+";
+$stmtToko = mysqli_prepare($conn, $sqlToko);
 
 $stmtDetail = mysqli_prepare($conn, "
     SELECT d.idProduk, d.hargaSatuan, d.jumlah, p.namaProduk
@@ -81,13 +76,17 @@ $defaultImage = "../assets/img/default.jpg";
         </div>
 
         <?php if (mysqli_num_rows($transaksi) === 0): ?>
-            <p class="text-center mt-5">There's no order yet.</p>
+            <div class="text-center py-5">
+                <i class="bi bi-box-seam display-1 text-muted opacity-25"></i>
+                <p class="mt-3 text-muted">There's no order yet.</p>
+            </div>
         <?php endif; ?>
 
         <?php while ($trx = mysqli_fetch_assoc($transaksi)) { 
             mysqli_stmt_bind_param($stmtToko, "s", $trx['idTransaksi']);
             mysqli_stmt_execute($stmtToko);
             $tokos = mysqli_stmt_get_result($stmtToko);
+
         ?>
 
             <?php while ($toko = mysqli_fetch_assoc($tokos)) { 
