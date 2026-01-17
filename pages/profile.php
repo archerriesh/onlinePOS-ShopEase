@@ -60,7 +60,15 @@ include $headerFile;
         <a href="profile.php" class="icon active" title="Profile">
           <i class="bi bi-person"></i>
         </a>
-        <a href="notifikasi.php" class="icon" title="Notifications">
+        <?php
+          $notifLink = 'notifikasi.php'; 
+          if ($role === 'penjual') {
+              $notifLink = 'seller/notifikasi-seller.php'; 
+          } elseif ($role === 'admin') {
+              $notifLink = 'notifikasi-admin.php';
+          }
+        ?>
+        <a href="<?= $notifLink; ?>" class="icon" title="Notifications">
           <i class="bi bi-bell"></i>
         </a>
         <a href="sign-out.php" class="icon logout" id="btnLogout" data-bs-toggle="modal" data-bs-target="#logoutModal">
@@ -76,7 +84,7 @@ include $headerFile;
             <h2>My Profile</h2>
             <?php 
               if (isset($_SESSION['role']) && $_SESSION['role'] == 'pelanggan') : 
-                  $kategori = $userData['kategoriAkun'] ?? 'Bronze'; 
+                  $kategori = $user['kategoriAkun'] ?? 'Bronze'; 
                   
                   $icon = "🥉";
                   if (strtolower($kategori) == 'gold') $icon = "✨";
