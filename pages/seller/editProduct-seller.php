@@ -122,7 +122,7 @@ include __DIR__ . '/../../includes/header-seller.php';
                 <input type="hidden" name="harga_raw" id="harga_raw" value="<?= (int)$product['harga'] ?>">
             </div>
             <button type="submit" class="btn">Save Changes</button>
-            <a href="index-seller.php" class="btn btn-cancel">Cancel</a>
+            <a href="products.php" class="btn btn-cancel">Cancel</a>
         </div>
     </form>
 </main>
@@ -153,7 +153,7 @@ hargaDisplay.addEventListener('input', function(e) {
         timer: 2000,
         showConfirmButton: false
     }).then(() => {
-        window.location.href = "index-seller.php";
+        window.location.href = "products.php";
     });
 <?php endif; ?>
 </script>

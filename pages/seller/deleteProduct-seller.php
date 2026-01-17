@@ -16,5 +16,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['idProduk'])) {
         $_SESSION['error'] = "Database error!";
     }
 }
-header('Location: index-seller.php');
+header('Location: products.php');
 exit;

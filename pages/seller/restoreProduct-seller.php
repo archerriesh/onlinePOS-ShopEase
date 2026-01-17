@@ -6,7 +6,7 @@ session_start();
 require '../../includes/dbOnlinePOS.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: index-seller.php');
+    header('Location: products.php');
     exit;
 }
 
@@ -45,6 +45,6 @@ if (!empty($idProduk)) {
 }
 
 mysqli_close($conn);
-header('Location: index-seller.php');
+header('Location: products.php');
 exit;
 ?>
