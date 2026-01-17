@@ -41,7 +41,7 @@ switch ($role) {
         default:
         $query = "CALL sp_signup_pelanggan(?, ?, ?, ?, ?)";
         $stmt = mysqli_prepare($conn, $query);
-        mysqli_stmt_bind_param($stmt, "ssssss", $nama, $username, $hashedPassword, $alamat, $kontak);
+        mysqli_stmt_bind_param($stmt, "sssss", $nama, $username, $hashedPassword, $alamat, $kontak);
         break;
 }
 

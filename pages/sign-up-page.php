@@ -47,14 +47,14 @@ include '../includes/header-auth.php';
                 <div id="sectionPenjual" style="display:none;">
                     <div class="mb-3">
                         <label class="form-label">Shop Category</label>
-                        <input type="text" name="kategoriToko" class="form-control" placeholder="Shop Category" required>
+                        <input type="text" name="kategoriToko" class="form-control" placeholder="Shop Category">
                     </div>
                 </div>
 
                 <div id="sectionAdmin" style="display:none;">
                     <div class="mb-3">
                         <label class="form-label">Specification</label>
-                        <input type="text" name="specification" class="form-control" placeholder="Specification" required>
+                        <input type="text" name="specification" class="form-control" placeholder="Specification">
                     </div>
                     <div class="alert alert-info py-2">
                         <small>

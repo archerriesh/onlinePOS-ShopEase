@@ -151,14 +151,20 @@ $defaultImage = "../assets/img/default.jpg";
                                     </div>
                                     <div class="detail-row">
                                         <span>Voucher Applied</span>
-                                        <span>Rp<?= number_format($toko['ongkir'],0,',','.') ?></span>
+                                        <span>Rp<?= number_format($toko['potonganPromo'],0,',','.') ?></span>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="total-text">
                                 Total:
-                                <span>Rp<?= number_format($toko['totalPenjual'], 0, ',', '.') ?></span>
+                                <?php 
+                                    $totalTampil = $toko['totalPenjual'];
+                                    if (is_null($totalTampil)) {
+                                        $totalTampil = ($toko['subTotal'] + $toko['biayaAdmin'] + $toko['ongkir']) - ($toko['potonganPromo'] ?? 0);
+                                    }
+                                ?>
+                                <span>Rp<?= number_format($totalTampil, 0, ',', '.') ?></span>
                             </div>
 
                             <?php if ($toko['statusPesanan'] === 'Selesai'): ?>
