@@ -57,7 +57,7 @@ $isIndex = isset($index) && $index === true;
 
                 <li class="nav-item">
                     <a class="nav-link <?= ($currentPage === 'profile.php') ? 'active' : '' ?>"
-                       href="../onlinePOS/pages/profile.php">Profile</a>
+                       href="/onlinePOS/pages/profile.php">Profile</a>
                 </li>
             </ul>
         </div>
