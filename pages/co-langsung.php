@@ -34,6 +34,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'hitung_total') {
 
     $idPromo = $_GET['idPromo'] ?? '';
     $kurir   = $_GET['kurir'] ?? 'J&T Express';
+    $subtotalInput = (float)($_GET['subtotal'] ?? 0);
 
     $sqlO = "SELECT fn_ongkos_kirim(?) AS ongkir";
     $stmtO = mysqli_prepare($conn, $sqlO);
@@ -41,7 +42,6 @@ if (isset($_GET['action']) && $_GET['action'] == 'hitung_total') {
     mysqli_stmt_execute($stmtO);
     $resO = mysqli_fetch_assoc(mysqli_stmt_get_result($stmtO));
     $ongkir = (float)($resO['ongkir'] ?? 0);
-    $subtotalInput = $_GET['subtotal'] ?? 0;
 
     $sqlA = "SELECT fn_biaya_admin(?, ?) AS admin";
     $stmtA = mysqli_prepare($conn, $sqlA);
@@ -52,12 +52,22 @@ if (isset($_GET['action']) && $_GET['action'] == 'hitung_total') {
 
     $potongan = 0;
     if (!empty($idPromo)) {
-        $sqlP = "SELECT fn_promo_terpakai(?, ?, ?, ?) AS pot";
-        $stmtP = mysqli_prepare($conn, $sqlP);
-        mysqli_stmt_bind_param($stmtP, "ssss", $idPromo, $idPelanggan, $kurir, $metodeLengkap);
-        mysqli_stmt_execute($stmtP);
-        $resP = mysqli_fetch_assoc(mysqli_stmt_get_result($stmtP));
-        $potongan = (float)($resP['pot'] ?? 0);
+        $sqlCek = "SELECT minimalTransaksi, nominalPotongan, persentasePotongan FROM tbpromo WHERE idPromo = ?";
+        $stmtC = mysqli_prepare($conn, $sqlCek);
+        mysqli_stmt_bind_param($stmtC, "s", $idPromo);
+        mysqli_stmt_execute($stmtC);
+        $resC = mysqli_stmt_get_result($stmtC);
+        $promo = mysqli_fetch_assoc($resC);
+
+        if ($promo) {
+            if ($subtotalInput >= (float)$promo['minimalTransaksi']) {
+                if ($promo['persentasePotongan'] > 0) {
+                    $potongan = $subtotalInput * ($promo['persentasePotongan'] / 100);
+                } else {
+                    $potongan = (float)$promo['nominalPotongan'];
+                }
+            }
+        }
     }
 
     echo json_encode([
@@ -75,35 +85,22 @@ if (isset($_POST['btn_checkout'])) {
     if ($modeCheckout === 'buy_now') {
         $bn_id = $_SESSION['bn_idProduk'] ?? '';
         $bn_qty = $_SESSION['bn_qty'] ?? 0;
-        
         $sql = "CALL sp_checkout_transaksi(?, ?, ?, ?, ?, ?, @status)";
         $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "ssisss", 
-            $idPelanggan, $bn_id, $bn_qty, $idPromo, $metodeLengkap, $ekspedisi
-        );
+        mysqli_stmt_bind_param($stmt, "ssisss", $idPelanggan, $bn_id, $bn_qty, $idPromo, $metodeLengkap, $ekspedisi);
     } else {
         $selectedItems = $_POST['selected_items'] ?? '';
         $sql = "CALL sp_checkout_keranjang_pilihan(?, ?, ?, ?, ?, @status)";
         $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "sssss", 
-            $idPelanggan, 
-            $selectedItems, 
-            $idPromo, 
-            $metodeLengkap, 
-            $ekspedisi
-        );
+        mysqli_stmt_bind_param($stmt, "sssss", $idPelanggan, $selectedItems, $idPromo, $metodeLengkap, $ekspedisi);
     }
     
-    if (!mysqli_stmt_execute($stmt)) {
-        die("<h1>Gagal Eksekusi SQL!</h1>" . mysqli_error($conn));
-    }
-
+    mysqli_stmt_execute($stmt);
     $res = mysqli_query($conn, "SELECT @status AS pesan");
     $row = mysqli_fetch_assoc($res);
-    $pesan = $row['pesan'] ?? 'Gagal: Prosedur tidak mengembalikan status.';
+    $pesan = $row['pesan'] ?? 'Gagal.';
 
     echo "<script>alert('$pesan');</script>";
-
     if (strpos($pesan, 'berhasil') !== false) {
         unset($_SESSION['mode_checkout'], $_SESSION['bn_idProduk'], $_SESSION['bn_qty'], $_SESSION['selected_items_checkout']);
         echo "<script>window.location.href='history.php';</script>";
@@ -115,7 +112,7 @@ $items = [];
 $totalHarga = 0;
 
 if ($modeCheckout === 'buy_now') {
-    $stmt = mysqli_prepare($conn, "SELECT idProduk, namaProduk, harga as hargaSatuan, idPenjual FROM tbProduk WHERE idProduk = ?");
+    $stmt = mysqli_prepare($conn, "SELECT idProduk, namaProduk, harga as hargaSatuan FROM tbProduk WHERE idProduk = ?");
     mysqli_stmt_bind_param($stmt, "s", $_SESSION['bn_idProduk']);
     mysqli_stmt_execute($stmt);
     $res = mysqli_stmt_get_result($stmt);
@@ -127,21 +124,14 @@ if ($modeCheckout === 'buy_now') {
 } else {
     $itemParam = $_SESSION['selected_items_checkout'] ?? ($_GET['items'] ?? ''); 
     $selectedItems = !empty($itemParam) ? explode(',', $itemParam) : [];
-    
     if (!empty($selectedItems)) {
         $placeholders = implode(',', array_fill(0, count($selectedItems), '?'));
-        $sql = "SELECT k.idProduk, k.jumlah, p.namaProduk, p.harga as hargaSatuan, p.idPenjual 
-        FROM tbKeranjang k 
-        JOIN tbProduk p ON k.idProduk = p.idProduk 
-        WHERE k.idPelanggan = ? AND k.idProduk IN ($placeholders)";
-        
+        $sql = "SELECT k.idProduk, k.jumlah, p.namaProduk, p.harga as hargaSatuan FROM tbKeranjang k JOIN tbProduk p ON k.idProduk = p.idProduk WHERE k.idPelanggan = ? AND k.idProduk IN ($placeholders)";
         $stmt = mysqli_prepare($conn, $sql);
         $types = "s" . str_repeat("s", count($selectedItems));
         mysqli_stmt_bind_param($stmt, $types, $idPelanggan, ...$selectedItems);
-        
         mysqli_stmt_execute($stmt);
         $res = mysqli_stmt_get_result($stmt);
-        
         while ($row = mysqli_fetch_assoc($res)) {
             $items[] = $row;
             $totalHarga += ($row['jumlah'] * $row['hargaSatuan']);
@@ -150,16 +140,14 @@ if ($modeCheckout === 'buy_now') {
 }
 
 $arrayIdProduk = array_column($items, 'idProduk');
-$listIdProduk = "'" . implode("','", $arrayIdProduk) . "'";
+$listIdProduk = count($arrayIdProduk) > 0 ? "'" . implode("','", $arrayIdProduk) . "'" : "''";
+$currentDate = date('Y-m-d H:i:s');
+$sqlPromo = "SELECT * FROM tbpromo WHERE startDate <= ? AND endDate >= ? AND statusAktif = 'Y'";
+$stmtPromo = mysqli_prepare($conn, $sqlPromo);
+mysqli_stmt_bind_param($stmtPromo, "ss", $currentDate, $currentDate);
+mysqli_stmt_execute($stmtPromo);
+$resultPromo = mysqli_stmt_get_result($stmtPromo);
 
-$sqlPromo = "SELECT * FROM tbPromo 
-             WHERE statusAktif = 'Y' 
-             AND endDate >= NOW()
-             AND (
-                idAdmin IS NOT NULL 
-                OR idPenjual IN (SELECT idPenjual FROM tbProduk WHERE idProduk IN ($listIdProduk))
-             )";
-$resultPromo = mysqli_query($conn, $sqlPromo);
 $stmtU = mysqli_prepare($conn, "SELECT namaPelanggan, kontakPelanggan, alamatPelanggan FROM tbpelanggan WHERE idPelanggan = ?");
 mysqli_stmt_bind_param($stmtU, "s", $idPelanggan);
 mysqli_stmt_execute($stmtU);
@@ -174,10 +162,9 @@ include '../includes/header-main.php';
         <h3 class="section-title">Ordered Items</h3>
         <?php 
         $basePath = "../foto/produk/";
-        $exts = ['webp', 'jpg', 'jpeg', 'png'];
         foreach ($items as $item): 
             $gambar = "../assets/img/default.jpg"; 
-            foreach ($exts as $e) {
+            foreach (['webp', 'jpg', 'jpeg', 'png'] as $e) {
                 if (file_exists($basePath . $item['idProduk'] . "." . $e)) {
                     $gambar = $basePath . $item['idProduk'] . "." . $e; 
                     break;
@@ -198,7 +185,7 @@ include '../includes/header-main.php';
 
         <h3 class="section-title">Shipping Address</h3>
         <div class="address-box">
-            <p><strong><?= htmlspecialchars(($user['namaPelanggan'] ?? 'User') . ' (' . ($user['kontakPelanggan'] ?? '-') . ')'); ?></strong></p>
+            <p><strong><?= htmlspecialchars($user['namaPelanggan'] ?? 'User'); ?> (<?= $user['kontakPelanggan'] ?? '-'; ?>)</strong></p>
             <p><?= htmlspecialchars($user['alamatPelanggan'] ?? 'Alamat belum diatur.'); ?></p>
         </div>
         
@@ -216,45 +203,36 @@ include '../includes/header-main.php';
                 <span id="selectedVoucherText">Pilih promo yang tersedia</span>
             </div>
             <div class="promo-dropdown" id="voucherContent">
-                <?php while ($p = mysqli_fetch_assoc($resultPromo)): ?>
-                    <div class="promo-item">
-                        <span><?= htmlspecialchars($p['namaPromo']); ?></span>
-                        <button type="button" class="apply-btn" 
-                                data-id="<?= $p['idPromo'] ?>" 
-                                data-name="<?= $p['namaPromo'] ?>">Gunakan</button>
-                    </div>
-                <?php endwhile; ?>
+                <?php if (mysqli_num_rows($resultPromo) === 0): ?>
+                    <div class="promo-item"><span>Tidak ada promo tersedia</span></div>
+                <?php else: ?>
+                    <?php while ($p = mysqli_fetch_assoc($resultPromo)): 
+                        $label = ($p['persentasePotongan'] > 0) ? $p['persentasePotongan']."%" : "Rp ".number_format($p['nominalPotongan'],0,',','.');
+                    ?>
+                        <div class="promo-item">
+                            <span><?= htmlspecialchars($p['namaPromo']); ?> (<?= $label ?>)</span>
+                            <button type="button" class="apply-btn" data-id="<?= $p['idPromo'] ?>" data-name="<?= htmlspecialchars($p['namaPromo']) ?>">Gunakan</button>
+                        </div>
+                    <?php endwhile; ?>
+                <?php endif; ?>
             </div>
         </div>
 
         <div class="summary-details">
-            <div class="row">
-                <span>Subtotal</span>
-                <span>Rp <?= number_format($totalHarga, 0, ',', '.'); ?></span>
-            </div>
-            <div class="row">
-                <span>Ongkir (<span id="namaKurir">-</span>)</span>
-                <span id="txtOngkir">Rp 0</span>
-            </div>
-            <div class="row">
-                <span>Biaya Admin</span>
-                <span id="txtAdmin">Rp 0</span>
-            </div>
-            <div id="rowPotongan" style="display:none; color: red;" class="row">
-                <span>Promo</span>
-                <span id="txtPotongan">- Rp 0</span>
-            </div>
+            <div class="row"><span>Subtotal</span><span>Rp <?= number_format($totalHarga, 0, ',', '.'); ?></span></div>
+            <div class="row"><span>Ongkir (<span id="namaKurir">-</span>)</span><span id="txtOngkir">Rp 0</span></div>
+            <div class="row"><span>Biaya Admin</span><span id="txtAdmin">Rp 0</span></div>
+            <div id="rowPotongan" style="display:none; color: red;" class="row"><span>Potongan Promo</span><span id="txtPotongan">- Rp 0</span></div>
         </div>
         <hr>
         <form action="" method="POST" id="formCheckout">
             <input type="hidden" name="idPromo" id="inputPromo">
             <input type="hidden" name="modeCheckout" value="<?= $modeCheckout ?>">
-            
             <?php if($modeCheckout === 'buy_now'): ?>
                 <input type="hidden" name="bn_idProduk" value="<?= $_SESSION['bn_idProduk'] ?>">
                 <input type="hidden" name="bn_qty" value="<?= $_SESSION['bn_qty'] ?>">
             <?php else: ?>
-                <input type="hidden" name="selected_items" value="<?= $itemParam ?>">
+                <input type="hidden" name="selected_items" value="<?= htmlspecialchars($itemParam) ?>">
             <?php endif; ?>
 
             <div class="mb-3">
@@ -263,15 +241,9 @@ include '../includes/header-main.php';
                     <option value="J&T Express">J&T Express</option>
                     <option value="JNE Reguler">JNE Reguler</option>
                     <option value="SiCepat">SiCepat</option>
-                    <option value="Kurir Toko">Kurir Toko</option>
                 </select>
             </div>
-
-            <div class="row total">
-                <span>Total Harga</span>
-                <span id="displayTotal">Rp <?= number_format($totalHarga, 0, ',', '.'); ?></span>
-            </div>
-
+            <div class="row total"><span>Total Harga</span><span id="displayTotal">Rp <?= number_format($totalHarga, 0, ',', '.'); ?></span></div>
             <button type="submit" name="btn_checkout" class="checkout-btn">Checkout Now</button>
         </form>
     </aside>
@@ -281,48 +253,47 @@ include '../includes/header-main.php';
 document.addEventListener('DOMContentLoaded', () => {
     const vWrapper = document.getElementById('voucherWrapper');
     const vToggle = document.getElementById('voucherToggle');
+    const selectedVoucherText = document.getElementById('selectedVoucherText');
     const selectKurir = document.querySelector('select[name="ekspedisi"]');
     const subtotalProduk = <?= $totalHarga ?>;
-    
     let currentPromoId = "";
 
-    function hitungUlangSemua() {
-        const kurir = selectKurir.value;
-        const url = `co-langsung.php?action=hitung_total&idPromo=${currentPromoId}&kurir=${kurir}&subtotal=${subtotalProduk}`;
-
-        fetch(url)
+    function hitungUlang() {
+        fetch(`co-langsung.php?action=hitung_total&idPromo=${currentPromoId}&kurir=${selectKurir.value}&subtotal=${subtotalProduk}`)
             .then(res => res.json())
             .then(data => {
-                document.getElementById('namaKurir').innerText = kurir;
+                document.getElementById('namaKurir').innerText = selectKurir.value;
                 document.getElementById('txtOngkir').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(data.ongkir);
                 document.getElementById('txtAdmin').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(data.admin);
                 document.getElementById('txtPotongan').innerText = '- Rp ' + new Intl.NumberFormat('id-ID').format(data.potongan);
-                
                 document.getElementById('rowPotongan').style.display = (data.potongan > 0) ? 'flex' : 'none';
-
-                const totalAkhir = (subtotalProduk + data.ongkir + data.admin) - data.potongan;
-                document.getElementById('displayTotal').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(totalAkhir);
+                const total = (subtotalProduk + data.ongkir + data.admin) - data.potongan;
+                document.getElementById('displayTotal').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(Math.max(0, total));
             });
     }
 
-    selectKurir.onchange = hitungUlangSemua;
+    vToggle.onclick = (e) => { e.stopPropagation(); vWrapper.classList.toggle('active'); };
+    document.addEventListener('click', () => vWrapper.classList.remove('active'));
 
     document.querySelectorAll('.apply-btn').forEach(btn => {
-        btn.onclick = function() {
-            currentPromoId = this.dataset.id;
-            const name = this.dataset.name;
+        btn.onclick = function(e) {
+            e.stopPropagation();
+            if (currentPromoId === this.dataset.id) {
+                currentPromoId = "";
+                selectedVoucherText.textContent = "Pilih promo yang tersedia";
+            } else {
+                currentPromoId = this.dataset.id;
+                selectedVoucherText.innerHTML = `Voucher: <strong>${this.dataset.name}</strong>`;
+            }
             document.getElementById('inputPromo').value = currentPromoId;
-            document.getElementById('selectedVoucherText').innerHTML = `<strong>${name}</strong>`;
             vWrapper.classList.remove('active');
-            hitungUlangSemua(); 
+            hitungUlang();
         };
     });
 
-    if(vToggle) {
-        vToggle.onclick = () => vWrapper.classList.toggle('active');
-    }
-    
-    hitungUlangSemua();
+    selectKurir.onchange = hitungUlang;
+    hitungUlang();
 });
 </script>
+
 <?php include '../includes/footer.php'; ?>
