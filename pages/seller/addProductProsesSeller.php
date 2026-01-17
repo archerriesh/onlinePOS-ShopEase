@@ -76,5 +76,5 @@ if (!empty($_FILES['gambar']['name'])) {
 
 // notif sukses
 $_SESSION['success'] = "Produk berhasil ditambahkan!";
-header("Location: index-seller.php");
+header("Location: products.php");
 exit;

@@ -46,7 +46,7 @@ include __DIR__ . '/../../includes/header-seller.php';
 
                 <button type="submit" class="btn">Add Product</button>
                 <br/>
-                <a href="index-seller.php" class="btn btn-cancel">Cancel</a>
+                <a href="products.php" class="btn btn-cancel">Cancel</a>
 
             </div>
 
