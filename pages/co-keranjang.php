@@ -17,22 +17,30 @@ if (isset($_GET['action']) && $_GET['action'] == 'cek_promo') {
     header('Content-Type: application/json');
     
     $idPromo = $_GET['idPromo'] ?? '';
+    $subtotal = (float)($_GET['subtotal'] ?? 0);
 
-    if (empty($idPelanggan) || empty($idPromo)) {
-        echo json_encode(['potongan' => 0]);
-        exit;
+    $sql = "SELECT tipePromo, minimalTransaksi, nominalPotongan, persentasePotongan FROM tbpromo WHERE idPromo = ?";
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "s", $idPromo);
+    mysqli_stmt_execute($stmt);
+    $promo = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+
+    $hasil = ['tipe' => '', 'nilai' => 0, 'pesan' => ''];
+
+    if ($promo) {
+        if ($subtotal < $promo['minimalTransaksi']) {
+            $hasil['pesan'] = "Min. belanja Rp " . number_format($promo['minimalTransaksi'], 0, ',', '.');
+        } else {
+            $nilai = ($promo['persentasePotongan'] > 0) 
+                     ? $subtotal * ($promo['persentasePotongan'] / 100) 
+                     : (float)$promo['nominalPotongan'];
+
+            $hasil['tipe'] = strtolower($promo['tipePromo']);
+            $hasil['nilai'] = $nilai;
+        }
     }
 
-    $sqlFunc = "SELECT fn_promo_terpakai(?, ?, NULL) AS potongan";
-    $stmtF = mysqli_prepare($conn, $sqlFunc);
-    mysqli_stmt_bind_param($stmtF, "ss", $idPelanggan, $idPromo);
-    mysqli_stmt_execute($stmtF);
-    $resF = mysqli_stmt_get_result($stmtF);
-    $rowF = mysqli_fetch_assoc($resF);
-
-    $potongan = (float)($rowF['potongan'] ?? 0);
-
-    echo json_encode(['potongan' => $potongan]);
+    echo json_encode($hasil);
     exit; 
 }
 
@@ -137,7 +145,7 @@ $defaultImg = "../assets/img/default.jpg";
                     <?php else: ?>
                         <?php mysqli_data_seek($resultPromo, 0); 
                         while ($promo = mysqli_fetch_assoc($resultPromo)): 
-                            $isPercent = (strpos(strtolower($promo['tipePromo']), 'diskon') !== false);
+                            $isPercent = ($promo['persentasePotongan'] > 0);
                             $label = $isPercent ? $promo['persentasePotongan']."%" : "Rp ".number_format($promo['nominalPotongan'],0,',','.');
                         ?>
                             <div class="promo-item">
@@ -151,9 +159,8 @@ $defaultImg = "../assets/img/default.jpg";
                 </div>
             </div>
 
-            <div class="summary-header"><strong>Total <?= $totalItemSemua ?> Barang</strong></div>
-            <div class="summary-details" id="summaryList">
-                </div>
+            <div class="summary-header"><strong>Total 0 Barang</strong></div>
+            <div class="summary-details" id="summaryList"></div>
 
             <hr>
             <div class="row total">
@@ -177,6 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     let activeVoucherId = null;
     let currentPotongan = 0;
+    let currentTipePromo = '';
 
     voucherToggle.onclick = (e) => {
         e.stopPropagation();
@@ -194,15 +202,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            fetch(`co-keranjang.php?action=cek_promo&idPromo=${promoId}`)
+            let totalBelanjaSkrg = 0;
+            checkboxes.forEach(cb => {
+                if(cb.checked) totalBelanjaSkrg += (parseFloat(cb.dataset.price) * parseInt(cb.dataset.qty));
+            });
+
+            fetch(`co-keranjang.php?action=cek_promo&idPromo=${promoId}&subtotal=${totalBelanjaSkrg}`)
                 .then(res => res.json())
                 .then(data => {
-                    if (parseFloat(data.potongan) <= 0) {
-                        alert("Voucher tidak memenuhi syarat atau keranjang kosong.");
+                    if (data.pesan !== "") {
+                        alert(data.pesan);
                         resetVoucher();
                     } else {
                         activeVoucherId = promoId;
-                        currentPotongan = parseFloat(data.potongan);
+                        currentPotongan = parseFloat(data.nilai);
+                        currentTipePromo = data.tipe;
                         selectedVoucherText.innerHTML = `Voucher: <strong>${promoName}</strong>`;
                         updateSummary();
                         voucherWrapper.classList.remove('active');
@@ -215,6 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function resetVoucher() {
         activeVoucherId = null;
         currentPotongan = 0;
+        currentTipePromo = '';
         selectedVoucherText.textContent = "Pilih promo yang tersedia";
         updateSummary();
     }
@@ -235,13 +250,22 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        let grandTotal = totalBelanja;
+
         if (currentPotongan > 0) {
-            html += `<div id="rowPotongan" style="color:red"><span>Potongan Promo</span><span>- Rp ${currentPotongan.toLocaleString('id-ID')}</span></div>`;
+            if (currentTipePromo.includes('diskon')) {
+                html += `<div class="row" style="color:red"><span>Diskon Belanja</span><span>- Rp ${currentPotongan.toLocaleString('id-ID')}</span></div>`;
+                grandTotal -= currentPotongan;
+            } else if (currentTipePromo.includes('cashback')) {
+                html += `<div class="row" style="color:blue"><span>Estimasi Cashback</span><span>+ Rp ${currentPotongan.toLocaleString('id-ID')}</span></div>`;
+            } else if (currentTipePromo.includes('ongkir')) {
+                html += `<div class="row" style="color:green"><span>Estimasi Potongan Ongkir</span><span>- Rp ${currentPotongan.toLocaleString('id-ID')}</span></div>`;
+            }
         }
         
         summaryHeader.textContent = `Total ${totalQty} Barang`;
         summaryDetails.innerHTML = html;
-        grandTotalDisplay.textContent = `Rp ${Math.max(0, totalBelanja - currentPotongan).toLocaleString('id-ID')}`;
+        grandTotalDisplay.textContent = `Rp ${Math.max(0, grandTotal).toLocaleString('id-ID')}`;
     }
 
     checkboxes.forEach(cb => cb.onchange = updateSummary);
