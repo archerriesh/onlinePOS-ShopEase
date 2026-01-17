@@ -8,6 +8,11 @@
 
 .sidebar {
   width: 220px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  position: sticky;
+  top: 20px;
 }
 
 .brand {
