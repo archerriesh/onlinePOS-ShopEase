@@ -9,7 +9,7 @@ if (!isset($_FILES['profile_img'])) {
 
 $username   = $_SESSION['username'];
 $role       = $_SESSION['role'];
-$redirectTo = $_POST['redirect_to'] ?? 'profile.php'; // Halaman asal
+$redirectTo = $_POST['redirect_to'] ?? 'profile.php'; 
 
 $targetDir = "../foto/";
 $file      = $_FILES['profile_img'];

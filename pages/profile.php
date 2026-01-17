@@ -123,9 +123,16 @@ include $headerFile;
           <div class="col-md-5 image-section text-center">
             <?php 
                 $namaFile = $user['foto_profil']; 
-                
+                $fotoDefault = "../foto/default.png"; 
+
+                if (isset($_SESSION['idPenjual'])) {
+                    $fotoDefault = "../foto/default-seller.jpg";
+                } elseif (isset($_SESSION['idAdmin'])) {
+                    $fotoDefault = "../foto/default-admin.jpg";
+                }
+
                 if (empty($namaFile) || !file_exists("../foto/" . $namaFile)) {
-                    $pathFoto = "../foto/default.jpg";
+                    $pathFoto = $fotoDefault;
                 } else {
                     $pathFoto = "../foto/" . $namaFile;
                 }
@@ -150,11 +157,11 @@ include $headerFile;
                 </form>
             </div>
               
-              <div class="mt-2">
-                  <button type="button" class="btn custom-btn btn-sm" onclick="document.getElementById('profile_img').click();">
-                      Change Image
-                  </button>
-              </div>
+            <div class="mt-2">
+                <button type="button" class="btn custom-btn btn-sm" onclick="document.getElementById('profile_img').click();">
+                    Change Image
+                </button>
+            </div>
           </div>
         </div>
       </section>

@@ -13,17 +13,17 @@ $role = $_SESSION['role'];
 switch ($role) {
     case 'pelanggan':
         $query = "SELECT usernamePelanggan AS username, namaPelanggan AS nama, 
-                  kontakPelanggan AS kontak, alamatPelanggan AS alamat 
+                  kontakPelanggan AS kontak, alamatPelanggan AS alamat, fotoPelanggan AS foto_profil 
                   FROM tbPelanggan WHERE usernamePelanggan = ?";
         break;
     case 'penjual':
         $query = "SELECT usernamePenjual AS username, namaPenjual AS nama, 
-                  kontakPenjual AS kontak, alamatPenjual AS alamat, kategoriToko 
+                  kontakPenjual AS kontak, alamatPenjual AS alamat, kategoriToko, fotoPenjual AS foto_profil
                   FROM tbPenjual WHERE usernamePenjual = ?";
         break;
     case 'admin':
         $query = "SELECT username AS username, namaAdmin AS nama, 
-                  email AS kontak, alamat AS alamat, specification 
+                  email AS kontak, alamat AS alamat, specification, foto AS foto_profil
                   FROM tbAdmin WHERE username = ?";
         break;
 }
@@ -117,11 +117,47 @@ include $headerFile;
                         </div>
 
                         <div class="col-md-5 image-section text-center">
-                            <img src="../foto/keano.jpg" alt="Profile">
-                            <br>
-                            <a href="change-photo.php" class="btn custom-btn mt-3">
-                                Change Image
-                            </a>
+                            <?php 
+                                $namaFile = $user['foto_profil']; 
+                                $fotoDefault = "../foto/default.png"; 
+
+                                if (isset($_SESSION['idPenjual'])) {
+                                    $fotoDefault = "../foto/default-seller.jpg";
+                                } elseif (isset($_SESSION['idAdmin'])) {
+                                    $fotoDefault = "../foto/default-admin.jpg";
+                                }
+
+                                if (empty($namaFile) || !file_exists("../foto/" . $namaFile)) {
+                                    $pathFoto = $fotoDefault;
+                                } else {
+                                    $pathFoto = "../foto/" . $namaFile;
+                                }
+                            ?>
+                            
+                            <div class="position-relative d-inline-block">
+                                <img src="<?= $pathFoto; ?>" alt="Profile" 
+                                class="rounded-circle img-thumbnail mb-3" 
+                                style="width:200px; height:200px; object-fit:cover;">
+                                
+                                <form action="proses-ganti-pfp.php" method="POST" enctype="multipart/form-data" id="photoForm">
+                                    <input type="hidden" name="redirect_to" value="<?= basename($_SERVER['PHP_SELF']); ?>">
+                                    
+                                    <input type="file" name="profile_img" id="profile_img" 
+                                        style="display: none;" accept="image/*" 
+                                        onchange="document.getElementById('photoForm').submit();">
+                                    
+                                    <button type="button" class="btn btn-sm btn-dark position-absolute bottom-0 end-0 rounded-circle p-2" 
+                                            onclick="document.getElementById('profile_img').click();">
+                                        <i class="bi bi-camera"></i>
+                                    </button>
+                                </form>
+                            </div>
+                            
+                            <div class="mt-2">
+                                <button type="button" class="btn custom-btn btn-sm" onclick="document.getElementById('profile_img').click();">
+                                    Change Image
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
