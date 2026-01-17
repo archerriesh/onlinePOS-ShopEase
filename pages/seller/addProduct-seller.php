@@ -6,9 +6,8 @@ include __DIR__ . '/../../includes/header-seller.php';
 <div class="page-wrapper">
     <form action="addProductProsesSeller.php" method="POST" enctype="multipart/form-data">
 
-        <main class="container">
+        <main class="container-addProduct">
 
-            <!-- LEFT -->
             <div class="left">
 
                 <div class="card">
@@ -21,7 +20,7 @@ include __DIR__ . '/../../includes/header-seller.php';
                     <textarea name="keterangan" rows="8" required></textarea>
                 </div>
 
-                <div class="card row">
+                <div class="card">
                     <div>
                         <label>Category</label>
                         <input type="text" name="kategoriProduk" required>
@@ -33,8 +32,6 @@ include __DIR__ . '/../../includes/header-seller.php';
                 </div>
 
             </div>
-
-            <!-- RIGHT -->
             <div class="right">
 
                 <div class="card">
@@ -48,6 +45,8 @@ include __DIR__ . '/../../includes/header-seller.php';
                 </div>
 
                 <button type="submit" class="btn">Add Product</button>
+                <br/>
+                <a href="index-seller.php" class="btn btn-cancel">Cancel</a>
 
             </div>
 

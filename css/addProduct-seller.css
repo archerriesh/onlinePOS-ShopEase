@@ -1,13 +1,9 @@
-* {
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
-}
 .page-wrapper {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
 }
-.container {
+.container-addProduct {
     display: flex;
     gap: 30px;
     padding: 30px 40px;
@@ -22,7 +18,6 @@
     flex: 1;
 }
 
-/* Card */
 .card {
     background: #e5ddd3;
     padding: 20px;
@@ -30,7 +25,6 @@
     margin-bottom: 20px;
 }
 
-/* Form */
 label {
     display: block;
     margin: 15px 0 5px;
@@ -58,4 +52,12 @@ input, textarea {
     color: #fff;
     font-size: 16px;
     cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.btn-cancel {
+    background: #999;
 }
