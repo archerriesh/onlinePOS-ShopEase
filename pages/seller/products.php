@@ -48,41 +48,43 @@ include("../../includes/header-seller.php");
     <div class="product-grid">
         <?php if (empty($products)): ?>
             <p>Belum ada produk</p>
-        <?php else: ?>
-            <?php foreach ($products as $p): ?>
-                <?php
-                $isInactive = ($p['statusAktif'] === 'N');
-                $gambarProduk = "../../assets/img/default.jpg";
-                foreach ($extensions as $ext) {
-                    $path = $basePath . $p['idProduk'] . '.' . $ext;
-                    if (file_exists($path)) { $gambarProduk = $path; break; }
-                }
-                ?>
-                <div class="card <?= $isInactive ? 'is-inactive' : '' ?>">
-                    <div class="card-actions">
-                        <a href="editProduct-seller.php?id=<?= $p['idProduk'] ?>" class="edit-btn">✎</a>
-                        
-                        <div class="dropdown">
-                            <button class="dropbtn">⋮</button>
-                            <div class="dropdown-content">
-                                <?php if (!$isInactive): ?>
-                                    <a href="#" class="text-danger" onclick="confirmAction('<?= $p['idProduk'] ?>', 'nonaktif')">Nonaktifkan</a>
-                                <?php else: ?>
-                                    <a href="#" class="text-success" onclick="confirmAction('<?= $p['idProduk'] ?>', 'aktif')">Aktifkan Kembali</a>
-                                <?php endif; ?>
+            <?php else: ?>
+                <?php foreach ($products as $p): ?>
+                    <?php
+                    $isInactive = ($p['statusAktif'] === 'N');
+                    $gambarProduk = "../../assets/img/default.jpg";
+                    foreach ($extensions as $ext) {
+                        $path = $basePath . $p['idProduk'] . '.' . $ext;
+                        if (file_exists($path)) { $gambarProduk = $path; break; }
+                    }
+                    ?>
+                    <div class="card <?= $isInactive ? 'is-inactive' : '' ?>">
+                        <div class="card-actions">
+                            <a href="editProduct-seller.php?id=<?= $p['idProduk'] ?>" class="edit-btn">✎</a>
+                            
+                            <div class="dropdown">
+                                <button class="dropbtn">⋮</button>
+                                <div class="dropdown-content">
+                                    <?php if (!$isInactive): ?>
+                                        <a href="#" class="text-danger" onclick="confirmAction('<?= $p['idProduk'] ?>', 'nonaktif')">Nonaktifkan</a>
+                                    <?php else: ?>
+                                        <a href="#" class="text-success" onclick="confirmAction('<?= $p['idProduk'] ?>', 'aktif')">Aktifkan Kembali</a>
+                                    <?php endif; ?>
+                                </div>
                             </div>
                         </div>
+                        
+                        <a href="liat-produk.php?id=<?= $p['idProduk'] ?>">
+                            <?php if ($isInactive): ?>
+                                <div class="status-badge">NONAKTIF</div>
+                            <?php endif; ?>
+                                
+                            <img src="<?= $gambarProduk ?>" alt="<?= htmlspecialchars($p['namaProduk']) ?>">
+                            <h4><?= htmlspecialchars($p['namaProduk']) ?></h4>
+                            <p>Rp <?= number_format($p['harga'], 0, ',', '.') ?></p>
+                        </a>
                     </div>
-
-                    <?php if ($isInactive): ?>
-                        <div class="status-badge">NONAKTIF</div>
-                    <?php endif; ?>
-
-                    <img src="<?= $gambarProduk ?>" alt="<?= htmlspecialchars($p['namaProduk']) ?>">
-                    <h4><?= htmlspecialchars($p['namaProduk']) ?></h4>
-                    <p>Rp <?= number_format($p['harga'], 0, ',', '.') ?></p>
-                </div>
-            <?php endforeach; ?>
+                <?php endforeach; ?>
         <?php endif; ?>
     </div>
 </section>
