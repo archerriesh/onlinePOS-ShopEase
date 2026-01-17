@@ -50,22 +50,38 @@ if (isset($_GET['action']) && $_GET['action'] == 'hitung_total') {
     $resA = mysqli_fetch_assoc(mysqli_stmt_get_result($stmtA));
     $admin = (float)($resA['admin'] ?? 0);
 
-    $potongan = 0;
+    $potonganHarga = 0;   
+    $potonganOngkir = 0;  
+    $nominalCashback = 0; 
+    $tipeTampil = '';     
+
     if (!empty($idPromo)) {
-        $sqlCek = "SELECT minimalTransaksi, nominalPotongan, persentasePotongan FROM tbpromo WHERE idPromo = ?";
+        $sqlCek = "SELECT namaPromo, minimalTransaksi, nominalPotongan, persentasePotongan, tipePromo FROM tbpromo WHERE idPromo = ?";
         $stmtC = mysqli_prepare($conn, $sqlCek);
         mysqli_stmt_bind_param($stmtC, "s", $idPromo);
         mysqli_stmt_execute($stmtC);
         $resC = mysqli_stmt_get_result($stmtC);
         $promo = mysqli_fetch_assoc($resC);
 
-        if ($promo) {
-            if ($subtotalInput >= (float)$promo['minimalTransaksi']) {
-                if ($promo['persentasePotongan'] > 0) {
-                    $potongan = $subtotalInput * ($promo['persentasePotongan'] / 100);
-                } else {
-                    $potongan = (float)$promo['nominalPotongan'];
-                }
+        if ($promo && $subtotalInput >= (float)$promo['minimalTransaksi']) {
+            $namaPromo = strtolower($promo['namaPromo']);
+            $tipePromo = strtolower($promo['tipePromo']);
+            
+            $nilaiPromo = ($promo['persentasePotongan'] > 0) 
+                          ? $subtotalInput * ($promo['persentasePotongan'] / 100) 
+                          : (float)$promo['nominalPotongan'];
+
+            if (strpos($namaPromo, 'ongkir') !== false) {
+                $potonganOngkir = min($nilaiPromo, $ongkir);
+                $tipeTampil = 'gratis_ongkir';
+            } 
+            else if ($tipePromo === 'diskon') {
+                $potonganHarga = $nilaiPromo;
+                $tipeTampil = 'diskon';
+            } 
+            else if ($tipePromo === 'cashback') {
+                $nominalCashback = $nilaiPromo;
+                $tipeTampil = 'cashback';
             }
         }
     }
@@ -73,9 +89,12 @@ if (isset($_GET['action']) && $_GET['action'] == 'hitung_total') {
     echo json_encode([
         'ongkir' => $ongkir,
         'admin' => $admin,
-        'potongan' => $potongan
+        'potongan' => $potonganHarga,
+        'potonganOngkir' => $potonganOngkir,
+        'cashback' => $nominalCashback,
+        'tipe' => $tipeTampil
     ]);
-    exit; 
+    exit;
 }
 
 if (isset($_POST['btn_checkout'])) {
@@ -263,11 +282,36 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(res => res.json())
             .then(data => {
                 document.getElementById('namaKurir').innerText = selectKurir.value;
-                document.getElementById('txtOngkir').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(data.ongkir);
+                
+                const ongkirFinal = Math.max(0, data.ongkir - data.potonganOngkir);
+                document.getElementById('txtOngkir').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(ongkirFinal);
+                
                 document.getElementById('txtAdmin').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(data.admin);
-                document.getElementById('txtPotongan').innerText = '- Rp ' + new Intl.NumberFormat('id-ID').format(data.potongan);
-                document.getElementById('rowPotongan').style.display = (data.potongan > 0) ? 'flex' : 'none';
-                const total = (subtotalProduk + data.ongkir + data.admin) - data.potongan;
+                
+                const rowPot = document.getElementById('rowPotongan');
+                const txtPot = document.getElementById('txtPotongan');
+                const labelPot = rowPot.querySelector('span:first-child');
+
+                if (data.tipe === 'gratis_ongkir') {
+                    rowPot.style.display = 'flex';
+                    rowPot.style.color = 'green';
+                    labelPot.innerText = 'Potongan Ongkir';
+                    txtPot.innerText = '- Rp ' + new Intl.NumberFormat('id-ID').format(data.potonganOngkir);
+                } else if (data.tipe === 'diskon') {
+                    rowPot.style.display = 'flex';
+                    rowPot.style.color = 'red';
+                    labelPot.innerText = 'Potongan Harga';
+                    txtPot.innerText = '- Rp ' + new Intl.NumberFormat('id-ID').format(data.potongan);
+                } else if (data.tipe === 'cashback') {
+                    rowPot.style.display = 'flex';
+                    rowPot.style.color = 'blue';
+                    labelPot.innerText = 'Estimasi Cashback';
+                    txtPot.innerText = '+ Rp ' + new Intl.NumberFormat('id-ID').format(data.cashback);
+                } else {
+                    rowPot.style.display = 'none';
+                }
+
+                const total = (subtotalProduk + data.admin + data.ongkir) - (data.potongan + data.potonganOngkir);
                 document.getElementById('displayTotal').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(Math.max(0, total));
             });
     }
