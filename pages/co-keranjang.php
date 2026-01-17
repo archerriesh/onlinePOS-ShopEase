@@ -13,27 +13,43 @@ if (!isset($_SESSION['idPelanggan'])) {
 $idPelanggan = $_SESSION['idPelanggan'];
 
 if (isset($_GET['action']) && $_GET['action'] == 'cek_promo') {
-    ob_clean();
+    ob_clean(); 
     header('Content-Type: application/json');
     
     $idPromo = $_GET['idPromo'] ?? '';
-    
-    $sqlCek = "SELECT jenisPembayaran FROM tbpromo WHERE idPromo = ?";
-    $stmtCek = mysqli_prepare($conn, $sqlCek);
-    mysqli_stmt_bind_param($stmtCek, "s", $idPromo);
-    mysqli_stmt_execute($stmtCek);
-    $resPromo = mysqli_stmt_get_result($stmtCek);
-    $dataPromo = mysqli_fetch_assoc($resPromo);
 
-    $metodeKirim = $dataPromo['jenisPembayaran'] ?? 'transferbank';
+    if (empty($idPelanggan) || empty($idPromo)) {
+        echo json_encode(['potongan' => 0]);
+        exit;
+    }
 
-    $sql = "SELECT fn_promo_terpakai(?, ?, 'JNE', ?) AS potongan";
-    $stmt = mysqli_prepare($conn, $sql);
-    mysqli_stmt_bind_param($stmt, "sss", $idPromo, $idPelanggan, $metodeKirim);
-    mysqli_stmt_execute($stmt);
-    $row = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+    $sqlTotal = "SELECT SUM(jumlah * hargaSatuan) as total_belanja FROM tbKeranjang WHERE idPelanggan = ?";
+    $stmtT = mysqli_prepare($conn, $sqlTotal);
+    mysqli_stmt_bind_param($stmtT, "s", $idPelanggan);
+    mysqli_stmt_execute($stmtT);
+    $resT = mysqli_stmt_get_result($stmtT);
+    $rowT = mysqli_fetch_assoc($resT);
+    $totalBelanja = (float)($rowT['total_belanja'] ?? 0);
 
-    echo json_encode(['potongan' => (float)($row['potongan'] ?? 0)]);
+    $sqlCek = "SELECT minimalTransaksi, nominalPotongan, persentasePotongan FROM tbpromo WHERE idPromo = ?";
+    $stmtC = mysqli_prepare($conn, $sqlCek);
+    mysqli_stmt_bind_param($stmtC, "s", $idPromo);
+    mysqli_stmt_execute($stmtC);
+    $resC = mysqli_stmt_get_result($stmtC);
+    $promo = mysqli_fetch_assoc($resC);
+
+    $potongan = 0;
+    if ($promo) {
+        if ($totalBelanja >= (float)$promo['minimalTransaksi']) {
+            if ($promo['persentasePotongan'] > 0) {
+                $potongan = $totalBelanja * ($promo['persentasePotongan'] / 100);
+            } else {
+                $potongan = (float)$promo['nominalPotongan'];
+            }
+        }
+    }
+
+    echo json_encode(['potongan' => $potongan]);
     exit; 
 }
 
@@ -58,27 +74,14 @@ if (isset($_POST['update_cart'])) {
     exit;
 }
 
-$sql = "
-SELECT 
-    k.idProduk,
-    p.namaProduk,
-    k.jumlah,
-    k.hargaSatuan
-FROM tbKeranjang k
-JOIN tbProduk p ON k.idProduk = p.idProduk
-WHERE k.idPelanggan = ?
-";
-
+$sql = "SELECT k.idProduk, p.namaProduk, k.jumlah, k.hargaSatuan FROM tbKeranjang k JOIN tbProduk p ON k.idProduk = p.idProduk WHERE k.idPelanggan = ?";
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, "s", $idPelanggan);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 
-$totalItem  = 0;
-$totalHarga = 0;
-
 $currentDate = date('Y-m-d H:i:s');
-$sqlPromo = "SELECT * FROM tbpromo WHERE startDate <= ? AND endDate >= ?";
+$sqlPromo = "SELECT * FROM tbpromo WHERE startDate <= ? AND endDate >= ? AND statusAktif = 'Y'";
 $stmtPromo = mysqli_prepare($conn, $sqlPromo);
 mysqli_stmt_bind_param($stmtPromo, "ss", $currentDate, $currentDate);
 mysqli_stmt_execute($stmtPromo);
@@ -95,60 +98,45 @@ $defaultImg = "../assets/img/default.jpg";
             <h3 class="section-title"><?= mysqli_num_rows($result); ?> items</h3>
 
             <?php if (mysqli_num_rows($result) === 0): ?>
-                <p class="empty">Cart is empty</p>
+                <p class="empty">Keranjang kosong.</p>
             <?php else: ?>
+                <?php 
+                $totalHargaSemua = 0;
+                $totalItemSemua = 0;
+                while ($row = mysqli_fetch_assoc($result)): 
+                    $subtotal = $row['jumlah'] * $row['hargaSatuan'];
+                    $totalHargaSemua += $subtotal;
+                    $totalItemSemua += $row['jumlah'];
 
-            <?php while ($row = mysqli_fetch_assoc($result)): ?>
-            <?php
-                $subtotal    = $row['jumlah'] * $row['hargaSatuan'];
-                $totalItem  += $row['jumlah'];
-                $totalHarga += $subtotal;
-
-                $gambar = $defaultImg;
-                foreach ($extensions as $ext) {
-                    $file = $basePath . $row['idProduk'] . "." . $ext;
-                    if (file_exists($file)) {
-                        $gambar = $file;
-                        break;
+                    $gambar = $defaultImg;
+                    foreach ($extensions as $ext) {
+                        $file = $basePath . $row['idProduk'] . "." . $ext;
+                        if (file_exists($file)) { $gambar = $file; break; }
                     }
-                }
-            ?>
-
-            <div class="cart-item" data-id="<?= $row['idProduk']; ?>">
-                <div class="item-selector">
-                    <input type="checkbox" class="item-checkbox" 
-                        value="<?= $row['idProduk']; ?>" 
-                        data-price="<?= $row['hargaSatuan']; ?>" 
-                        data-qty="<?= $row['jumlah']; ?>" checked>
-                </div>               
-
-                <div class="thumb">
-                    <img src="<?= $gambar; ?>" alt="<?= htmlspecialchars($row['namaProduk']); ?>">
-                </div>
-
-                <div class="item-info">
-                    <div class="item-name" style="font-weight: 600;">
-                        <?= htmlspecialchars($row['namaProduk']); ?>
+                ?>
+                <div class="cart-item" data-id="<?= $row['idProduk']; ?>">
+                    <div class="item-selector">
+                        <input type="checkbox" class="item-checkbox" 
+                               value="<?= $row['idProduk']; ?>" 
+                               data-price="<?= $row['hargaSatuan']; ?>" 
+                               data-qty="<?= $row['jumlah']; ?>" checked>
+                    </div>               
+                    <div class="thumb"><img src="<?= $gambar; ?>"></div>
+                    <div class="item-info">
+                        <div class="item-name"><?= htmlspecialchars($row['namaProduk']); ?></div>
+                        <form method="POST" class="qty-form">
+                            <input type="hidden" name="update_cart" value="1">
+                            <input type="hidden" name="idProduk" value="<?= $row['idProduk']; ?>">
+                            <div class="qty">
+                                <button type="button" class="btn-icon minus">−</button>
+                                <input type="text" name="qty" class="qty-input" value="<?= $row['jumlah']; ?>" readonly>
+                                <button type="button" class="btn-icon plus">+</button>
+                            </div>
+                        </form>
                     </div>
-
-                    <form method="POST" class="qty-form">
-                        <input type="hidden" name="update_cart" value="1">
-                        <input type="hidden" name="idProduk" value="<?= $row['idProduk']; ?>">
-                        
-                        <div class="qty">
-                            <button type="button" class="btn-icon minus">−</button>
-                            <input type="text" name="qty" class="qty-input" value="<?= $row['jumlah']; ?>" readonly>
-                            <button type="button" class="btn-icon plus">+</button>
-                        </div>
-                    </form>
+                    <div class="price">Rp <?= number_format($row['hargaSatuan'], 0, ',', '.'); ?></div>
                 </div>
-
-                <div class="price">
-                    Rp <?= number_format($row['hargaSatuan'], 0, ',', '.'); ?>
-                </div>
-            </div>
-
-            <?php endwhile; ?>
+                <?php endwhile; ?>
             <?php endif; ?>
         </div>
 
@@ -160,16 +148,14 @@ $defaultImg = "../assets/img/default.jpg";
                         <span id="selectedVoucherText">Pilih promo yang tersedia</span>
                     </div>
                 </div>
-                
                 <div class="promo-dropdown" id="voucherContent">
                     <?php if (mysqli_num_rows($resultPromo) === 0): ?>
                         <div class="promo-item"><span>Tidak ada promo tersedia</span></div>
                     <?php else: ?>
-                        <?php while ($promo = mysqli_fetch_assoc($resultPromo)): 
+                        <?php mysqli_data_seek($resultPromo, 0); 
+                        while ($promo = mysqli_fetch_assoc($resultPromo)): 
                             $isPercent = ($promo['persentasePotongan'] > 0);
-                            $discountVal = $isPercent ? $promo['persentasePotongan'] : $promo['nominalPotongan'];
-                            $type = $isPercent ? 'percent' : 'flat';
-                            $label = $isPercent ? $discountVal."%" : "Rp ".number_format($discountVal,0,',','.');
+                            $label = $isPercent ? $promo['persentasePotongan']."%" : "Rp ".number_format($promo['nominalPotongan'],0,',','.');
                         ?>
                             <div class="promo-item">
                                 <span><?= htmlspecialchars($promo['namaPromo']); ?> (<?= $label ?>)</span>
@@ -182,201 +168,119 @@ $defaultImg = "../assets/img/default.jpg";
                 </div>
             </div>
 
-            <div class="summary-header">
-                <strong>Total <?= $totalItem; ?> Barang</strong>
-            </div>
-
-            <div class="summary-details" style="margin: 10px 0; font-size: 13px; color: #555;">
-                <?php 
-                mysqli_data_seek($result, 0); 
-                while ($detail = mysqli_fetch_assoc($result)): 
-                ?>
-                    <div class="row" style="margin-bottom: 5px;">
-                        <span><?= $detail['jumlah']; ?> item @ Rp <?= number_format($detail['hargaSatuan'], 0, ',', '.'); ?></span>
-                        <span style="font-weight: 500;">Rp <?= number_format($detail['jumlah'] * $detail['hargaSatuan'], 0, ',', '.'); ?></span>
-                    </div>
-                <?php endwhile; ?>
-
-                <div id="rowPotongan">
-                    <span id="labelPromoUsed">Potongan Promo</span>
-                    <span id="txtPotongan">- Rp 0</span>
+            <div class="summary-header"><strong>Total <?= $totalItemSemua ?> Barang</strong></div>
+            <div class="summary-details" id="summaryList">
                 </div>
 
-            </div>
-
             <hr>
-
             <div class="row total">
                 <span>Total Harga</span>
-                <span style="color: #61593d; font-size: 18px;">Rp <?= number_format($totalHarga, 0, ',', '.'); ?></span>
+                <span id="grandTotalDisplay" style="color: #61593d; font-size: 18px;">Rp 0</span>
             </div>
-
             <button type="button" id="btnCheckout" class="checkout-btn">Checkout</button>
         </aside>
-
     </section>
 </main>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('btnCheckout').onclick = function() {
-        const selectedIds = Array.from(document.querySelectorAll('.item-checkbox:checked'))
-                                .map(cb => cb.value);
-        
-        if (selectedIds.length === 0) {
-            alert("Pilih barang yang ingin dibeli dulu!");
-            return;
-        }
+document.addEventListener('DOMContentLoaded', () => {
+    const voucherWrapper = document.querySelector('.voucher-wrapper');
+    const voucherToggle = document.getElementById('voucherToggle');
+    const selectedVoucherText = document.getElementById('selectedVoucherText');
+    const summaryDetails = document.getElementById('summaryList');
+    const grandTotalDisplay = document.getElementById('grandTotalDisplay');
+    const summaryHeader = document.querySelector('.summary-header strong');
+    const checkboxes = document.querySelectorAll('.item-checkbox');
+    
+    let activeVoucherId = null;
+    let currentPotongan = 0;
 
-        window.location.href = `co-langsung.php?mode=cart&items=${selectedIds.join(',')}`;
+    voucherToggle.onclick = (e) => {
+        e.stopPropagation();
+        voucherWrapper.classList.toggle('active');
     };
 
-    document.querySelectorAll('.qty-form').forEach(form => {
-        const minus = form.querySelector('.minus');
-        const plus  = form.querySelector('.plus');
-        const input = form.querySelector('.qty-input');
-
-        if(plus) {
-            plus.onclick = (e) => {
-                e.preventDefault(); 
-                input.value = (parseInt(input.value, 10) || 0) + 1;
-                form.submit(); 
-            };
-        }
-
-        if(minus) {
-            minus.onclick = (e) => {
-                e.preventDefault();
-                let qty = parseInt(input.value, 10) || 0;
-                if (qty - 1 <= 0) {
-                    if (!confirm('Hapus produk dari keranjang?')) return;
-                    input.value = 0;
-                } else {
-                    input.value = qty - 1;
-                }
-                form.submit();
-            };
-        }
-    });
-    
-    const voucherToggle = document.getElementById('voucherToggle');
-    const voucherWrapper = document.querySelector('.voucher-wrapper');
-    const selectedVoucherText = document.getElementById('selectedVoucherText');
-    const txtPotongan = document.getElementById('txtPotongan');
-    const txtTotalHarga = document.querySelector('.row.total span:last-child');
-    const checkboxes = document.querySelectorAll('.item-checkbox');
-    const summaryHeader = document.querySelector('.summary-header strong');
-    const summaryDetails = document.querySelector('.summary-details');
-    
-    const totalHargaAsli = parseFloat("<?= $totalHarga ?>") || 0;
-    let activeVoucherId = null;
-
-    if (voucherToggle) {
-        voucherToggle.onclick = (e) => {
-            e.stopPropagation();
-            voucherWrapper.classList.toggle('active');
-        };
-    }
-
     document.querySelectorAll('.apply-btn').forEach(btn => {
-        btn.onclick = function (e) {
-            e.preventDefault();
+        btn.onclick = function(e) {
             e.stopPropagation();
-
-            const promoId = this.getAttribute('data-idpromo');
-            const promoName = this.getAttribute('data-name');
+            const promoId = this.dataset.idpromo;
+            const promoName = this.dataset.name;
 
             if (activeVoucherId === promoId) {
                 resetVoucher();
                 return;
             }
 
-            const url = `co-keranjang.php?action=cek_promo&idPromo=${promoId}`;
-
-            fetch(url)
-                .then(response => {
-                    if (!response.ok) throw new Error('Gagal memuat data promo');
-                    return response.json();
-                })
+            fetch(`co-keranjang.php?action=cek_promo&idPromo=${promoId}`)
+                .then(res => res.json())
                 .then(data => {
-                    const potongan = parseFloat(data.potongan) || 0;
-                    
-                    activeVoucherId = promoId;
-                    selectedVoucherText.innerHTML = `Voucher: <strong>${promoName}</strong>`;
-                    selectedVoucherText.style.color = "#61593d";
-
-                    txtPotongan.textContent = `- Rp ${new Intl.NumberFormat('id-ID').format(potongan)}`;
-                    
-                    const totalBaru = totalHargaAsli - potongan;
-                    txtTotalHarga.textContent = `Rp ${new Intl.NumberFormat('id-ID').format(totalBaru)}`;
-
-                    voucherWrapper.classList.remove('active');
-                })
-                .catch(err => {
-                    console.error("Detail Error:", err);
-                    alert("Terjadi kesalahan saat memasang voucher.");
+                    if (parseFloat(data.potongan) <= 0) {
+                        alert("Voucher tidak memenuhi syarat.");
+                        resetVoucher();
+                    } else {
+                        activeVoucherId = promoId;
+                        currentPotongan = parseFloat(data.potongan);
+                        selectedVoucherText.innerHTML = `Voucher: <strong>${promoName}</strong>`;
+                        updateSummary();
+                        voucherWrapper.classList.remove('active');
+                    }
                 });
         };
     });
 
     function resetVoucher() {
         activeVoucherId = null;
+        currentPotongan = 0;
         selectedVoucherText.textContent = "Pilih promo yang tersedia";
-        selectedVoucherText.style.color = "#8a817c";
-        txtPotongan.textContent = "- Rp 0";
-        txtTotalHarga.textContent = `Rp ${new Intl.NumberFormat('id-ID').format(totalHargaAsli)}`;
-        voucherWrapper.classList.remove('active');
+        updateSummary();
     }
-
-    window.onclick = (e) => {
-        if (voucherWrapper && !voucherWrapper.contains(e.target)) {
-            voucherWrapper.classList.remove('active');
-        }
-    };
-
 
     function updateSummary() {
         let totalBelanja = 0;
         let totalQty = 0;
-        let detailHtml = '';
+        let html = '';
 
         checkboxes.forEach(cb => {
             if (cb.checked) {
-                const hargaSatuan = parseFloat(cb.getAttribute('data-price')) || 0;
-                const qty = parseInt(cb.getAttribute('data-qty')) || 0;
-                const subtotal = hargaSatuan * qty;
-                
-                totalBelanja += subtotal;
-                totalQty += qty;
-
-                detailHtml += `
-                    <div class="row" style="margin-bottom: 5px;">
-                        <span>${qty} item @ Rp ${new Intl.NumberFormat('id-ID').format(hargaSatuan)}</span>
-                        <span style="font-weight: 500;">Rp ${new Intl.NumberFormat('id-ID').format(subtotal)}</span>
-                    </div>`;
+                const p = parseFloat(cb.dataset.price);
+                const q = parseInt(cb.dataset.qty);
+                const sub = p * q;
+                totalBelanja += sub;
+                totalQty += q;
+                html += `<div class="row"><span>${q} item @ Rp ${p.toLocaleString('id-ID')}</span><span>Rp ${sub.toLocaleString('id-ID')}</span></div>`;
             }
         });
 
-        detailHtml += `
-            <div id="rowPotongan">
-                <span id="labelPromoUsed">Potongan Promo</span>
-                <span id="txtPotongan">${txtPotongan.textContent}</span>
-            </div>`;
-
-        summaryHeader.textContent = `Total ${totalQty} Barang`;
-        summaryDetails.innerHTML = detailHtml;
-
-        const nominalPotongan = parseFloat(txtPotongan.textContent.replace(/[^0-9]/g, '')) || 0;
-        const grandTotal = totalBelanja - nominalPotongan;
-
-        txtTotalHarga.textContent = `Rp ${new Intl.NumberFormat('id-ID').format(Math.max(0, grandTotal))}`;
+        html += `<div id="rowPotongan" style="color:red"><span>Potongan Promo</span><span>- Rp ${currentPotongan.toLocaleString('id-ID')}</span></div>`;
         
-        window.currentTotalBelanja = totalBelanja; 
+        summaryHeader.textContent = `Total ${totalQty} Barang`;
+        summaryDetails.innerHTML = html;
+        grandTotalDisplay.textContent = `Rp ${Math.max(0, totalBelanja - currentPotongan).toLocaleString('id-ID')}`;
     }
 
-    checkboxes.forEach(cb => {
-        cb.addEventListener('change', updateSummary);
+    checkboxes.forEach(cb => cb.onchange = updateSummary);
+
+    document.querySelectorAll('.qty-form .plus, .qty-form .minus').forEach(btn => {
+        btn.onclick = function() {
+            const form = this.closest('form');
+            const input = form.querySelector('.qty-input');
+            let val = parseInt(input.value);
+            if (this.classList.contains('plus')) val++;
+            else val--;
+            
+            if (val < 1) { if(!confirm('Hapus item?')) return; val = 0; }
+            input.value = val;
+            form.submit();
+        };
     });
+
+    document.getElementById('btnCheckout').onclick = () => {
+        const ids = Array.from(checkboxes).filter(c => c.checked).map(c => c.value);
+        if(!ids.length) return alert("Pilih barang!");
+        window.location.href = `co-langsung.php?mode=cart&items=${ids.join(',')}`;
+    };
+
+    updateSummary();
 });
 </script>
 
