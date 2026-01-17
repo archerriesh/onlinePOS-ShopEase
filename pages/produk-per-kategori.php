@@ -10,7 +10,6 @@ if ($kategori == '') {
         SELECT idProduk, namaProduk, harga
         FROM tbproduk
         ORDER BY RAND()
-        LIMIT 8
     ";
     $stmt = mysqli_prepare($conn, $sql);
 } else {
