@@ -2,6 +2,8 @@
   display: flex;
   padding: 24px;
   gap: 24px;
+  height: calc(100vh - 100px);
+  align-items: flex-start;
 }
 
 .sidebar {
@@ -44,8 +46,22 @@
 .content {
   background-color: #e3d6cc;
   border-radius: 28px;
-  padding: 28px;
+  padding: 30px;
   flex: 1;
+  height: 530px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.content::-webkit-scrollbar {
+  width: 8px;
+}
+.content::-webkit-scrollbar-thumb {
+  background-color: #ba704a; 
+  border-radius: 10px;
+}
+.content::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .category-list li:hover {
