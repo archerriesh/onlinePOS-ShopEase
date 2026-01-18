@@ -11,7 +11,7 @@ $result = mysqli_query($conn, $sql);
 
 <div class="toko-container">
     <div class="toko-header">
-        <h1 class="section-title">Daftar Buyer</h1>
+        <h1 class="section-title">Buyer List</h1>
     </div>
 
     <div class="buyer-grid">
@@ -44,11 +44,11 @@ $result = mysqli_query($conn, $sql);
                 <div id="b-<?= $id ?>" class="dropdown-content">
                     <?php if ($isNonaktif) : ?>
                         <a href="javascript:void(0)" class="btn-aktifkan" onclick="confirmAction('<?= $id ?>', 'aktifkan')">
-                            Aktifkan Kembali
+                            Activate
                         </a>
                     <?php else : ?>
                         <a href="javascript:void(0)" class="btn-nonaktif" onclick="confirmAction('<?= $id ?>', 'nonaktifkan')">
-                            Nonaktifkan
+                            Non-activate
                         </a>
                     <?php endif; ?>
                 </div>

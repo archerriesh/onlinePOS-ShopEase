@@ -8,15 +8,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $isiBalasan = $_POST['isiBalasan'];
 
     $sql = "UPDATE tbReview SET balasanPenjual = ? WHERE idReview = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ss", $isiBalasan, $idReview);
-
-    if ($stmt->execute()) {
-        $_SESSION['success'] = "Reply sent successfully!";
-    } else {
-        $_SESSION['error'] = "Failed to send reply.";
-    }
     
-    header("Location: liat-produk.php?id=" . $idProduk);
-    exit;
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "ss", $isiBalasan, $idReview);
+
+    if (mysqli_stmt_execute($stmt)) {
+        header("Location: liat-produk.php?id=" . $idProduk . "#review");
+        exit;
+    } else {
+        echo "Error: " . mysqli_error($conn);
+    }
 }

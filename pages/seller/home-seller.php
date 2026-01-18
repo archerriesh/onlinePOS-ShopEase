@@ -61,7 +61,7 @@ include("../../includes/header-seller.php");
 <h1>My Products</h1>
 
 <?php if (empty($products)): ?>
-<p>Belum ada produk</p>
+<p>There's no product yet.</p>
 <?php else: ?>
 
 <div class="carousel-wrapper">

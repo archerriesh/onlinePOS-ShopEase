@@ -101,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <div class="form-group">
-                <label>Minimal Transaction (Rp)</label>
+                <label>Minimum Purchase (Rp)</label>
                 <input type="number" name="minimalTransaksi" required>
             </div>
 
@@ -123,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <div class="form-group">
-                    <label>Nominal Potongan (Rp)</label>
+                    <label>Discount Amount (Rp)</label>
                     <input type="number" name="nominalPotongan" id="inputNominal">
                 </div>
             </div>

@@ -42,12 +42,12 @@ include("../../includes/header-seller.php");
     <div class="store-header">
         <span>My products</span>
         <h1 class="section-title"><?= htmlspecialchars($namaToko ?: 'Toko Saya') ?></h1>
-        <a href="addProduct-seller.php" class="add-btn">Add new product ⊕</a>
+        <a href="addProduct-seller.php" class="add-btn">Add new product +</a>
     </div>
 
     <div class="product-grid">
         <?php if (empty($products)): ?>
-            <p>Belum ada produk</p>
+            <p>There's no product yet.</p>
             <?php else: ?>
                 <?php foreach ($products as $p): ?>
                     <?php
@@ -66,9 +66,9 @@ include("../../includes/header-seller.php");
                                 <button class="dropbtn">⋮</button>
                                 <div class="dropdown-content">
                                     <?php if (!$isInactive): ?>
-                                        <a href="#" class="text-danger" onclick="confirmAction('<?= $p['idProduk'] ?>', 'nonaktif')">Nonaktifkan</a>
+                                        <a href="#" class="text-danger" onclick="confirmAction('<?= $p['idProduk'] ?>', 'nonaktif')">Non-activate</a>
                                     <?php else: ?>
-                                        <a href="#" class="text-success" onclick="confirmAction('<?= $p['idProduk'] ?>', 'aktif')">Aktifkan Kembali</a>
+                                        <a href="#" class="text-success" onclick="confirmAction('<?= $p['idProduk'] ?>', 'aktif')">Activate</a>
                                     <?php endif; ?>
                                 </div>
                             </div>
@@ -76,7 +76,7 @@ include("../../includes/header-seller.php");
                         
                         <a href="liat-produk.php?id=<?= $p['idProduk'] ?>">
                             <?php if ($isInactive): ?>
-                                <div class="status-badge">NONAKTIF</div>
+                                <div class="status-badge">Non-active</div>
                             <?php endif; ?>
                                 
                             <img src="<?= $gambarProduk ?>" alt="<?= htmlspecialchars($p['namaProduk']) ?>">

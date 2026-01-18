@@ -47,11 +47,11 @@ $result = mysqli_query($conn, $sql);
                     <div id="menu-<?= $idPenjual ?>" class="dropdown-content">
                         <?php if ($isNonaktif): ?>
                             <a href="javascript:void(0)" class="btn-aktifkan" onclick="confirmAction('<?= $idPenjual ?>', 'aktifkan')">
-                                Aktifkan Kembali
+                                Activate
                             </a>
                         <?php else: ?>
                             <a href="javascript:void(0)" class="btn-nonaktif" onclick="confirmAction('<?= $idPenjual ?>', 'nonaktifkan')">
-                                Nonaktifkan
+                                Non-activate
                             </a>
                         <?php endif; ?>
                     </div>

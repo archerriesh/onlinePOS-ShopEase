@@ -47,7 +47,7 @@ include '../../includes/header-seller.php';
         <?php if (mysqli_num_rows($notifs) === 0): ?>
             <div class="text-center mt-5">
                 <i class="bi bi-mailbox" style="font-size: 3rem; color: #ccc;"></i>
-                <p class="text-muted mt-2">Belum ada pesanan baru masuk.</p>
+                <p class="text-muted mt-2">There's no notification yet.</p>
             </div>
         <?php endif; ?>
 

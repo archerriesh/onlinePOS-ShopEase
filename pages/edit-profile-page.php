@@ -34,6 +34,11 @@ mysqli_stmt_execute($stmt);
 
 $user = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 
+if (!$user) {
+    echo "Data user tidak ditemukan di database. Silakan login ulang.";
+    exit;
+}
+
 $headerFile = '../includes/header-main.php'; 
 if ($role === 'admin') $headerFile = '../includes/header-admin.php';
 elseif ($role === 'penjual') $headerFile = '../includes/header-seller.php';
@@ -64,7 +69,7 @@ include $headerFile;
                     <div class="row align-items-start">
                         <div class="col-md-7">
                             <h2 class="text-center mb-4">Change Profile</h2>
-                            <form method="POST" action="update-profile.php" class="profile-info">
+                            <form method="POST" action="edit-profile.php" class="profile-info">
                                 <div class="info-item">
                                     <label>Name</label>
                                     <input type="text" name="nama"
@@ -74,9 +79,7 @@ include $headerFile;
 
                                 <div class="info-item">
                                 <label>Username</label>
-                                <input type="text" name="username"
-                                    value="<?= $user['username']; ?>"
-                                    class="form-control">
+                                <input type="text" name="new_username" value="<?= htmlspecialchars($user['username']); ?>" class="form-control">
                                 </div>
                                 
                                 <div class="info-item">

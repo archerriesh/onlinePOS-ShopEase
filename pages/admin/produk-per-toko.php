@@ -77,7 +77,7 @@ while ($row = mysqli_fetch_assoc($resultProduk)) {
 
                 <?php endforeach; ?>
             <?php else: ?>
-                <p class="empty">Toko ini belum memiliki produk.</p>
+                <p class="empty">This shop has no products yet.</p>
             <?php endif; ?>
         </div>
     </main>

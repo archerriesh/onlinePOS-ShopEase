@@ -27,26 +27,24 @@ if ($resProduk) {
 
     <div class="admin-hero">
 
-        <div class="admin-content">
-            <span class="admin-tag">ADMIN DASHBOARD</span>
+        <span class="admin-tag">ADMIN DASHBOARD</span>
 
             <h1>Manage ShopEase</h1>
             <p>
-                Kendalikan seluruh sistem penjualan,<br>
-                kelola seller, produk, dan transaksi dalam satu panel
+                Take full control of the sales system,<br>
+                manage users, and monitor transactions in real-time.
             </p>
 
-            <!-- DASHBOARD STATS -->
             <div class="admin-stats">
                 <div class="stat-box">
-                    <span class="stat-label">Total Seller</span>
+                    <span class="stat-label">Seller Total</span>
                     <span class="stat-value">
                         <?= number_format($totalSeller); ?>
                     </span>
                 </div>
 
                 <div class="stat-box">
-                    <span class="stat-label">Total Produk</span>
+                    <span class="stat-label">Product Total</span>
                     <span class="stat-value">
                         <?= number_format($totalProduk); ?>
                     </span>

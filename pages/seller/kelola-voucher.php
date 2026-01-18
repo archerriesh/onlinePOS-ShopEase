@@ -137,7 +137,7 @@ $badgeIcon = ($data['persentasePotongan'] > 0) ? '%' : 'Rp';
             </div>
 
             <div class="form-group">
-                <label>Minimal Transaction (Rp)</label>
+                <label>Minimum Purchase(Rp)</label>
                 <input type="number" name="minimalTransaksi" value="<?= $data['minimalTransaksi'] ?>" required>
             </div>
 
@@ -157,7 +157,7 @@ $badgeIcon = ($data['persentasePotongan'] > 0) ? '%' : 'Rp';
                     <input type="number" name="persentasePotongan" id="persentasePotongan" value="<?= $data['persentasePotongan'] ?>">
                 </div>
                 <div class="form-group">
-                    <label>Nominal Potongan (Rp)</label>
+                    <label>Discount amount (Rp)</label>
                     <input type="number" name="nominalPotongan" id="nominalPotongan" value="<?= $data['nominalPotongan'] ?>">
                 </div>
             </div>

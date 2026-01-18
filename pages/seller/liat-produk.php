@@ -145,34 +145,41 @@ foreach ($extensions as $ext) {
         <div class="review-list">
             <?php if (count($reviews) > 0): ?>
                 <?php foreach ($reviews as $r): ?>
-                    <div class="review-card">
+                    <div class="review-card" style="border-bottom: 1px solid #eee; padding-bottom: 20px; margin-bottom: 20px;">
                         <div class="avatar"></div>
-                        <div>
+                        <div style="flex: 1;">
                             <div class="review-stars">
                                 <?php
                                     $fullStar = (int)$r['rating'];
                                     echo str_repeat('★', $fullStar);
                                     echo str_repeat('☆', 5 - $fullStar);
                                 ?>
+                                <span style="font-size: 12px; color: #888; margin-left: 10px;">
+                                    <?= date('d M Y', strtotime($r['tglReview'])); ?>
+                                </span>
                             </div>
-                            <p><?= htmlspecialchars($r['isiKomentar']); ?></p>
+                            
+                            <p style="margin: 10px 0;"><?= htmlspecialchars($r['isiKomentar']); ?></p>
+
                             <?php if (!empty($r['balasanPenjual'])): ?>
-                                <div class="seller-reply" style="margin-top: 10px; padding: 10px; background: #f9f9f9; border-left: 3px solid #8d9b7a;">
-                                    <strong>Your Reply:</strong>
-                                    <p><?= htmlspecialchars($r['balasanPenjual']); ?></p>
+                                <div class="seller-reply" style="margin-top: 10px; padding: 15px; background: #f4f1ed; border-left: 4px solid #5D5A43; border-radius: 0 8px 8px 0;">
+                                    <strong style="color: #5D5A43; font-size: 13px;">Your Response:</strong>
+                                    <p style="margin-top: 5px; margin-bottom: 0; font-style: italic; color: #444;">
+                                        <?= htmlspecialchars($r['balasanPenjual']); ?>
+                                    </p>
                                 </div>
                             <?php else: ?>
-                                <button class="btn-reply" 
-                                        onclick="openReplyModal('<?= $idProduk ?>', '<?= $r['idReview'] ?>')"
-                                        style="margin-top: 10px; background: none; border: 1px solid #8d9b7a; color: #8d9b7a; cursor: pointer; padding: 5px 15px; border-radius: 5px;">
-                                    Reply
+                                <button type="button" 
+                                        onclick="openReplyModal('<?= $produk['idProduk']; ?>', '<?= $r['idReview']; ?>')"
+                                        style="margin-top: 10px; background: #5D5A43; color: white; border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.3s;">
+                                    <i class="fas fa-reply"></i> Reply to Customer
                                 </button>
                             <?php endif; ?>
                         </div>
                     </div>
                 <?php endforeach; ?>
             <?php else: ?>
-                <p style="opacity:0.6;">No reviews yet.</p>
+                <p style="opacity:0.6; text-align: center; padding: 40px;">No reviews found for this product.</p>
             <?php endif; ?>
         </div>
     </div>

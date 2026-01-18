@@ -10,7 +10,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// ambil id penjual
 $idPenjual = $_SESSION['idPenjual'] ?? null;
 if (!$idPenjual) {
     die("Session idPenjual tidak ditemukan");
@@ -56,7 +55,6 @@ if (!$idProduk) {
     die("Gagal mendapatkan idProduk");
 }
 
-// upload gambar
 if (!empty($_FILES['gambar']['name'])) {
     $ext = strtolower(pathinfo($_FILES['gambar']['name'], PATHINFO_EXTENSION));
     $allowed = ['jpg', 'jpeg', 'png', 'webp'];
@@ -74,7 +72,6 @@ if (!empty($_FILES['gambar']['name'])) {
     }
 }
 
-// notif sukses
 $_SESSION['success'] = "Produk berhasil ditambahkan!";
 header("Location: products.php");
 exit;
