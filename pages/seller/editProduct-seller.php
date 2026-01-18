@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $selisihStok = $stokBaru - $stokLama;
         
-        $spStokSql = "CALL sp_update_stok(?, ?)";
+        $spStokSql = "CALL sp_update_stok_produk(?, ?)";
         $stmtStok = $conn->prepare($spStokSql);
         $stmtStok->bind_param("si", $idProduk, $selisihStok);
         
