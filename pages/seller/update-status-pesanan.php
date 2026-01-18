@@ -13,8 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['idPenjual'])) {
     mysqli_stmt_bind_param($stmt, "ssss", $statusKirim, $statusPesanan, $idTrxPenjual, $_SESSION['idPenjual']);
     
     if (mysqli_stmt_execute($stmt)) {
-        header("Location: history-seller.php?update=success");
+        header("Location: orders.php?update=success");
     } else {
-        header("Location: history-seller.php?update=failed");
+        header("Location: orders.php?update=failed");
     }
 }
