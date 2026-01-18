@@ -1,5 +1,6 @@
 <?php
 session_start();
+$promoTerpilih = $_GET['promo'] ?? '';
 include '../includes/dbOnlinePOS.php';
 
 if (!isset($_SESSION['idPelanggan'])) {
@@ -27,6 +28,13 @@ $idPelanggan = $_SESSION['idPelanggan'];
 $payment = $_SESSION['payment'] ?? 'Belum Dipilih';
 $subPayment = $_SESSION['sub_payment'] ?? '';
 $metodeLengkap = trim($payment . ' ' . $subPayment);
+$kategoriSaja = strtolower(str_replace([' ', '-'], '', trim($payment)));
+
+if ($kategoriSaja == 'virtualaccount') {
+    $kategoriSaja = 'transferbank';
+} elseif ($kategoriSaja == 'ewallet') {
+    $kategoriSaja = 'emoney';
+}
 
 if (isset($_GET['action']) && $_GET['action'] == 'hitung_total') {
     ob_clean();
@@ -53,35 +61,41 @@ if (isset($_GET['action']) && $_GET['action'] == 'hitung_total') {
     $potonganHarga = 0;   
     $potonganOngkir = 0;  
     $nominalCashback = 0; 
-    $tipeTampil = '';     
+    $tipeTampil = ''; 
+    $errorMsg = "";    
 
     if (!empty($idPromo)) {
-        $sqlCek = "SELECT namaPromo, minimalTransaksi, nominalPotongan, persentasePotongan, tipePromo FROM tbpromo WHERE idPromo = ?";
+        $sqlCek = "SELECT namaPromo, minimalTransaksi, nominalPotongan, persentasePotongan, tipePromo, jenisPembayaran FROM tbpromo WHERE idPromo = ?";
         $stmtC = mysqli_prepare($conn, $sqlCek);
         mysqli_stmt_bind_param($stmtC, "s", $idPromo);
         mysqli_stmt_execute($stmtC);
         $resC = mysqli_stmt_get_result($stmtC);
         $promo = mysqli_fetch_assoc($resC);
 
-        if ($promo && $subtotalInput >= (float)$promo['minimalTransaksi']) {
-            $namaPromo = strtolower($promo['namaPromo']);
-            $tipePromo = strtolower($promo['tipePromo']);
-            
-            $nilaiPromo = ($promo['persentasePotongan'] > 0) 
-                          ? $subtotalInput * ($promo['persentasePotongan'] / 100) 
-                          : (float)$promo['nominalPotongan'];
+        if($promo){
+            if ($subtotalInput < (float)$promo['minimalTransaksi']){
+                $errorMsg = "Minimal belanja Rp ".number_format($promo['minimalTransaksi'], 0, ',', '.');
+            } else if (!empty($promo['jenisPembayaran']) && strtolower(trim($promo['jenisPembayaran'])) !== $kategoriSaja) {
+                $errorMsg = "Promo ini khusus pembayaran " . strtoupper($promo['jenisPembayaran']);
+            }
 
-            if (strpos($namaPromo, 'ongkir') !== false) {
-                $potonganOngkir = min($nilaiPromo, $ongkir);
-                $tipeTampil = 'gratis_ongkir';
-            } 
-            else if ($tipePromo === 'diskon') {
-                $potonganHarga = $nilaiPromo;
-                $tipeTampil = 'diskon';
-            } 
-            else if ($tipePromo === 'cashback') {
-                $nominalCashback = $nilaiPromo;
-                $tipeTampil = 'cashback';
+            if ($errorMsg === "") {
+                $namaPromo = strtolower($promo['namaPromo']);
+                $tipePromo = strtolower($promo['tipePromo']);
+                $nilaiPromo = ($promo['persentasePotongan'] > 0) 
+                              ? $subtotalInput * ($promo['persentasePotongan'] / 100) 
+                              : (float)$promo['nominalPotongan'];
+
+                if (strpos($namaPromo, 'ongkir') !== false) {
+                    $potonganOngkir = min($nilaiPromo, $ongkir);
+                    $tipeTampil = 'gratis_ongkir';
+                } else if ($tipePromo === 'diskon') {
+                    $potonganHarga = $nilaiPromo;
+                    $tipeTampil = 'diskon';
+                } else if ($tipePromo === 'cashback') {
+                    $nominalCashback = $nilaiPromo;
+                    $tipeTampil = 'cashback';
+                }
             }
         }
     }
@@ -92,12 +106,25 @@ if (isset($_GET['action']) && $_GET['action'] == 'hitung_total') {
         'potongan' => $potonganHarga,
         'potonganOngkir' => $potonganOngkir,
         'cashback' => $nominalCashback,
-        'tipe' => $tipeTampil
+        'tipe' => $tipeTampil,
+        'error' => $errorMsg
     ]);
     exit;
 }
 
+// --- BAGIAN PROSES CHECKOUT ---
 if (isset($_POST['btn_checkout'])) {
+    if (!empty($_POST['idPromo'])) {
+        $idP = $_POST['idPromo'];
+        $cek = mysqli_query($conn, "SELECT jenisPembayaran FROM tbpromo WHERE idPromo = '$idP'");
+        $rp = mysqli_fetch_assoc($cek);
+
+        if (!empty($rp['jenisPembayaran']) && strtolower(trim($rp['jenisPembayaran'])) !== $kategoriSaja) {
+            echo "<script>alert('Gagal! Promo ini khusus pembayaran " . strtoupper($rp['jenisPembayaran']) . "'); window.location.href='co-langsung.php';</script>";
+            exit;
+        }
+    }
+
     $idPromo   = !empty($_POST['idPromo']) ? $_POST['idPromo'] : NULL;
     $ekspedisi = $_POST['ekspedisi'] ?? 'J&T Express';
 
@@ -127,6 +154,7 @@ if (isset($_POST['btn_checkout'])) {
     }
 }
 
+// --- PENGAMBILAN DATA UNTUK TAMPILAN ---
 $items = [];
 $totalHarga = 0;
 
@@ -158,8 +186,6 @@ if ($modeCheckout === 'buy_now') {
     }
 }
 
-$arrayIdProduk = array_column($items, 'idProduk');
-$listIdProduk = count($arrayIdProduk) > 0 ? "'" . implode("','", $arrayIdProduk) . "'" : "''";
 $currentDate = date('Y-m-d H:i:s');
 $sqlPromo = "SELECT * FROM tbpromo WHERE startDate <= ? AND endDate >= ? AND statusAktif = 'Y'";
 $stmtPromo = mysqli_prepare($conn, $sqlPromo);
@@ -248,10 +274,10 @@ include '../includes/header-main.php';
             <input type="hidden" name="idPromo" id="inputPromo">
             <input type="hidden" name="modeCheckout" value="<?= $modeCheckout ?>">
             <?php if($modeCheckout === 'buy_now'): ?>
-                <input type="hidden" name="bn_idProduk" value="<?= $_SESSION['bn_idProduk'] ?>">
-                <input type="hidden" name="bn_qty" value="<?= $_SESSION['bn_qty'] ?>">
+                <input type="hidden" name="bn_idProduk" value="<?= $_SESSION['bn_idProduk'] ?? '' ?>">
+                <input type="hidden" name="bn_qty" value="<?= $_SESSION['bn_qty'] ?? 0 ?>">
             <?php else: ?>
-                <input type="hidden" name="selected_items" value="<?= htmlspecialchars($itemParam) ?>">
+                <input type="hidden" name="selected_items" value="<?= htmlspecialchars($itemParam ?? '') ?>">
             <?php endif; ?>
 
             <div class="mb-3">
@@ -275,12 +301,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectedVoucherText = document.getElementById('selectedVoucherText');
     const selectKurir = document.querySelector('select[name="ekspedisi"]');
     const subtotalProduk = <?= $totalHarga ?>;
-    let currentPromoId = "";
+    let currentPromoId = "<?= $promoTerpilih ?>";
+
+    if (currentPromoId !== "") {
+        document.getElementById('inputPromo').value = currentPromoId;
+        const btnAsli = document.querySelector(`.apply-btn[data-id="${currentPromoId}"]`);
+        if (btnAsli) {
+            selectedVoucherText.innerHTML = `Voucher: <strong>${btnAsli.dataset.name}</strong>`;
+        }
+    }
 
     function hitungUlang() {
         fetch(`co-langsung.php?action=hitung_total&idPromo=${currentPromoId}&kurir=${selectKurir.value}&subtotal=${subtotalProduk}`)
             .then(res => res.json())
             .then(data => {
+                if (data.error !== ""){
+                    alert(data.error);
+                    currentPromoId ="";
+                    document.getElementById('inputPromo').value = "";
+                    selectedVoucherText.textContent = "Pilih promo yang tersedia";
+                    hitungUlang();
+                    return;
+                }
+
                 document.getElementById('namaKurir').innerText = selectKurir.value;
                 
                 const ongkirFinal = Math.max(0, data.ongkir - data.potonganOngkir);

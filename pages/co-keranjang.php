@@ -290,11 +290,14 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btnCheckout').onclick = () => {
         const ids = Array.from(checkboxes).filter(c => c.checked).map(c => c.value);
         if(!ids.length) return alert("Pilih minimal satu barang!");
-        
+
         let checkoutUrl = `co-langsung.php?mode=cart&items=${ids.join(',')}`;
+
+        // TAMBAHKAN BAGIAN INI:
         if (activeVoucherId) {
             checkoutUrl += `&promo=${activeVoucherId}`;
         }
+
         window.location.href = checkoutUrl;
     };
     updateSummary();
