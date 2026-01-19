@@ -46,7 +46,7 @@ if (!$produk) {
 
 if ($filterRating !== '') {
     $sqlReview = "
-        SELECT rating, isiKomentar, tglReview
+        SELECT rating, isiKomentar, tglReview, balasanPenjual
         FROM tbReview
         WHERE idProduk = ?
         AND rating = ?
@@ -56,7 +56,7 @@ if ($filterRating !== '') {
     mysqli_stmt_bind_param($stmtReview, "si", $idProduk, $filterRating);
 } else {
     $sqlReview = "
-        SELECT rating, isiKomentar, tglReview
+        SELECT rating, isiKomentar, tglReview, balasanPenjual
         FROM tbReview
         WHERE idProduk = ?
         ORDER BY tglReview DESC
@@ -170,11 +170,22 @@ foreach ($extensions as $ext) {
                                 <?= str_repeat('★', $r['rating']) . str_repeat('☆', 5 - $r['rating']); ?>
                             </div>
                             <p><?= htmlspecialchars($r['isiKomentar']); ?></p>
+
+                            <?php if (!empty($r['balasanPenjual'])): ?>
+                                <div class="seller-reply" style="margin-top: 10px; padding: 12px; background: #f9f9f9; border-left: 3px solid #5D5A43; border-radius: 4px;">
+                                    <strong style="display: block; font-size: 13px; color: #5D5A43; margin-bottom: 5px;">
+                                        Seller Response:
+                                    </strong>
+                                    <p style="margin: 0; font-style: italic; font-size: 14px; color: #555;">
+                                        <?= htmlspecialchars($r['balasanPenjual']); ?>
+                                    </p>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 <?php endforeach; ?>
             <?php else: ?>
-                <p style="opacity:0.6;">Belum ada review untuk produk ini</p>
+                <p style="opacity:0.6;">There's no review yet.</p>
             <?php endif; ?>
         </div>
 
@@ -187,6 +198,25 @@ foreach ($extensions as $ext) {
 const qtyInput = document.getElementById('qtyInput');
 const maxStock = <?= (int)$produk['stok']; ?>;
 const idProduk = <?= json_encode($produk['idProduk']); ?>;
+const ratingRadios = document.querySelectorAll('.rating-filter input[type="radio"]');
+const urlParams = new URLSearchParams(window.location.search);
+const currentRating = urlParams.get('rating');
+
+if (currentRating) {
+    ratingRadios.forEach(radio => {
+        if (radio.value === currentRating) radio.checked = true;
+    });
+}
+
+ratingRadios.forEach(radio => {
+    radio.addEventListener('click', () => {
+        if (radio.value === currentRating) {
+            window.location.href = `liat-produk.php?id=${idProduk}#review`;
+        } else {
+            window.location.href = `liat-produk.php?id=${idProduk}&rating=${radio.value}#review`;
+        }
+    });
+});
 
 document.querySelector('.plus').onclick = () => {
     if (+qtyInput.value < maxStock) qtyInput.value++;
